@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "BDSOJVKDVfTg6MO6Pg6zqxPO67tJLTLpDyKgBjXz98bVBjl46QZF8wmCOPhL6Ec7cR8wy77usJeBXCFduHjw8Q==",
+  "success": true,
+  "projectFilePath": "/home/harry/Desktop/RiderProjects/ChessGameV2_.Net6/ChessGameV2_.Net6/ChessGameV2_.Net6.csproj",
+  "expectedPackageFiles": [
+    "/home/harry/.nuget/packages/raylib-cs/4.5.0.2/raylib-cs.4.5.0.2.nupkg.sha512",
+    "/home/harry/.nuget/packages/system.numerics.vectors/4.5.0/system.numerics.vectors.4.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}
