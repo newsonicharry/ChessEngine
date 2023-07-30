@@ -18,6 +18,9 @@ public class MovementMasks
     public static readonly ulong[] PawnBlackMoveMovementMasks = new ulong[64];
     public static readonly ulong[] PawnBlackAttackMovementMasks = new ulong[64];
 
+    public static readonly ulong[][] RookMovesLookUp = new ulong[64][];
+    public static ulong[][] BishopMovesLookUp = new ulong[64][];
+
 
 
     public static void CreateMovementMasks()
@@ -221,66 +224,70 @@ public class MovementMasks
     }
     
     
-    public static ulong[] GenerateRookMovesLookup()
+    public static void GenerateRookMovesLookup()
     {
-        ulong[] rookValidMoveLookup = new ulong[1048576];
-
         
-        ulong[] rookMovementMasks = RookMovementMasks;
-
         int rookIndex = 0;
-        foreach (ulong rookMovementMask in rookMovementMasks)
-        {   
+        foreach (ulong rookMovementMask in RookMovementMasks)
+        {
+
+
+            RookMovesLookUp[rookIndex] = new ulong[4096];
             ulong[] blockers = Blockers.GenerateBlockers(rookMovementMask);
 
-            for (int i = 0; i < blockers.Length; i++)
+            foreach (ulong blocker in blockers)
             {
-                ulong blocker = blockers[i];
+
                 ulong key = (blocker * PrecomputedMagics.RookMagics[rookIndex]) >> PrecomputedMagics.RookShifts[rookIndex];
+                ulong validMoves = Blockers.GetRookMovesFromBlockers(rookMovementMask,blocker, rookIndex);
                 
-                ulong validMoves = Blockers.GetRookMovesFromBlockers(rookMovementMask, blocker, rookIndex);
-
-                rookValidMoveLookup[key] = validMoves;
-
+                // dont ask me why i have to do this
+                // probably should of just not stolen those precomputed magics and generated them myself
+                // but short term gain for long term suffering
+                if (validMoves > RookMovesLookUp[rookIndex][key])
+                {
+                    RookMovesLookUp[rookIndex][key] = validMoves;
+                }
+                
+                
             }
 
             rookIndex++;
 
         }
-        
-        return rookValidMoveLookup;
 
     }
     
     
-    public static ulong[] GenerateBishopMovesLookup()
+    public static void GenerateBishopMovesLookup()
     {
-        ulong[] bishopValidMoveLookup = new ulong[70399];
         
-        ulong[] bishopMovementMasks = MovementMasks.BishopMovementMasks;
-
         int bishopIndex = 0;
-        foreach (ulong bishopMovementMask in bishopMovementMasks)
-        {   
+        foreach (ulong bishopMovementMask in BishopMovementMasks)
+        {
+            BishopMovesLookUp[bishopIndex] = new ulong[4096];
+            
             ulong[] blockers = Blockers.GenerateBlockers(bishopMovementMask);
 
-            for (int i = 0; i < blockers.Length; i++)
-            {
-                ulong blocker = blockers[i];
-                ulong key = (blocker * PrecomputedMagics.BishopMagics[bishopIndex]) >> PrecomputedMagics.BishopShifts[bishopIndex];
-                
-                ulong validMove = Blockers.GetRookMovesFromBlockers(bishopMovementMask, blocker, bishopIndex);
-                
-                bishopValidMoveLookup[key] = validMove;
+            foreach (ulong blocker in blockers)
+            {   
+                ulong magic = PrecomputedMagics.BishopMagics[bishopIndex];
+                int shift = PrecomputedMagics.BishopShifts[bishopIndex];
 
+                ulong key = (blocker * magic) >> shift;
+                
+                ulong validMove = Blockers.GetBishopMovesFromBlockers(bishopMovementMask, blocker, bishopIndex);
+                
+                
+                BishopMovesLookUp[bishopIndex][key] = validMove;
+                
+                
             }
 
             bishopIndex++;
 
         }
         
-        
-        return bishopValidMoveLookup;
 
     }
 }

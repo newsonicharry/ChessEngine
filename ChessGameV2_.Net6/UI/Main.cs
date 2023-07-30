@@ -29,6 +29,8 @@ namespace learnraylib
         private static ulong PieceBitboard = 0ul;
         private static List<int> OccupiedSquares = new List<int>();
         
+        private static int[][] ValidMoves = {};
+
         
         public static void Main()
         {
@@ -51,6 +53,8 @@ namespace learnraylib
                 
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(backgroundColor);
+
+                ValidMoves = Board.FindValidMoves(true);
                 
                 DrawBoard();
                 DrawPiecesFromBitboards(allPieceTextures);
@@ -96,19 +100,12 @@ namespace learnraylib
                 foreach (int[] squarePosition in squarePositions)
                 {
                     if (Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle(squarePosition[0], squarePosition[1], SideLength, SideLength)))
-                    {   
-                        Console.WriteLine(CurrentSquareSelected);
-                        Console.WriteLine(index);
-                        Console.WriteLine();
-
+                    {
                         
                         if (CurrentSquareSelected != index)
                         {   
-
-                            // Console.WriteLine("true");
-                            int[][] validMoves = Board.FindValidMoves(true);
                             
-                            foreach (int[] validMove in validMoves)
+                            foreach (int[] validMove in ValidMoves)
                             {   
                                 
                                 // Console.WriteLine(validMove[0] + ", " + validMove[1]);
@@ -131,7 +128,8 @@ namespace learnraylib
                 
                 CurrentSquareSelected = -1;
                 PieceBitboard = 0ul;
-                
+                PieceSelectedTexture = new Texture2D();
+
             }
             
 
@@ -204,12 +202,19 @@ namespace learnraylib
                         currentColor = new Color((byte)161, (byte)111, (byte)90, (byte)255);
                     }
 
+                    foreach (int[] validMove in ValidMoves)
+                    {   
+                        if (validMove[0] == CurrentSquareSelected & validMove[1] == index)
+                        {   
+                            currentColor = new Color((byte)37, (byte)150, (byte)190, (byte)255);
+                        }
+                    }
+                    
                     if (index == CurrentSquareSelected) {   
                         currentColor = new Color((byte)37, (byte)150, (byte)190, (byte)255);
                         // currentColor = new Color((byte)248, (byte)236, (byte)90, (byte)255);
                     }
-                    
-                    
+
                     int xPos = x * SideLength + InitialXOffset;
                     int yPos = y * SideLength + InitialYOffset;
                     

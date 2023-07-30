@@ -25,13 +25,18 @@ public class Board
             friendlyBitboard = blackBitboards;
             enemyBitboard = whiteBitboards;
         }
-        
-        
 
+
+        ulong GetBlockers(ulong movementMask)
+        {   
+            // BitboardUtils.PrintBitboards(movementMask & (enemyBitboard | friendlyBitboard));
+            
+            return movementMask & (enemyBitboard | friendlyBitboard);
+        }
         
         bool PieceOnIndex(ulong bitboard, int i)
         {
-            return BitboardUtils.isBitOn(bitboard, BitboardUtils.ConvertToBitboardIndex(i));
+            return BitboardUtils.isBitOn(bitboard, (i));
         }
 
         ulong MovesNotObstructed(ulong movementMask)
@@ -45,7 +50,7 @@ public class Board
         {
             if (PieceOnIndex(Bitboards.WhiteKnightBitboard, i))
             {
-                ulong validMoves = MovementMasks.KnightMovementMasks[i];
+                ulong validMoves = MovesNotObstructed(MovementMasks.KnightMovementMasks[i]);
                 foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validMoves))
                 {
                     allValidMoves.Add(new [] {i, validIndex});
@@ -54,20 +59,86 @@ public class Board
             
             if (PieceOnIndex(Bitboards.WhitePawnBitboard, i))
             {
-                ulong validMoves = MovementMasks.PawnWhiteMoveMovementMasks[i];
+                ulong validMoves = MovesNotObstructed(MovementMasks.PawnWhiteMoveMovementMasks[i]) & ~enemyBitboard;
+                
+                ulong validAttacks = MovementMasks.PawnWhiteAttackMovementMasks[i] & enemyBitboard;
+                
+                foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validMoves) )
+                {
+                    allValidMoves.Add(new [] {i, validIndex});
+                }
+                
+                foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validAttacks) )
+                {
+                    allValidMoves.Add(new [] {i, validIndex});
+                }
+                
+            }
+            
+            if (PieceOnIndex(Bitboards.WhiteKingBitboard, i))
+            {
+                ulong validMoves = MovesNotObstructed(MovementMasks.KingMovementMasks[i]);
                 foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validMoves))
                 {
                     allValidMoves.Add(new [] {i, validIndex});
                 }
             }
-            
-            if (PieceOnIndex(Bitboards.WhiteKingBitboard, i))
+
+            if (PieceOnIndex(Bitboards.WhiteRookBitboard, i))
             {
-                ulong validMoves = MovementMasks.KingMovementMasks[i];
+                ulong rookMovementMask = MovementMasks.RookMovementMasks[i];
+                
+                ulong blockers = GetBlockers(rookMovementMask);
+                ulong key = (blockers * PrecomputedMagics.RookMagics[i]) >> PrecomputedMagics.RookShifts[i];
+                ulong validMoves = MovementMasks.RookMovesLookUp[i][key];
+
                 foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validMoves))
-                {
-                    allValidMoves.Add(new [] {i, validIndex});
+                { 
+                    allValidMoves.Add(new []{i, validIndex});
                 }
+                
+            }
+            
+            if (PieceOnIndex(Bitboards.WhiteBishopBitboard, i))
+            {
+                ulong bishopMovementMask = MovementMasks.BishopMovementMasks[i];
+                
+                ulong blockers = GetBlockers(bishopMovementMask);
+                ulong key = (blockers * PrecomputedMagics.BishopMagics[i]) >> PrecomputedMagics.BishopShifts[i];
+                ulong validMoves = MovementMasks.BishopMovesLookUp[i][key];
+
+                foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validMoves))
+                { 
+                    allValidMoves.Add(new []{i, validIndex});
+                }
+                
+            }
+            
+            if (PieceOnIndex(Bitboards.WhiteQueenBitboard, i))
+            {
+                ulong bishopMovementMask = MovementMasks.BishopMovementMasks[i];
+                
+                ulong bishopBlockers = GetBlockers(bishopMovementMask);
+                ulong bishopKey = (bishopBlockers * PrecomputedMagics.BishopMagics[i]) >> PrecomputedMagics.BishopShifts[i];
+                ulong bishopValidMoves = MovementMasks.BishopMovesLookUp[i][bishopKey];
+                
+
+                ulong rookMovementMask = MovementMasks.RookMovementMasks[i];
+                
+                ulong rookBlockers = GetBlockers(rookMovementMask);
+                ulong rookKey = (rookBlockers * PrecomputedMagics.RookMagics[i]) >> PrecomputedMagics.RookShifts[i];
+                ulong rookValidMoves = MovementMasks.RookMovesLookUp[i][rookKey];
+
+                foreach (int validIndex in BitboardUtils.GetSetBitIndexes(bishopValidMoves))
+                { 
+                    allValidMoves.Add(new []{i, validIndex});
+                }
+                
+                foreach (int validIndex in BitboardUtils.GetSetBitIndexes(rookValidMoves))
+                { 
+                    allValidMoves.Add(new []{i, validIndex});
+                }
+                
             }
             
             
@@ -83,12 +154,12 @@ public class Board
 
         bool NeedsToDeleteBit(ulong bitboard) 
         {
-            return BitboardUtils.isBitOn(bitboard, BitboardUtils.ConvertToBitboardIndex(newIndex));
+            return BitboardUtils.isBitOn(bitboard, (newIndex));
         }
         
         ulong DeleteBit(ulong bitboard)
         {
-            return BitboardUtils.negateBit(bitboard, BitboardUtils.ConvertToBitboardIndex(newIndex));
+            return BitboardUtils.negateBit(bitboard, (newIndex));
         }
         
         
@@ -111,8 +182,8 @@ public class Board
         
         ulong ChangeBitPosition(ulong bitboard)
         {
-            ulong newBitboard = BitboardUtils.negateBit(bitboard, BitboardUtils.ConvertToBitboardIndex(originalIndex));
-            newBitboard = BitboardUtils.enableBit(newBitboard, BitboardUtils.ConvertToBitboardIndex(newIndex));
+            ulong newBitboard = BitboardUtils.negateBit(bitboard, (originalIndex));
+            newBitboard = BitboardUtils.enableBit(newBitboard, (newIndex));
             
             return newBitboard;
         }

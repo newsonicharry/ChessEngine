@@ -12,15 +12,13 @@ public class Blockers
         
         List<int> moveIndexes = new List<int>();
         for (int i = 0; i < 64; i++)
-        {
-            ulong mask = 1ul << i;
-            if ((movementMask & mask) != 0)
+        { if (((movementMask >> i) & 1) == 1)
             {
                 moveIndexes.Add(i);
             }
         }
 
-        int totalBlockerPatterns = (int)Math.Pow(2, moveIndexes.Count);
+        int totalBlockerPatterns = 1 << moveIndexes.Count;
         ulong[] allBlockerPatterns = new ulong[totalBlockerPatterns];
 
 
@@ -73,6 +71,7 @@ public class Blockers
             }
         }
         
+
         // left side
         canNegate = false;
         for (int i = bishopIndex+7; i < 64; i+=7) {
@@ -83,10 +82,10 @@ public class Blockers
             }
         }
         
-        
+
         // bottom left side
         canNegate = false;
-        for (int i = bishopIndex-9; i < 64; i-=9) {
+        for (int i = bishopIndex-9; i >= 0; i-=9) {
             
             if (BoardUtils.IndexToFile(bishopIndex) - BoardUtils.IndexToFile(i) == 1) {
                 canNegate = CheckValidBits(i, canNegate);
@@ -94,9 +93,10 @@ public class Blockers
             }
         }
         
+
         // bottom right side
         canNegate = false;
-        for (int i = bishopIndex-7; i < 64; i-=7) {
+        for (int i = bishopIndex-7; i >= 0; i-=7) {
             
             if (BoardUtils.IndexToFile(bishopIndex) - BoardUtils.IndexToFile(i) == 1) {
                 canNegate = CheckValidBits(i, canNegate);
