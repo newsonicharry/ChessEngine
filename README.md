@@ -8,6 +8,7 @@ Utilizes bitboards and movement masks for move creation
 Uses raylib for gui
 
 Todo:
+- Allow for castling and en passant
 - Check for pins
 - Finsh move validation
 - Create highlights on square pieces can move to
