@@ -158,7 +158,8 @@ namespace learnraylib
         }
         private static Texture2D[] GetPieceTextures()
         {
-            string[] imageFiles = Directory.GetFiles("/home/harry/Desktop/RiderProjects/ChessGameV2_.Net6/ChessGameV2_.Net6/Pieces");
+            string[] imageFiles = Directory.GetFiles("../../../Pieces");
+
             List<Texture2D> allPieceTextures = new List<Texture2D>();
             
             
