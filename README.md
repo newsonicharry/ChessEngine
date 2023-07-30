@@ -14,3 +14,4 @@ Todo:
 - Allow the gui to accuratly move pieces
 - Create work on an engine
 - Hook up the engine to the gui
+- Allow for castling and en passant
