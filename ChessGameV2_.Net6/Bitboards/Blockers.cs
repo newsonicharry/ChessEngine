@@ -37,24 +37,21 @@ public class Blockers
     }
 
     public static ulong GetBishopMovesFromBlockers(ulong bishopMovementMask, ulong blockersBitboard, int bishopIndex) 
-    {
-        ulong validBoard = bishopMovementMask & (~blockersBitboard);
+    {   
         
-        
+        ulong validBoard = MovementMasks.BishopMovementMasks[bishopIndex];
+
+
         bool CheckValidBits(int i, bool canNegate)
         {
             if (canNegate)
             {
-                ulong bitmask = (ulong)1 << i;
-                bitmask = ~bitmask;
-                validBoard &= bitmask;
+                validBoard = BitboardUtils.negateBit(validBoard, i);
+
             }
             else
             {
-                ulong bitmask = (ulong)1 << i;
-                bool isBitZero = (validBoard & bitmask) == 0;
-
-                if (isBitZero)
+                if (BitboardUtils.isBitOn(blockersBitboard, i))
                 {
                     return true;
                 }
@@ -66,44 +63,30 @@ public class Blockers
         // right side
         bool canNegate = false;
         for (int i = bishopIndex+9; i < 64; i+=9) {
-            
-            if (BoardUtils.IndexToFile(i) - BoardUtils.IndexToFile(bishopIndex) == 1) {
-                canNegate = CheckValidBits(i, canNegate);
-
-            }
+            canNegate = CheckValidBits(i, canNegate);
         }
         
 
         // left side
         canNegate = false;
         for (int i = bishopIndex+7; i < 64; i+=7) {
-            
-            if (BoardUtils.IndexToFile(i) - BoardUtils.IndexToFile(bishopIndex) == 1) {
-                canNegate = CheckValidBits(i, canNegate);
+            canNegate = CheckValidBits(i, canNegate);
 
-            }
         }
         
 
         // bottom left side
         canNegate = false;
         for (int i = bishopIndex-9; i >= 0; i-=9) {
-            
-            if (BoardUtils.IndexToFile(bishopIndex) - BoardUtils.IndexToFile(i) == 1) {
-                canNegate = CheckValidBits(i, canNegate);
-
-            }
+            canNegate = CheckValidBits(i, canNegate);
         }
         
 
         // bottom right side
         canNegate = false;
         for (int i = bishopIndex-7; i >= 0; i-=7) {
-            
-            if (BoardUtils.IndexToFile(bishopIndex) - BoardUtils.IndexToFile(i) == 1) {
-                canNegate = CheckValidBits(i, canNegate);
+            canNegate = CheckValidBits(i, canNegate);
 
-            }
         }
         
 

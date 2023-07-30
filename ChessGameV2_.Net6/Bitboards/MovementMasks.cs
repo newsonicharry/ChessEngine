@@ -19,6 +19,7 @@ public class MovementMasks
     public static readonly ulong[] PawnBlackAttackMovementMasks = new ulong[64];
         
     public static readonly ulong[] RookMovementMasksNoEdges = new ulong[64];
+    public static readonly ulong[] BishopMovementMasksNoEdges = new ulong[64];
 
     public static readonly ulong[][] RookMovesLookUp = new ulong[64][];
     public static ulong[][] BishopMovesLookUp = new ulong[64][];
@@ -51,6 +52,7 @@ public class MovementMasks
                 PawnBlackAttackMovementMasks[index] = CreatePawnAttackMovementMask(x, y, false);
 
                 RookMovementMasksNoEdges[index] = CreateRookMovementMaskNoEdges(x, y);
+                BishopMovementMasksNoEdges[index] = CreateBishopMovementMaskNoEdges(x,y);
 
             }
         }
@@ -135,6 +137,45 @@ public class MovementMasks
         return movementMask;
     }
 
+    private static ulong CreateBishopMovementMaskNoEdges(int xBishop, int yBishop)
+    { 
+        ulong movementMask = 0ul;
+        int bishopIndex = yBishop * 8 + xBishop;
+        
+        for (int y = 1; y < 7; y += 1) {
+            for (int x = 1; x < 7; x += 1) {
+                
+                int index = y * 8 + x;
+                
+                int yDistance = Math.Abs(yBishop - y);
+
+                if (bishopIndex == index)
+                {
+                    continue;
+                }
+                
+                if (index == bishopIndex+7*yDistance && yBishop != BoardUtils.IndexToFile(bishopIndex+7)){
+                    movementMask |= 1ul << Math.Abs(index);
+                }
+                
+                if (index == bishopIndex-7*yDistance && yBishop != BoardUtils.IndexToFile(bishopIndex-7)){
+                    movementMask |= 1ul << Math.Abs(index);
+                }
+                
+                if (index == bishopIndex+9*yDistance){
+                    movementMask |= 1ul << Math.Abs(index);
+                }
+                
+                if (index == bishopIndex-9*yDistance){
+                    movementMask |= 1ul << Math.Abs(index);
+                }
+
+            }
+        }
+        return movementMask;
+
+    }
+    
     private static ulong CreateBishopMovementMask(int xBishop, int yBishop)
     { 
         ulong movementMask = 0ul;
@@ -156,7 +197,7 @@ public class MovementMasks
                     movementMask |= 1ul << Math.Abs(index);
                 }
                 
-                if (index == bishopIndex-7*yDistance && yBishop != BoardUtils.IndexToFile(bishopIndex+7)){
+                if (index == bishopIndex-7*yDistance && yBishop != BoardUtils.IndexToFile(bishopIndex-7)){
                     movementMask |= 1ul << Math.Abs(index);
                 }
                 
@@ -173,6 +214,7 @@ public class MovementMasks
         return movementMask;
 
     }
+
     
     private static ulong CreatePawnAttackMovementMask(int xPawn, int yPawn, bool isWhite)
     {
@@ -304,9 +346,9 @@ public class MovementMasks
     {
         
         int bishopIndex = 0;
-        foreach (ulong bishopMovementMask in BishopMovementMasks)
+        foreach (ulong bishopMovementMask in BishopMovementMasksNoEdges)
         {
-            BishopMovesLookUp[bishopIndex] = new ulong[4096];
+            BishopMovesLookUp[bishopIndex] = new ulong[10000];
             
             ulong[] blockers = Blockers.GenerateBlockers(bishopMovementMask);
 

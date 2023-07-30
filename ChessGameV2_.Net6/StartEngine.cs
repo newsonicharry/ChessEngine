@@ -1,3 +1,5 @@
+using ChessGame.board;
+
 namespace ChessGame;
 using bitboards;
 

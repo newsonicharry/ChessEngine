@@ -84,7 +84,7 @@ public class Board
                 }
             }
 
-            if (PieceOnIndex(Bitboards.WhiteRookBitboard, i))
+            if (PieceOnIndex(Bitboards.WhiteRookBitboard, i) || PieceOnIndex(Bitboards.WhiteQueenBitboard, i))
             {
                 ulong rookMovementMask = MovementMasks.RookMovementMasksNoEdges[i];
 
@@ -100,14 +100,16 @@ public class Board
                 
             }
             
-            if (PieceOnIndex(Bitboards.WhiteBishopBitboard, i))
+            if (PieceOnIndex(Bitboards.WhiteBishopBitboard, i) || PieceOnIndex(Bitboards.WhiteQueenBitboard, i))
             {
-                ulong bishopMovementMask = MovementMasks.BishopMovementMasks[i];
+                ulong bishopMovementMask = MovementMasks.BishopMovementMasksNoEdges[i];
                 
                 ulong blockers = GetBlockers(bishopMovementMask);
                 ulong key = (blockers * PrecomputedMagics.BishopMagics[i]) >> PrecomputedMagics.BishopShifts[i];
                 ulong validMoves = MovementMasks.BishopMovesLookUp[i][key];
 
+                validMoves = MovesNotObstructed(validMoves);
+                
                 foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validMoves))
                 { 
                     allValidMoves.Add(new []{i, validIndex});
@@ -115,32 +117,6 @@ public class Board
                 
             }
             
-            if (PieceOnIndex(Bitboards.WhiteQueenBitboard, i))
-            {
-                ulong bishopMovementMask = MovementMasks.BishopMovementMasks[i];
-                
-                ulong bishopBlockers = GetBlockers(bishopMovementMask);
-                ulong bishopKey = (bishopBlockers * PrecomputedMagics.BishopMagics[i]) >> PrecomputedMagics.BishopShifts[i];
-                ulong bishopValidMoves = MovementMasks.BishopMovesLookUp[i][bishopKey];
-                
-
-                ulong rookMovementMask = MovementMasks.RookMovementMasksNoEdges[i];
-                
-                ulong rookBlockers = GetBlockers(rookMovementMask);
-                ulong rookKey = (rookBlockers * PrecomputedMagics.RookMagics[i]) >> PrecomputedMagics.RookShifts[i];
-                ulong rookValidMoves = MovementMasks.RookMovesLookUp[i][rookKey];
-
-                foreach (int validIndex in BitboardUtils.GetSetBitIndexes(bishopValidMoves))
-                { 
-                    allValidMoves.Add(new []{i, validIndex});
-                }
-                
-                foreach (int validIndex in BitboardUtils.GetSetBitIndexes(rookValidMoves))
-                { 
-                    allValidMoves.Add(new []{i, validIndex});
-                }
-                
-            }
             
             
         }

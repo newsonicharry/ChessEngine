@@ -193,28 +193,37 @@ namespace learnraylib
                 {   
                     
                     Color currentColor;
+                    bool customColor = false;
                     int index = (7-y) * 8 + x;
-
-                    if (Math.Abs(y-x) % 2 == 0)
+                    
+                    
+                    foreach (int[] validMove in ValidMoves) {   
+                        if (validMove[0] == CurrentSquareSelected & validMove[1] == index) { customColor = true; }
+                    }
+                    if (index == CurrentSquareSelected) { customColor = true;}
+                    
+                    
+                    // lighter
+                    if (Math.Abs(y-x) % 2 == 0){
+                        
+                        
                         currentColor = new Color((byte)235, (byte)210, (byte)184, (byte)255);
+                        if (customColor) {   
+                            currentColor = new Color((byte)37, (byte)150, (byte)190, (byte)255);
+                        }
+
+                    }
+                    
                     else
                     {
                         currentColor = new Color((byte)161, (byte)111, (byte)90, (byte)255);
-                    }
+                        if (customColor) {   
+                            currentColor = new Color((byte)14, (byte)120, (byte)172, (byte)255);
 
-                    foreach (int[] validMove in ValidMoves)
-                    {   
-                        if (validMove[0] == CurrentSquareSelected & validMove[1] == index)
-                        {   
-                            currentColor = new Color((byte)37, (byte)150, (byte)190, (byte)255);
                         }
+
                     }
                     
-                    if (index == CurrentSquareSelected) {   
-                        currentColor = new Color((byte)37, (byte)150, (byte)190, (byte)255);
-                        // currentColor = new Color((byte)248, (byte)236, (byte)90, (byte)255);
-                    }
-
                     int xPos = x * SideLength + InitialXOffset;
                     int yPos = y * SideLength + InitialYOffset;
                     
