@@ -14,9 +14,7 @@ public class StartEngine
         MovementMasks.CreateMovementMasks();
         MovementMasks.GenerateRookMovesLookup();
         MovementMasks.GenerateBishopMovesLookup();
-
-        BitboardUtils.PrintBitboards(MovementMasks.RookMovementMasks[0]);
-
+        
         
     }
 }

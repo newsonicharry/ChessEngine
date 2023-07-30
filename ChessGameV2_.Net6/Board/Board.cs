@@ -87,11 +87,12 @@ public class Board
             if (PieceOnIndex(Bitboards.WhiteRookBitboard, i))
             {
                 ulong rookMovementMask = MovementMasks.RookMovementMasksNoEdges[i];
-                
+
                 ulong blockers = GetBlockers(rookMovementMask);
                 ulong key = (blockers * PrecomputedMagics.RookMagics[i]) >> PrecomputedMagics.RookShifts[i];
                 ulong validMoves = MovementMasks.RookMovesLookUp[i][key];
-
+                validMoves = MovesNotObstructed(validMoves);
+                
                 foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validMoves))
                 { 
                     allValidMoves.Add(new []{i, validIndex});

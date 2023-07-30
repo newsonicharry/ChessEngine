@@ -135,7 +135,7 @@ public class Blockers
         
         // right side
         bool canNegate = false;
-        for (int i = rookIndex; i < rookIndex + rookIndex%8; i++) {
+        for (int i = rookIndex; i <= rookIndex + (7-rookIndex%8); i++) {
             
             if (BoardUtils.IndexToFile(i) == BoardUtils.IndexToFile(rookIndex) & i != rookIndex) {
                 canNegate = CheckValidBits(i, canNegate);
