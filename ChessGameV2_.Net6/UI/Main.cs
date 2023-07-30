@@ -46,15 +46,13 @@ namespace learnraylib
             
             FindSquarePositions();
 
-            Board.FindValidMoves(true);
+            ValidMoves = Board.FindValidMoves(true);
             
             while (!Raylib.WindowShouldClose())
             {
                 
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(backgroundColor);
-
-                ValidMoves = Board.FindValidMoves(true);
                 
                 DrawBoard();
                 DrawPiecesFromBitboards(allPieceTextures);
@@ -103,15 +101,13 @@ namespace learnraylib
                     {
                         
                         if (CurrentSquareSelected != index)
-                        {   
-                            
+                        {
                             foreach (int[] validMove in ValidMoves)
-                            {   
-                                
-                                // Console.WriteLine(validMove[0] + ", " + validMove[1]);
+                            {
                                 if (validMove[0] == CurrentSquareSelected & validMove[1] == index)
-                                {
+                                {   
                                     Board.UpdateBitboards(PieceBitboard, CurrentSquareSelected, index);
+                                    ValidMoves = Board.FindValidMoves(true);
 
                                 }
                                 

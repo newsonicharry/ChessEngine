@@ -59,14 +59,17 @@ public class Board
             
             if (PieceOnIndex(Bitboards.WhitePawnBitboard, i))
             {
-                ulong validMoves = MovesNotObstructed(MovementMasks.PawnWhiteMoveMovementMasks[i]) & ~enemyBitboard;
-                
+                ulong validMoves = MovementMasks.PawnWhiteMoveMovementMasks[i] & ~(friendlyBitboard | enemyBitboard) << 8;
+                validMoves |= 1ul << i+8;
+                validMoves &= ~(friendlyBitboard | enemyBitboard);
+
                 ulong validAttacks = MovementMasks.PawnWhiteAttackMovementMasks[i] & enemyBitboard;
                 
                 foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validMoves) )
-                {
+                {   
                     allValidMoves.Add(new [] {i, validIndex});
                 }
+
                 
                 foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validAttacks) )
                 {
