@@ -15,6 +15,7 @@ public class Blockers
         { if (((movementMask >> i) & 1) == 1)
             {
                 moveIndexes.Add(i);
+                
             }
         }
 
@@ -27,6 +28,7 @@ public class Blockers
             for (int bitIndex = 0; bitIndex < moveIndexes.Count; bitIndex++)
             {   
                 // these two lines of code are a mystery that i may never truly understand
+
                 int bit = (patternIndex >> bitIndex) & 1;
                 allBlockerPatterns[patternIndex] |= (ulong)bit << moveIndexes[bitIndex];
             }

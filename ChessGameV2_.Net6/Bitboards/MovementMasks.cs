@@ -17,6 +17,8 @@ public class MovementMasks
     
     public static readonly ulong[] PawnBlackMoveMovementMasks = new ulong[64];
     public static readonly ulong[] PawnBlackAttackMovementMasks = new ulong[64];
+        
+    public static readonly ulong[] RookMovementMasksNoEdges = new ulong[64];
 
     public static readonly ulong[][] RookMovesLookUp = new ulong[64][];
     public static ulong[][] BishopMovesLookUp = new ulong[64][];
@@ -39,7 +41,6 @@ public class MovementMasks
                 BishopMovementMasks[index] = bishopMovementMask;
                 QueenMovementMasks[index] = queenMovementMask;
                 
-                
                 KnightMovementMasks[index] = CreateKnightMovementMask(x, y);
                 KingMovementMasks[index] = CreateKingMovementMask(x, y);
                 
@@ -48,7 +49,9 @@ public class MovementMasks
                 
                 PawnBlackMoveMovementMasks[index] = CreatePawnMoveMovementMask(x, y, false);
                 PawnBlackAttackMovementMasks[index] = CreatePawnAttackMovementMask(x, y, false);
-                
+
+                RookMovementMasksNoEdges[index] = CreateRookMovementMaskNoEdges(x, y);
+
             }
         }
     }
@@ -88,10 +91,16 @@ public class MovementMasks
 
                 int index = y * 8 + x;
 
-                if ((x == xRook || y == yRook) && !(x == xRook && y == yRook))
+                if (!(x == xRook && y == yRook))
                 {
-                    movementMask |= 1ul << index;
+                    if ((x == xRook) || (y == yRook))
+                    {
+
+                        movementMask |= 1ul << index;
+                        
+                    }
                 }
+                
             }
         }
 
@@ -223,16 +232,53 @@ public class MovementMasks
         return movementMask;
     }
     
+    private static ulong CreateRookMovementMaskNoEdges(int xRook, int yRook)
+    {
+        ulong movementMask = 0ul;
+
+        for (int y = 0; y < 8; y += 1)
+        {
+            for (int x = 0; x < 8; x += 1)
+            {   
+
+                int index = y * 8 + x;
+
+                if (!(x == xRook && y == yRook))
+                {
+                    if ((x == xRook))
+                    {
+                        if (y != 0 & y != 7)
+                        {
+                            movementMask |= 1ul << index;
+
+                        }
+                    }
+
+                    if (y == yRook)
+                    {
+                        if (x != 0 & x != 7)
+                        {
+                            movementMask |= 1ul << index;
+                        }
+                    }
+                }
+                
+            }
+        }
+
+        return movementMask;
+    }
+
     
     public static void GenerateRookMovesLookup()
     {
         
         int rookIndex = 0;
-        foreach (ulong rookMovementMask in RookMovementMasks)
+        foreach (ulong rookMovementMask in RookMovementMasksNoEdges)
         {
 
 
-            RookMovesLookUp[rookIndex] = new ulong[4096];
+            RookMovesLookUp[rookIndex] = new ulong[16386];
             ulong[] blockers = Blockers.GenerateBlockers(rookMovementMask);
 
             foreach (ulong blocker in blockers)
@@ -241,13 +287,8 @@ public class MovementMasks
                 ulong key = (blocker * PrecomputedMagics.RookMagics[rookIndex]) >> PrecomputedMagics.RookShifts[rookIndex];
                 ulong validMoves = Blockers.GetRookMovesFromBlockers(rookMovementMask,blocker, rookIndex);
                 
-                // dont ask me why i have to do this
-                // probably should of just not stolen those precomputed magics and generated them myself
-                // but short term gain for long term suffering
-                if (validMoves > RookMovesLookUp[rookIndex][key])
-                {
-                    RookMovesLookUp[rookIndex][key] = validMoves;
-                }
+                RookMovesLookUp[rookIndex][key] = validMoves;
+                
                 
                 
             }

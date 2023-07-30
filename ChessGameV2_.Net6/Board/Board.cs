@@ -30,7 +30,7 @@ public class Board
         ulong GetBlockers(ulong movementMask)
         {   
             // BitboardUtils.PrintBitboards(movementMask & (enemyBitboard | friendlyBitboard));
-            
+
             return movementMask & (enemyBitboard | friendlyBitboard);
         }
         
@@ -86,7 +86,7 @@ public class Board
 
             if (PieceOnIndex(Bitboards.WhiteRookBitboard, i))
             {
-                ulong rookMovementMask = MovementMasks.RookMovementMasks[i];
+                ulong rookMovementMask = MovementMasks.RookMovementMasksNoEdges[i];
                 
                 ulong blockers = GetBlockers(rookMovementMask);
                 ulong key = (blockers * PrecomputedMagics.RookMagics[i]) >> PrecomputedMagics.RookShifts[i];
@@ -123,7 +123,7 @@ public class Board
                 ulong bishopValidMoves = MovementMasks.BishopMovesLookUp[i][bishopKey];
                 
 
-                ulong rookMovementMask = MovementMasks.RookMovementMasks[i];
+                ulong rookMovementMask = MovementMasks.RookMovementMasksNoEdges[i];
                 
                 ulong rookBlockers = GetBlockers(rookMovementMask);
                 ulong rookKey = (rookBlockers * PrecomputedMagics.RookMagics[i]) >> PrecomputedMagics.RookShifts[i];
