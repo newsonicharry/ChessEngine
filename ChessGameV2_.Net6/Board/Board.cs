@@ -6,31 +6,31 @@ namespace ChessGame.board;
 public class Board
 {
 
-    public static int[][] FindValidMoves(bool isWhite)
-    {   
-        
-        ulong whiteBitboards = Bitboards.WhitePawnBitboard | Bitboards.WhiteKnightBitboard | Bitboards.WhiteBishopBitboard | Bitboards.WhiteRookBitboard | Bitboards.WhiteQueenBitboard | Bitboards.WhiteKingBitboard;
-        ulong blackBitboards = Bitboards.BlackPawnBitboard | Bitboards.BlackKnightBitboard | Bitboards.BlackBishopBitboard | Bitboards.BlackRookBitboard | Bitboards.BlackQueenBitboard | Bitboards.BlackKingBitboard;
+    public static bool IsWhite = true;
 
-        ulong friendlyBitboard;
-        ulong enemyBitboard;
-        
-        if (isWhite)
+    public static void SwitchCurrentPlayerTurn()
+    {
+        if (IsWhite)
         {
-            friendlyBitboard = whiteBitboards;
-            enemyBitboard = blackBitboards;
+            IsWhite = false;
         }
         else
         {
-            friendlyBitboard = blackBitboards;
-            enemyBitboard = whiteBitboards;
+            IsWhite = true;
         }
+    }
+    
+    
+    
+    private static int[][] FindWhiteValidMoves()
+    {
 
-
+        ulong friendlyBitboard = BoardUtils.GetWhiteBitboard();
+        ulong enemyBitboard = BoardUtils.GetBlackBitboard();
+            
+            
         ulong GetBlockers(ulong movementMask)
-        {   
-            // BitboardUtils.PrintBitboards(movementMask & (enemyBitboard | friendlyBitboard));
-
+        {
             return movementMask & (enemyBitboard | friendlyBitboard);
         }
         
@@ -49,13 +49,14 @@ public class Board
         for (int i = 0; i < 64; i++)
         {
             if (PieceOnIndex(Bitboards.WhiteKnightBitboard, i))
-            {
+            {   
                 ulong validMoves = MovesNotObstructed(MovementMasks.KnightMovementMasks[i]);
                 foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validMoves))
                 {
                     allValidMoves.Add(new [] {i, validIndex});
                 }
             }
+            
             
             if (PieceOnIndex(Bitboards.WhitePawnBitboard, i))
             {
@@ -70,14 +71,13 @@ public class Board
                     allValidMoves.Add(new [] {i, validIndex});
                 }
 
-                
                 foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validAttacks) )
                 {
                     allValidMoves.Add(new [] {i, validIndex});
                 }
-                
+                    
             }
-            
+                
             if (PieceOnIndex(Bitboards.WhiteKingBitboard, i))
             {
                 ulong validMoves = MovesNotObstructed(MovementMasks.KingMovementMasks[i]);
@@ -119,13 +119,128 @@ public class Board
                 }
                 
             }
-            
-            
-            
+
         }
 
         return allValidMoves.ToArray();
 
+    }
+
+
+    private static int[][] FindBlackValidMoves()
+    {
+        ulong enemyBitboard = Bitboards.WhitePawnBitboard | Bitboards.WhiteKnightBitboard | Bitboards.WhiteBishopBitboard | Bitboards.WhiteRookBitboard | Bitboards.WhiteQueenBitboard | Bitboards.WhiteKingBitboard;
+        ulong friendlyBitboard = Bitboards.BlackPawnBitboard | Bitboards.BlackKnightBitboard | Bitboards.BlackBishopBitboard | Bitboards.BlackRookBitboard | Bitboards.BlackQueenBitboard | Bitboards.BlackKingBitboard;
+
+
+        ulong GetBlockers(ulong movementMask)
+        {
+            return movementMask & (enemyBitboard | friendlyBitboard);
+        }
+        
+        bool PieceOnIndex(ulong bitboard, int i)
+        {
+            return BitboardUtils.isBitOn(bitboard, (i));
+        }
+
+        ulong MovesNotObstructed(ulong movementMask)
+        {
+            return movementMask & ~friendlyBitboard;
+        }
+
+        List<int[]> allValidMoves = new List<int[]>();
+
+        for (int i = 0; i < 64; i++)
+        {
+            
+            if (PieceOnIndex(Bitboards.BlackKnightBitboard, i))
+            {   
+                ulong validMoves = MovesNotObstructed(MovementMasks.KnightMovementMasks[i]);
+                foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validMoves))
+                {
+                    allValidMoves.Add(new[] { i, validIndex });
+                }
+            }
+        
+        
+            if (PieceOnIndex(Bitboards.BlackPawnBitboard, i))
+            {
+                ulong validMoves = MovementMasks.PawnBlackMoveMovementMasks[i] & ~(friendlyBitboard | enemyBitboard) >> 8;
+                
+                validMoves |= 1ul << i-8;
+                validMoves &= ~(friendlyBitboard | enemyBitboard);
+
+                ulong validAttacks = MovementMasks.PawnBlackAttackMovementMasks[i] & enemyBitboard;
+                
+                foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validMoves) )
+                {   
+                    allValidMoves.Add(new [] {i, validIndex});
+                }
+
+                
+                foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validAttacks) )
+                {
+                    allValidMoves.Add(new [] {i, validIndex});
+                }
+                
+            }
+            
+            if (PieceOnIndex(Bitboards.BlackKingBitboard, i))
+            {
+                ulong validMoves = MovesNotObstructed(MovementMasks.KingMovementMasks[i]);
+                foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validMoves))
+                {
+                    allValidMoves.Add(new [] {i, validIndex});
+                }
+            }
+
+            if (PieceOnIndex(Bitboards.BlackRookBitboard, i) || PieceOnIndex(Bitboards.BlackQueenBitboard, i))
+            {
+                ulong rookMovementMask = MovementMasks.RookMovementMasksNoEdges[i];
+
+                ulong blockers = GetBlockers(rookMovementMask);
+                ulong key = (blockers * PrecomputedMagics.RookMagics[i]) >> PrecomputedMagics.RookShifts[i];
+                ulong validMoves = MovementMasks.RookMovesLookUp[i][key];
+                validMoves = MovesNotObstructed(validMoves);
+                
+                foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validMoves))
+                { 
+                    allValidMoves.Add(new []{i, validIndex});
+                }
+                
+            }
+            
+            if (PieceOnIndex(Bitboards.BlackBishopBitboard, i) || PieceOnIndex(Bitboards.BlackQueenBitboard, i))
+            {
+                ulong bishopMovementMask = MovementMasks.BishopMovementMasksNoEdges[i];
+                
+                ulong blockers = GetBlockers(bishopMovementMask);
+                ulong key = (blockers * PrecomputedMagics.BishopMagics[i]) >> PrecomputedMagics.BishopShifts[i];
+                ulong validMoves = MovementMasks.BishopMovesLookUp[i][key];
+
+                validMoves = MovesNotObstructed(validMoves);
+                
+                foreach (int validIndex in BitboardUtils.GetSetBitIndexes(validMoves))
+                { 
+                    allValidMoves.Add(new []{i, validIndex});
+                }
+                
+            }
+        }
+
+        return allValidMoves.ToArray();
+    }
+
+    public static int[][] FindValidMoves()
+    {
+        if (IsWhite)
+        {
+            return FindWhiteValidMoves();
+        }
+        else
+        {
+            return FindBlackValidMoves();
+        }
     }
     
     public static void UpdateBitboards(ulong pieceBitboard, int originalIndex, int newIndex)

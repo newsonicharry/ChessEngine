@@ -214,7 +214,6 @@ public class MovementMasks
         return movementMask;
 
     }
-
     
     private static ulong CreatePawnAttackMovementMask(int xPawn, int yPawn, bool isWhite)
     {
@@ -265,6 +264,11 @@ public class MovementMasks
                 if (pawnIndex-8 == i)
                 {
                     movementMask |= 1ul << i;
+                    if (yPawn == 6)
+                    {
+                        movementMask |= 1ul << i-8;
+
+                    }
 
                 }
             }
