@@ -10,7 +10,12 @@ Uses raylib for gui
 Todo:
 - Allow for castling and en passant
 - Check for pins
-- Create highlights on square pieces can move to
 - Create work on an engine
 - Hook up the engine to the gui
-- Allow for castling and en passant
+
+Engine:
+- Evaluation based on material
+- Piece square tables
+- Bishop pair
+- King safety
++ Much More
