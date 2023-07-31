@@ -18,7 +18,7 @@ public class UIElements
     private static ulong _pieceBitboard = 0ul;
     private static List<int> _occupiedSquares = new List<int>();
 
-    private static int[][] _validMoves = Board.FindValidMoves();
+    private static ulong[] _validMoves = ValidMoves.FindValidMoves();
     
     
     private static int[][] FindSquarePositions()
@@ -40,42 +40,29 @@ public class UIElements
     public static void MovePiece()
     {
 
-        // checks if the square should be highlighted
-        if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_RIGHT_BUTTON))
-        {
-            _currentSquareSelected = -1;
-        }
-        
         
         if (!Raylib.IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON) & _pieceSelected)
         {
 
-            int index = 0;
+            int newSquareIndex = 0;
             foreach (int[] squarePosition in SquarePositions)
             {
                 if (Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle(squarePosition[0], squarePosition[1], SideLength, SideLength)))
                 {
-                    
-                    if (_currentSquareSelected != index)
+                    if (_currentSquareSelected != newSquareIndex)
                     {
-                        foreach (int[] validMove in _validMoves)
+                        if (BitboardUtils.isBitOn(_validMoves[_currentSquareSelected], newSquareIndex))
                         {
-                            if (validMove[0] == _currentSquareSelected & validMove[1] == index)
-                            {   
-                                Board.UpdateBitboards(_pieceBitboard, _currentSquareSelected, index);
-                                Board.SwitchCurrentPlayerTurn();
-                                _validMoves = Board.FindValidMoves();
-
-                            }
-                            
+                            Board.UpdateBitboards(_pieceBitboard, _currentSquareSelected, newSquareIndex);
+                            Board.SwitchCurrentPlayerTurn();
+                            _validMoves = ValidMoves.FindValidMoves();
                         }
-                        
+
                     }
                     
-
                 }
             
-                index++;
+                newSquareIndex++;
 
             }
             
@@ -151,12 +138,14 @@ public class UIElements
                 Color currentColor;
                 bool customColor = false;
                 int index = (7-y) * 8 + x;
-                
-                
-                foreach (int[] validMove in _validMoves) {   
-                    if (validMove[0] == _currentSquareSelected & validMove[1] == index) { customColor = true; }
+
+
+                if (_currentSquareSelected != -1)
+                {
+                    if (BitboardUtils.isBitOn(_validMoves[_currentSquareSelected], index)) { customColor = true; }
+                    if (index == _currentSquareSelected) { customColor = true;}
                 }
-                if (index == _currentSquareSelected) { customColor = true;}
+                
                 
                 
                 // lighter
