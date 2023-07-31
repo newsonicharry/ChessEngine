@@ -10,9 +10,12 @@ Uses raylib for gui
 Todo:
 - Allow for castling and en passant
 - Check for pins
-- Finsh move validation
-- Create highlights on square pieces can move to
-- Allow the gui to accuratly move pieces
 - Create work on an engine
 - Hook up the engine to the gui
-- Allow for castling and en passant
+
+Engine:
+- Evaluation based on material
+- Piece square tables
+- Bishop pair
+- King safety
++ Much More
