@@ -142,8 +142,6 @@ public class Board
         if (NeedsToDeleteBit(Bitboards.BlackKingBitboard)) { Bitboards.BlackKingBitboard = DeleteBit(Bitboards.BlackKingBitboard); }
         
         
-        
-        
         ulong ChangeBitPosition(ulong bitboard)
         {
             ulong newBitboard = BitboardUtils.negateBit(bitboard, (originalIndex));
@@ -167,7 +165,7 @@ public class Board
                 HasMovedRightWhiteRook = true;
             }
             
-            if (newIndex == 2 & CanWhiteShortCastle(EnemyAttackedSquares))
+            if (newIndex == 2 & CanWhiteLongCastle(EnemyAttackedSquares))
             {
                 Bitboards.WhiteRookBitboard = BitboardUtils.negateBit(Bitboards.WhiteRookBitboard, 0);
                 Bitboards.WhiteRookBitboard = BitboardUtils.enableBit(Bitboards.WhiteRookBitboard, 3);
@@ -196,7 +194,7 @@ public class Board
                 HasMovedRightBlackRook = true;
             }
             
-            if (newIndex == 58 & CanBlackShortCastle(EnemyAttackedSquares))
+            if (newIndex == 58 & CanBlackLongCastle(EnemyAttackedSquares))
             {
                 Bitboards.BlackRookBitboard = BitboardUtils.negateBit(Bitboards.BlackRookBitboard, 56);
                 Bitboards.BlackRookBitboard = BitboardUtils.enableBit(Bitboards.BlackRookBitboard, 59);
