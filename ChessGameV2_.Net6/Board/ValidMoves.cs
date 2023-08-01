@@ -237,7 +237,7 @@ public class ValidMoves
 
             if (Board.CanBlackLongCastle(Board.EnemyAttackedSquares))
             {
-                allValidMoves[60] |= 144115188075855872;
+                allValidMoves[60] |= 288230376151711744;
             }
         }
         

@@ -9,7 +9,7 @@ public class StartEngine
     {   
         
         
-        const string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1";
+        const string fen = "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1";
         // const string fen = "8/4p3/8/8/ppp1Rp2/8/4p3/8 w - - 0 1";
 
         Bitboards.LoadBitboardsFromFen(fen);

@@ -175,8 +175,9 @@ public class Board
             }
 
             Bitboards.WhiteKingBitboard = ChangeBitPosition(Bitboards.WhiteKingBitboard);
-
             HasMovedWhiteKing = true;
+            
+            return;
         }
 
         if (pieceBitboard == Bitboards.BlackPawnBitboard) { Bitboards.BlackPawnBitboard = ChangeBitPosition(Bitboards.BlackPawnBitboard); }
@@ -190,15 +191,15 @@ public class Board
             
             if (newIndex == 62 & CanBlackShortCastle(EnemyAttackedSquares))
             {
-                Bitboards.WhiteRookBitboard = BitboardUtils.negateBit(Bitboards.WhiteRookBitboard, 63);
-                Bitboards.WhiteRookBitboard = BitboardUtils.enableBit(Bitboards.WhiteRookBitboard, 61);
+                Bitboards.BlackRookBitboard = BitboardUtils.negateBit(Bitboards.BlackRookBitboard, 63);
+                Bitboards.BlackRookBitboard = BitboardUtils.enableBit(Bitboards.BlackRookBitboard, 61);
                 HasMovedRightBlackRook = true;
             }
             
             if (newIndex == 58 & CanBlackShortCastle(EnemyAttackedSquares))
             {
-                Bitboards.WhiteRookBitboard = BitboardUtils.negateBit(Bitboards.WhiteRookBitboard, 56);
-                Bitboards.WhiteRookBitboard = BitboardUtils.enableBit(Bitboards.WhiteRookBitboard, 59);
+                Bitboards.BlackRookBitboard = BitboardUtils.negateBit(Bitboards.BlackRookBitboard, 56);
+                Bitboards.BlackRookBitboard = BitboardUtils.enableBit(Bitboards.BlackRookBitboard, 59);
                 HasMovedLeftBlackRook = true;
             }
             

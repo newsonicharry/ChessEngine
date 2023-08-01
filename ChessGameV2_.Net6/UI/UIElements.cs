@@ -37,6 +37,27 @@ public class UIElements
         return squarePositions;
     }
 
+
+    private static int CheckIfMouesOnPiece()
+    {
+        int i = 0;
+        foreach (int[] posData in SquarePositions)
+        {
+            int xPos = posData[0];
+            int yPos = posData[1];
+                
+            if (Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle(xPos, yPos, SideLength, SideLength)) & _occupiedSquares.Contains(i))
+            {
+                return i;
+            }
+
+            i++;
+        }
+
+        return -1;
+    }
+    
+    
     public static void MovePiece()
     {
 
@@ -44,12 +65,13 @@ public class UIElements
         if (!Raylib.IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON) & _pieceSelected)
         {
 
+
             int newSquareIndex = 0;
             foreach (int[] squarePosition in SquarePositions)
             {
                 if (Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle(squarePosition[0], squarePosition[1], SideLength, SideLength)))
                 {
-                    if (_currentSquareSelected != newSquareIndex)
+                    if (_currentSquareSelected != newSquareIndex & _currentSquareSelected != -1)
                     {
                         if (BitboardUtils.isBitOn(_validMoves[_currentSquareSelected], newSquareIndex))
                         {
@@ -75,24 +97,14 @@ public class UIElements
 
         if (Raylib.IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
         {
-            Vector2 mousePosition = Raylib.GetMousePosition();
-
-            int i = 0;
-            foreach (int[] posData in SquarePositions)
+            int pieceSelected = CheckIfMouesOnPiece();
+            if (pieceSelected != -1)
             {
-                int xPos = posData[0];
-                int yPos = posData[1];
-                
-                if (Raylib.CheckCollisionPointRec(mousePosition, new Rectangle(xPos, yPos, SideLength, SideLength)) & _occupiedSquares.Contains(i))
-                {
-                    _currentSquareSelected = i;
-                }
-
-                i++;
+                _currentSquareSelected = pieceSelected;
+                _pieceSelected = true;
             }
-
         }
-        _pieceSelected = Raylib.IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON);
+
 
         if (_pieceSelected)
         {
