@@ -5,9 +5,29 @@ namespace ChessGame.board;
 
 public class ValidMoves
 {
-    public static ulong FindWhiteValidMoves(int pieceIndex)
-    {
 
+    public static ulong GetEnemyAttackSquares()
+    {
+        ulong attackedSquares = 0ul;
+        
+        for (int pieceIndex = 0; pieceIndex < 64; pieceIndex++)
+        {
+            if (Board.IsWhite)
+            {
+                attackedSquares |= FindBlackValidMoves(pieceIndex, 0ul);
+            }
+            else
+            {
+                attackedSquares |= FindWhiteValidMoves(pieceIndex, 0ul);
+            }
+        }
+
+        return attackedSquares;
+    }
+
+    private static ulong FindWhiteValidMoves(int pieceIndex, ulong enemyAttackedSquares)
+    {   
+        
         ulong friendlyBitboard = BoardUtils.GetWhiteBitboard();
         ulong enemyBitboard = BoardUtils.GetBlackBitboard();
         
@@ -40,7 +60,8 @@ public class ValidMoves
         if (BitboardUtils.isBitOn(Bitboards.WhiteKingBitboard, pieceIndex))
         {
             ulong validMoves = MovesNotObstructed(MovementMasks.KingMovementMasks[pieceIndex]);
-
+            validMoves &= ~enemyAttackedSquares;
+            
             return validMoves;
         }
         
@@ -89,8 +110,7 @@ public class ValidMoves
         return 0ul;
     }
 
-
-    public static ulong FindBlackValidMoves(int pieceIndex)
+    private static ulong FindBlackValidMoves(int pieceIndex, ulong enemyAttackedSquares)
     {
         ulong enemyBitboard = BoardUtils.GetWhiteBitboard();
         ulong friendlyBitboard = BoardUtils.GetBlackBitboard();
@@ -125,6 +145,7 @@ public class ValidMoves
         if (BitboardUtils.isBitOn(Bitboards.BlackKingBitboard, pieceIndex))
         {
             ulong validMoves = MovesNotObstructed(MovementMasks.KingMovementMasks[pieceIndex]);
+            validMoves &= ~enemyAttackedSquares;
             
             return validMoves;
         }
@@ -180,19 +201,47 @@ public class ValidMoves
     {
 
         ulong[] allValidMoves = new ulong[64];
+
+        Board.EnemyAttackedSquares = GetEnemyAttackSquares();
         
         for (int index = 0; index < 64; index++)
         {
             if (Board.IsWhite)
             {
-                allValidMoves[index] = FindWhiteValidMoves(index);
+                allValidMoves[index] = FindWhiteValidMoves(index, Board.EnemyAttackedSquares);
             }
             else
             {
-                allValidMoves[index] = FindBlackValidMoves(index);
+                allValidMoves[index] = FindBlackValidMoves(index, Board.EnemyAttackedSquares);
             }
         }
 
+        if (Board.IsWhite)
+        {
+            if (Board.CanWhiteShortCastle(Board.EnemyAttackedSquares))
+            {
+                allValidMoves[4] |= 64ul;
+            }
+            
+            if (Board.CanWhiteLongCastle(Board.EnemyAttackedSquares))
+            {
+                allValidMoves[4] |= 4ul;
+            }
+        }
+        else
+        {
+            if (Board.CanBlackShortCastle(Board.EnemyAttackedSquares))
+            {
+                allValidMoves[60] |= 4611686018427387904ul;
+            }
+
+            if (Board.CanBlackLongCastle(Board.EnemyAttackedSquares))
+            {
+                allValidMoves[60] |= 144115188075855872;
+            }
+        }
+        
+        
         return allValidMoves;
 
     }
