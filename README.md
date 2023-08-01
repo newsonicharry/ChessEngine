@@ -8,7 +8,7 @@ Utilizes bitboards and movement masks for move creation
 Uses raylib for gui
 
 Todo:
-- Allow for castling and en passant
+- Allow for en passant
 - Check for pins
 - Create work on an engine
 - Hook up the engine to the gui
