@@ -10,7 +10,7 @@ public class Board
     public static ulong EnemyAttackedSquares = 0ul;
 
     public static int WhiteDoubleMovedPawnIndex;
-    public static int BlackDoubleMovedPawnIndex = 0;
+    public static int BlackDoubleMovedPawnIndex;
 
     
     public static bool InCheck(ulong enemyAttackedSquares)
@@ -152,7 +152,6 @@ public class Board
             
             // checks if the pawn double moved
             if (originalIndex - newIndex == 16) {
-                Console.WriteLine("updated move = " + newIndex);
                 BlackDoubleMovedPawnIndex = newIndex;
             }
             

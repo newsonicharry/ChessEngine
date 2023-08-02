@@ -221,10 +221,14 @@ public class ValidMoves
             if (Board.IsWhite)
             {
                 allValidMoves[index] = FindWhiteValidMoves(index, Board.EnemyAttackedSquares);
+                Board.WhiteDoubleMovedPawnIndex = 0;
             }
             else
-            {
+            {   
+
                 allValidMoves[index] = FindBlackValidMoves(index, Board.EnemyAttackedSquares);
+                Board.BlackDoubleMovedPawnIndex = 0;
+
             }
         }
 
