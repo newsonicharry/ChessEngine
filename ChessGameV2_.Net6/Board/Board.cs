@@ -22,8 +22,35 @@ public class Board
         return (Bitboards.BlackKingBitboard & ~enemyAttackedSquares) != Bitboards.BlackKingBitboard;
 
     }
-    
-    
+
+    public static void CheckForQueening()
+    {
+        if (IsWhite)
+        {
+            ulong promotablePawns = Bitboards.WhitePawnBitboard >> 56;
+            
+            if (promotablePawns != 0)
+            {
+                ulong promotablePawnBitboard = promotablePawns << 56;
+                Console.WriteLine(BitboardUtils.ConvertULongToBinaryString(promotablePawnBitboard));
+                
+                Bitboards.WhitePawnBitboard &= ~ promotablePawnBitboard;
+                Bitboards.WhiteQueenBitboard |= promotablePawnBitboard;
+            }
+            
+        }
+        else
+        {
+            ulong promotablePawns = Bitboards.BlackPawnBitboard << 56;
+            
+            if (promotablePawns != 0)
+            {
+                ulong promotablePawnBitboard = promotablePawns >> 56;
+                
+                Bitboards.BlackPawnBitboard &= ~ promotablePawnBitboard;
+                Bitboards.BlackQueenBitboard |= promotablePawnBitboard;            }
+        }
+    }    
 
     public static void SwitchCurrentPlayerTurn()
     {
@@ -55,6 +82,9 @@ public class Board
         {
             UpdateBlackBitboards(pieceBitboard, originalIndex, newIndex);
         }
+
+        CheckForQueening();
+
     }
 
     private static void UpdateWhiteBitboards(ulong pieceBitboard, int originalIndex, int newIndex)
