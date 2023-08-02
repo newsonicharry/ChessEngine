@@ -8,14 +8,15 @@ Utilizes bitboards and movement masks for move creation
 Uses raylib for gui
 
 Todo:
-- Allow for en passant
+- Allow for checks
 - Check for pins
-- Create work on an engine
-- Hook up the engine to the gui
+- Check for checkmate, 50 move rule, stalemate and repition
+- Start work on an engine
+
 
 Engine:
 - Evaluation based on material
 - Piece square tables
 - Bishop pair
 - King safety
-+ Much More
++ And Much More
