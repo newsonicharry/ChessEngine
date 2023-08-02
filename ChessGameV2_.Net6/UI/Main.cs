@@ -30,12 +30,14 @@ namespace learnraylib
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(backgroundColor);
 
-                UIElements.DrawBoard();
-                UIElements.DrawPiecesFromBitboards(allPieceTextures);
-                UIElements.MovePiece();
+
+                if (!Board.GameOver)
+                {
+                    UIElements.DrawBoard();
+                    UIElements.DrawPiecesFromBitboards(allPieceTextures);
+                    UIElements.MovePiece();   
+                }
                 
-
-
 
                 Raylib.EndDrawing();
 

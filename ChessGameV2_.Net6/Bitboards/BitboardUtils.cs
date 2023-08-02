@@ -63,6 +63,24 @@ public class BitboardUtils
     {
         return (7-BoardUtils.IndexToRank(index))+BoardUtils.IndexToFile(index)*8;
     }
+    
+    public static int FindLsb(ulong bits)
+    {
+        // Check if the input is zero, which means no bit is set
+        if (bits == 0)
+            return -1; // Return a value to indicate no bit is set
+
+        // Use a loop to find the index of the least significant bit (LSB)
+        int index = 0;
+        while ((bits & 1) == 0)
+        {
+            bits >>= 1;
+            index++;
+        }
+
+        return index;
+    }
+
 
     public static int[] GetSetBitIndexes(ulong number)
     {

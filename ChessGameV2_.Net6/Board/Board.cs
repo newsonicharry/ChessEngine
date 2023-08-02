@@ -4,7 +4,7 @@ namespace ChessGame.board;
 
 public class Board
 {
-
+    public static bool GameOver = false;
     public static bool IsWhite = true;
     
     public static ulong EnemyAttackedSquares = 0ul;
@@ -32,7 +32,6 @@ public class Board
             if (promotablePawns != 0)
             {
                 ulong promotablePawnBitboard = promotablePawns << 56;
-                Console.WriteLine(BitboardUtils.ConvertULongToBinaryString(promotablePawnBitboard));
                 
                 Bitboards.WhitePawnBitboard &= ~ promotablePawnBitboard;
                 Bitboards.WhiteQueenBitboard |= promotablePawnBitboard;
@@ -57,7 +56,7 @@ public class Board
         IsWhite = !IsWhite;
     }
 
-    public static void UpdateBoard(ulong pieceBitboard, int originalIndex, int newIndex)
+     public static void UpdateBoard(ulong pieceBitboard, int originalIndex, int newIndex)
     {   
         
         if (BitboardUtils.isBitOn(Bitboards.WhitePawnBitboard, newIndex))   { Bitboards.WhitePawnBitboard = BitboardUtils.NegateBit(Bitboards.WhitePawnBitboard, newIndex); }

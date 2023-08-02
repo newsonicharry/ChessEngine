@@ -51,11 +51,10 @@ public class Bitboards
                 index += 1;
             
             }
-            
-            
-            
         }
     }
+    
+    
     
     
 }
