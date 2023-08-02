@@ -25,7 +25,7 @@ public class BitboardUtils
         return binaryString;
     }
     
-    public static ulong negateBit(ulong bitboard, int index)
+    public static ulong NegateBit(ulong bitboard, int index)
     {
         ulong bitmask = (ulong)1 << index;
         bitmask = ~bitmask;
@@ -35,7 +35,7 @@ public class BitboardUtils
     }
     
     
-    public static ulong enableBit(ulong bitboard, int index)
+    public static ulong EnableBit(ulong bitboard, int index)
     {
         ulong bitmask = (ulong)1 << index;
         bitboard |= bitmask;
@@ -51,19 +51,18 @@ public class BitboardUtils
         return isBitOn;
     }
     
-    public static bool isBitOff(ulong bitboard, int index)
+    public static bool IsBitOff(ulong bitboard, int index)
     {
         ulong bitmask = (ulong)1 << index;
         bool isBitZero = (bitboard & bitmask) == 0;
 
         return isBitZero;
     }
-
+    
     public static int ConvertToBitboardIndex(int index)
     {
         return (7-BoardUtils.IndexToRank(index))+BoardUtils.IndexToFile(index)*8;
     }
-
 
     public static int[] GetSetBitIndexes(ulong number)
     {
@@ -82,6 +81,14 @@ public class BitboardUtils
         }
 
         return setBitIndexes.ToArray();
+    }
+    
+    public static ulong ChangeBitPosition(ulong bitboard, int originalIndex, int newIndex)
+    {
+        ulong newBitboard = BitboardUtils.NegateBit(bitboard, originalIndex);
+        newBitboard = BitboardUtils.EnableBit(newBitboard, newIndex);
+            
+        return newBitboard;
     }
     
 }

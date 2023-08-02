@@ -53,7 +53,13 @@ public class ValidMoves
             validMoves &= ~(friendlyBitboard | enemyBitboard);
 
             ulong validAttacks = MovementMasks.PawnWhiteAttackMovementMasks[pieceIndex] & enemyBitboard;
-
+            
+            // en passant
+            if (BoardUtils.IndexToFile(Board.BlackDoubleMovedPawnIndex) == BoardUtils.IndexToFile(pieceIndex) & (Math.Abs(Board.BlackDoubleMovedPawnIndex-pieceIndex) == 1))
+            {
+                validAttacks |= 1ul << pieceIndex + 8 + Board.BlackDoubleMovedPawnIndex-pieceIndex;
+            }
+            
             return validMoves | validAttacks;
         }
             
@@ -138,7 +144,13 @@ public class ValidMoves
             validMoves &= ~(friendlyBitboard | enemyBitboard);
 
             ulong validAttacks = MovementMasks.PawnBlackAttackMovementMasks[pieceIndex] & enemyBitboard;
-
+            
+            if (BoardUtils.IndexToFile(Board.WhiteDoubleMovedPawnIndex) == BoardUtils.IndexToFile(pieceIndex) & (Math.Abs(Board.WhiteDoubleMovedPawnIndex-pieceIndex) == 1))
+            {
+                validAttacks |= 1ul << pieceIndex - 8 + Board.WhiteDoubleMovedPawnIndex-pieceIndex;
+            }
+            
+            
             return validMoves | validAttacks;
         }
         
@@ -218,24 +230,24 @@ public class ValidMoves
 
         if (Board.IsWhite)
         {
-            if (Board.CanWhiteShortCastle(Board.EnemyAttackedSquares))
+            if (Castling.CanWhiteShortCastle(Board.EnemyAttackedSquares))
             {
                 allValidMoves[4] |= 64ul;
             }
             
-            if (Board.CanWhiteLongCastle(Board.EnemyAttackedSquares))
+            if (Castling.CanWhiteLongCastle(Board.EnemyAttackedSquares))
             {
                 allValidMoves[4] |= 4ul;
             }
         }
         else
         {
-            if (Board.CanBlackShortCastle(Board.EnemyAttackedSquares))
+            if (Castling.CanBlackShortCastle(Board.EnemyAttackedSquares))
             {
                 allValidMoves[60] |= 4611686018427387904ul;
             }
 
-            if (Board.CanBlackLongCastle(Board.EnemyAttackedSquares))
+            if (Castling.CanBlackLongCastle(Board.EnemyAttackedSquares))
             {
                 allValidMoves[60] |= 288230376151711744;
             }

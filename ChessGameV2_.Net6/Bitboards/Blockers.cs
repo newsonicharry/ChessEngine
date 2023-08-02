@@ -46,7 +46,7 @@ public class Blockers
         {
             if (canNegate)
             {
-                validBoard = BitboardUtils.negateBit(validBoard, i);
+                validBoard = BitboardUtils.NegateBit(validBoard, i);
 
             }
             else
@@ -102,13 +102,13 @@ public class Blockers
         {
             if (canNegate)
             {
-                validBoard = BitboardUtils.negateBit(validBoard, i);
+                validBoard = BitboardUtils.NegateBit(validBoard, i);
             }
             else
             {
-                if (BitboardUtils.isBitOff(validBoard, i))
+                if (BitboardUtils.IsBitOff(validBoard, i))
                 {
-                    validBoard = BitboardUtils.enableBit(validBoard, i);
+                    validBoard = BitboardUtils.EnableBit(validBoard, i);
                     return true;
                 }
             }

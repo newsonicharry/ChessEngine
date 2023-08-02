@@ -75,7 +75,7 @@ public class UIElements
                     {
                         if (BitboardUtils.isBitOn(_validMoves[_currentSquareSelected], newSquareIndex))
                         {
-                            Board.UpdateBitboards(_pieceBitboard, _currentSquareSelected, newSquareIndex);
+                            Board.UpdateBoard(_pieceBitboard, _currentSquareSelected, newSquareIndex);
                             Board.SwitchCurrentPlayerTurn();
                             _validMoves = ValidMoves.FindValidMoves();
                         }

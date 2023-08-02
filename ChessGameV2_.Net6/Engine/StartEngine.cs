@@ -9,15 +9,13 @@ public class StartEngine
     {   
         
         
-        const string fen = "r3k3/pppppppp/8/8/8/8/PPPPPrPP/R3K2R w KQq - 0 1";
+        const string fen = "rnbqkbnr/pppp1ppp/8/8/4p3/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         // const string fen = "8/4p3/8/8/ppp1Rp2/8/4p3/8 w - - 0 1";
 
         Bitboards.LoadBitboardsFromFen(fen);
         MovementMasks.CreateMovementMasks();
         MovementMasks.GenerateRookMovesLookup();
         MovementMasks.GenerateBishopMovesLookup();
-        
-        Console.WriteLine(Bitboards.WhiteKingBitboard);
         
         
     }
