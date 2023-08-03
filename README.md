@@ -9,7 +9,6 @@ Uses raylib for gui
 
 Todo:
 - Allow for checks
-- Check for pins
 - Check for checkmate, 50 move rule, stalemate and repition
 - Start work on an engine
 
