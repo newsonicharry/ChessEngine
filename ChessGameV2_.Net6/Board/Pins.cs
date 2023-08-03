@@ -17,8 +17,8 @@ public class Pins
             enemyPieces = BoardUtils.GetWhiteBitboard() & ~ Bitboards.WhiteRookBitboard;
 
         }
-        
-        
+
+
         ulong key = (blockers * PrecomputedMagics.RookMagics[rookIndex]) >> PrecomputedMagics.RookShifts[rookIndex];
         ulong rookMoves = MovementMasks.RookMovesLookUp[rookIndex][key];
         rookMoves &= ~enemyPieces;
@@ -27,7 +27,7 @@ public class Pins
     }
 
     private static ulong GetBishopMoves(int bishopIndex, ulong blockers)
-    {   
+    {
         ulong enemyPieces;
 
         if (Board.IsWhite)
@@ -39,143 +39,155 @@ public class Pins
             enemyPieces = BoardUtils.GetWhiteBitboard() & ~ Bitboards.WhiteBishopBitboard;
 
         }
-        
-        ulong key = (blockers * PrecomputedMagics.BishopMagics[bishopIndex]) >> PrecomputedMagics.BishopShifts[bishopIndex];
+
+        ulong key = (blockers * PrecomputedMagics.BishopMagics[bishopIndex]) >>
+                    PrecomputedMagics.BishopShifts[bishopIndex];
         ulong validMoves = MovementMasks.BishopMovesLookUp[bishopIndex][key];
         validMoves &= ~enemyPieces;
 
 
         return validMoves;
     }
-    
-    private static List<int> FindBishopPinnedPieces(int[] friendlyPiecesIndexes, ulong enemyBishopBitboard, ulong enemyQueenBitboard, ulong friendlyKingBitboard)
+
+    public static (int, int, ulong) FindBishopPinnedPieces(int friendlyPieceIndex, ulong enemyBishopBitboard,
+        ulong enemyQueenBitboard, ulong friendlyKingBitboard)
     {
-        int[] enemyBishopIndexes = BitboardUtils.GetSetBitIndexes(enemyBishopBitboard).ToList().Concat(BitboardUtils.GetSetBitIndexes(enemyQueenBitboard)).ToArray();
+        int[] enemyBishopIndexes = BitboardUtils.GetSetBitIndexes(enemyBishopBitboard).ToList()
+            .Concat(BitboardUtils.GetSetBitIndexes(enemyQueenBitboard)).ToArray();
 
         List<ulong> enemyBishopMoves = new List<ulong>();
-        
+
         for (int i = 0; i < enemyBishopIndexes.Length; i++)
         {
-            enemyBishopMoves.Add( GetBishopMoves(enemyBishopIndexes[i], 0ul));
+            enemyBishopMoves.Add(GetBishopMoves(enemyBishopIndexes[i], 0ul));
         }
 
-        List<int> pinnedPiecesIndexes = new List<int>();
-        
+        ulong enemyPinnedBishopMove = 0ul;
+        int enemyPinnedBishopsIndex = -1;
+        int pinnedPiecesIndex = -1;
+
         for (int i = 0; i < enemyBishopMoves.Count; i++)
-        {   
+        {
 
             ulong enemyBishopMove = enemyBishopMoves[i];
             bool isAttackingKing = (enemyBishopMove | friendlyKingBitboard) == enemyBishopMove;
-            
+
             List<int> possiblePinnedPieces = new List<int>();
             if (isAttackingKing)
             {
-                for (int index = 0; index < friendlyPiecesIndexes.Length; index++)
+                // checks if the piece is actually in the way of the rook
+                if ((enemyBishopMove | (1ul << friendlyPieceIndex)) == enemyBishopMove)
                 {
-                    int friendlyPieceIndex = friendlyPiecesIndexes[index];
-                    
-                    // checks if the piece is actually in the way of the rook
-                    if ((enemyBishopMove | (1ul << friendlyPieceIndex)) == enemyBishopMove)
-                    {   
-                        // adds that piece as a blocker
-                        ulong newBishopMoves = GetBishopMoves(i, 1ul << friendlyPieceIndex);
-                        
-                        // checks if with the piece in the way it can not attack the king
-                        if ((newBishopMoves | friendlyKingBitboard) != newBishopMoves)
-                        {   
-                            // if so then it is probably pinned (does not account for multiple pieces in the way)
-                            possiblePinnedPieces.Add(friendlyPieceIndex);
-                        }
+                    // adds that piece as a blocker
+                    ulong newBishopMoves = GetBishopMoves(i, 1ul << friendlyPieceIndex);
+
+                    // checks if with the piece in the way it can not attack the king
+                    if ((newBishopMoves | friendlyKingBitboard) != newBishopMoves)
+                    {
+                        // if so then it is probably pinned (does not account for multiple pieces in the way)
+                        possiblePinnedPieces.Add(friendlyPieceIndex);
+                    }
+
+
+                    if (possiblePinnedPieces.Count == 1)
+                    {
+                        pinnedPiecesIndex = possiblePinnedPieces[0];
+                        enemyPinnedBishopMove = enemyBishopMove;
+                        enemyPinnedBishopsIndex = enemyBishopIndexes[i];
                     }
                 }
 
-                if (possiblePinnedPieces.Count == 1)
-                {
-                    pinnedPiecesIndexes.Add(possiblePinnedPieces[0]);
-                }
             }
+
         }
-        
-        return pinnedPiecesIndexes;
+        return (pinnedPiecesIndex, enemyPinnedBishopsIndex, enemyPinnedBishopMove);
     }
-    
-    private static List<int> FindRookPinnedPieces(int[] friendlyPiecesIndexes, ulong enemyRookBitboard, ulong enemyQueenBitboard, ulong friendlyKingBitboard)
+
+    public static (int, int, ulong) FindRookPinnedPieces(int friendlyPieceIndex, ulong enemyRookBitboard,
+        ulong enemyQueenBitboard, ulong friendlyKingBitboard)
     {
 
-        int[] enemyRookIndexes = BitboardUtils.GetSetBitIndexes(enemyRookBitboard).ToList().Concat(BitboardUtils.GetSetBitIndexes(enemyQueenBitboard)).ToArray();
+        int[] enemyRookIndexes = BitboardUtils.GetSetBitIndexes(enemyRookBitboard).ToList()
+            .Concat(BitboardUtils.GetSetBitIndexes(enemyQueenBitboard)).ToArray();
 
         List<ulong> enemyRookMoves = new List<ulong>();
-        
+
         for (int i = 0; i < enemyRookIndexes.Length; i++)
         {
             enemyRookMoves.Add(GetRookMoves(enemyRookIndexes[i], 0ul));
         }
 
-        List<int> pinnedPiecesIndexes = new List<int>();
-        
+
+
+        int pinnedPieceIndex = -1;
+        int enemyPinnedRookIndex = -1;
+        ulong enemyPinnedRookMovementMask = 0ul;
+
+
         for (int i = 0; i < enemyRookMoves.Count; i++)
-        {   
+        {
 
             ulong enemyRookMove = enemyRookMoves[i];
             bool isAttackingKing = (enemyRookMove | friendlyKingBitboard) == enemyRookMove;
-            
+
             List<int> possiblePinnedPieces = new List<int>();
             if (isAttackingKing)
             {
-                for (int index = 0; index < friendlyPiecesIndexes.Length; index++)
+                // checks if the piece is actually in the way of the rook
+                if ((enemyRookMove | (1ul << friendlyPieceIndex)) == enemyRookMove)
                 {
-                    int friendlyPieceIndex = friendlyPiecesIndexes[index];
-                    
-                    // checks if the piece is actually in the way of the rook
-                    if ((enemyRookMove | (1ul << friendlyPieceIndex)) == enemyRookMove)
-                    {   
-                        // adds that piece as a blocker
-                        ulong newRookMoves = GetRookMoves(i, 1ul << friendlyPieceIndex);
-                        
-                        // checks if with the piece in the way it can not attack the king
-                        if ((newRookMoves | friendlyKingBitboard) != newRookMoves)
-                        {   
-                            // if so then it is probably pinned (does not account for multiple pieces in the way)
-                            possiblePinnedPieces.Add(friendlyPieceIndex);
-                        }
+                    // adds that piece as a blocker
+                    ulong newRookMoves = GetRookMoves(i, 1ul << friendlyPieceIndex);
+
+                    // checks if with the piece in the way it can not attack the king
+                    if ((newRookMoves | friendlyKingBitboard) != newRookMoves)
+                    {
+                        // if so then it is probably pinned (does not account for multiple pieces in the way)
+                        possiblePinnedPieces.Add(friendlyPieceIndex);
+
                     }
                 }
 
+
                 if (possiblePinnedPieces.Count == 1)
                 {
-                    pinnedPiecesIndexes.Add(possiblePinnedPieces[0]);
+                    pinnedPieceIndex = possiblePinnedPieces[0];
+                    enemyPinnedRookMovementMask = enemyRookMove;
+                    enemyPinnedRookIndex = enemyRookIndexes[i];
+
                 }
             }
         }
-        
-        return pinnedPiecesIndexes;
+
+        return (pinnedPieceIndex, enemyPinnedRookIndex, enemyPinnedRookMovementMask);
     }
     
-    public static int[] FindPinnedPieces()
-    {
-        ulong friendlyKingBitboard = Bitboards.WhiteKingBitboard;
-        ulong enemyQueenBitboard = Bitboards.BlackQueenBitboard;
-        ulong enemyRookBitboard = Bitboards.BlackRookBitboard;
-        ulong enemyBishopBitboard = Bitboards.BlackBishopBitboard;
-
-        if (!Board.IsWhite)
-        {
-            friendlyKingBitboard = Bitboards.BlackKingBitboard;
-            enemyQueenBitboard = Bitboards.WhiteQueenBitboard;
-            enemyRookBitboard = Bitboards.WhiteRookBitboard;
-            enemyBishopBitboard = Bitboards.WhiteBishopBitboard;
-        }
-        
-        
-        ulong friendlyPieces = BoardUtils.GetWhiteBitboard() & ~ friendlyKingBitboard;
-        int[] friendlyPiecesIndexes = BitboardUtils.GetSetBitIndexes(friendlyPieces);
-
-        List<int> rookPinnedPieces = FindRookPinnedPieces(friendlyPiecesIndexes, enemyRookBitboard, enemyQueenBitboard, friendlyKingBitboard);
-        List<int> bishopPinnedPieces = FindBishopPinnedPieces(friendlyPiecesIndexes, enemyBishopBitboard, enemyQueenBitboard, friendlyKingBitboard);
-
-        return rookPinnedPieces.Concat(bishopPinnedPieces).ToArray();
-
-
-    }
-
+    
 }
+// public static (int[], int[]) FindPinnedPieces(bool isWhite)
+        // {
+        //     ulong friendlyKingBitboard = Bitboards.WhiteKingBitboard;
+        //     ulong enemyQueenBitboard = Bitboards.BlackQueenBitboard;
+        //     ulong enemyRookBitboard = Bitboards.BlackRookBitboard;
+        //     ulong enemyBishopBitboard = Bitboards.BlackBishopBitboard;
+        //
+        //     if (!isWhite)
+        //     {
+        //         friendlyKingBitboard = Bitboards.BlackKingBitboard;
+        //         enemyQueenBitboard = Bitboards.WhiteQueenBitboard;
+        //         enemyRookBitboard = Bitboards.WhiteRookBitboard;
+        //         enemyBishopBitboard = Bitboards.WhiteBishopBitboard;
+        //     }
+        //     
+        //     
+        //     ulong friendlyPieces = BoardUtils.GetWhiteBitboard() & ~ friendlyKingBitboard;
+        //     int[] friendlyPiecesIndexes = BitboardUtils.GetSetBitIndexes(friendlyPieces);
+        //
+        //     (int[] rookPinnedPieces, int[] enemyRookIndexes,  ulong[] enemyRookMoves) = FindRookPinnedPieces(friendlyPiecesIndexes, enemyRookBitboard, enemyQueenBitboard, friendlyKingBitboard);
+        //     (int[] bishopPinnedPieces, int[] enemyBishopIndexes,  ulong[] enemyBishopMoves) = FindBishopPinnedPieces(friendlyPiecesIndexes, enemyBishopBitboard, enemyQueenBitboard, friendlyKingBitboard);
+        //
+        //     return (rookPinnedPieces.ToArray(), bishopPinnedPieces.ToArray());
+        //
+        //
+        // }
+

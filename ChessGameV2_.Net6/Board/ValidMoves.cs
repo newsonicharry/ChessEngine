@@ -8,6 +8,24 @@ public class ValidMoves
   
     public static ulong FindWhiteSlidingPieceMoves(int pieceIndex)
     {   
+        
+        // check for pins
+
+        bool pinnedByBishop = false;
+        bool pinnedByRook = false;
+        
+        ulong friendlyKingBitboard = Bitboards.WhiteKingBitboard;
+        ulong enemyQueenBitboard = Bitboards.BlackQueenBitboard;
+        ulong enemyRookBitboard = Bitboards.BlackRookBitboard;
+        ulong enemyBishopBitboard = Bitboards.BlackBishopBitboard;
+        
+        (int rookPinnedPieceIndex, int enemyPinnedRookIndex, ulong enemyPinnedRookMovementMask) = Pins.FindRookPinnedPieces(pieceIndex, enemyRookBitboard, enemyQueenBitboard, friendlyKingBitboard);
+        (int bishopPinnedPieceIndex, int enemyPinnedBishopsIndex, ulong enemyPinnedBishopMovementMask) = Pins.FindBishopPinnedPieces(pieceIndex, enemyBishopBitboard, enemyQueenBitboard, friendlyKingBitboard);
+        
+        if (rookPinnedPieceIndex != -1)   {pinnedByRook = true;}
+        if (bishopPinnedPieceIndex != -1) {pinnedByBishop = true;}
+        
+        
         ulong friendlyBitboard = BoardUtils.GetWhiteBitboard();
         ulong enemyBitboard = BoardUtils.GetBlackBitboard();
         
@@ -16,6 +34,12 @@ public class ValidMoves
         
         if (BitboardUtils.isBitOn(Bitboards.WhiteRookBitboard, pieceIndex) || isQueen)
         {
+
+            if (!isQueen & pinnedByBishop)
+            {
+                return 0ul;
+            }
+            
             ulong rookMovementMask = MovementMasks.RookMovementMasksNoEdges[pieceIndex];
 
             ulong blockers = rookMovementMask & (enemyBitboard | friendlyBitboard);
@@ -24,10 +48,21 @@ public class ValidMoves
             ulong validMoves = MovementMasks.RookMovesLookUp[pieceIndex][key];
             validMoves &= ~friendlyBitboard;
             
-
+            if (pinnedByRook)
+            {
+                validMoves &= enemyPinnedRookMovementMask;
+                validMoves |= 1ul << enemyPinnedRookIndex;
+                
+                return validMoves;
+            }
+            
+            
             if (isQueen)
             {
-                queenValidMoves |= validMoves;
+                if (!pinnedByBishop)
+                {
+                    queenValidMoves |= validMoves;
+                }
             }
             else
             {
@@ -36,7 +71,14 @@ public class ValidMoves
         }
         
         if (BitboardUtils.isBitOn(Bitboards.WhiteBishopBitboard, pieceIndex) || isQueen)
-        {
+        {   
+            
+            if (!isQueen & pinnedByRook)
+            {
+                return 0ul;
+            }
+            
+            
             ulong bishopMovementMask = MovementMasks.BishopMovementMasksNoEdges[pieceIndex];
             
             ulong blockers = bishopMovementMask & (enemyBitboard | friendlyBitboard);
@@ -45,6 +87,13 @@ public class ValidMoves
 
             validMoves &= ~friendlyBitboard;
 
+            if (pinnedByBishop)
+            {
+                validMoves &= enemyPinnedBishopMovementMask;
+                validMoves |= 1ul << enemyPinnedBishopsIndex;
+            }
+            
+            
             if (isQueen)
             {
                 return queenValidMoves | validMoves;
@@ -59,6 +108,19 @@ public class ValidMoves
     private static ulong FindWhiteNonSlidingValidMoves(int pieceIndex, ulong enemyAttackedSquares)
     {   
         
+        bool piecePinned = false;
+        
+        ulong friendlyKingBitboard = Bitboards.WhiteKingBitboard;
+        ulong enemyQueenBitboard = Bitboards.BlackQueenBitboard;
+        ulong enemyRookBitboard = Bitboards.BlackRookBitboard;
+        ulong enemyBishopBitboard = Bitboards.BlackBishopBitboard;
+        
+        (int rookPinnedPieceIndex, int enemyPinnedRookIndex, ulong enemyPinnedRookMovementMask) = Pins.FindRookPinnedPieces(pieceIndex, enemyRookBitboard, enemyQueenBitboard, friendlyKingBitboard);
+        (int bishopPinnedPieceIndex, int enemyPinnedBishopsIndex, ulong enemyPinnedBishopMovementMask) = Pins.FindBishopPinnedPieces(pieceIndex, enemyBishopBitboard, enemyQueenBitboard, friendlyKingBitboard);
+        
+        if (rookPinnedPieceIndex != -1 | bishopPinnedPieceIndex != -1)   {piecePinned = true;}
+        
+        
         ulong friendlyBitboard = BoardUtils.GetWhiteBitboard();
         ulong enemyBitboard = BoardUtils.GetBlackBitboard();
         
@@ -70,15 +132,22 @@ public class ValidMoves
         
 
         if (BitboardUtils.isBitOn(Bitboards.WhiteKnightBitboard, pieceIndex))
-        {   
-            ulong validMoves = MovesNotObstructed(MovementMasks.KnightMovementMasks[pieceIndex]);
+        {
+            if (piecePinned){
+                return 0ul;
+            }
             
+            ulong validMoves = MovesNotObstructed(MovementMasks.KnightMovementMasks[pieceIndex]);
             return validMoves;
         }
             
             
         if (BitboardUtils.isBitOn(Bitboards.WhitePawnBitboard, pieceIndex))
-        {
+        {   
+            if (piecePinned){
+                return 0ul;
+            }
+            
             ulong validMoves = MovementMasks.PawnWhiteMoveMovementMasks[pieceIndex] & ~(friendlyBitboard | enemyBitboard) << 8;
             validMoves |= 1ul << pieceIndex+8;
             validMoves &= ~(friendlyBitboard | enemyBitboard);
@@ -107,6 +176,23 @@ public class ValidMoves
     private static ulong FindBlackSlidingPieceMoves(int pieceIndex)
     {   
         
+        // check for pins
+        bool pinnedByBishop = false;
+        bool pinnedByRook = false;
+        
+        ulong friendlyKingBitboard = Bitboards.BlackKingBitboard;
+        ulong enemyQueenBitboard = Bitboards.WhiteQueenBitboard;
+        ulong enemyRookBitboard = Bitboards.WhiteRookBitboard;
+        ulong enemyBishopBitboard = Bitboards.WhiteBishopBitboard;
+        
+        (int rookPinnedPieceIndex, int enemyPinnedRookIndex, ulong enemyPinnedRookMovementMask) = Pins.FindRookPinnedPieces(pieceIndex, enemyRookBitboard, enemyQueenBitboard, friendlyKingBitboard);
+        (int bishopPinnedPieceIndex, int enemyPinnedBishopsIndex, ulong enemyPinnedBishopMovementMask) = Pins.FindBishopPinnedPieces(pieceIndex, enemyBishopBitboard, enemyQueenBitboard, friendlyKingBitboard);
+        
+        if (rookPinnedPieceIndex != -1)   {pinnedByRook = true;}
+        if (bishopPinnedPieceIndex != -1) {pinnedByBishop = true;}
+        
+        
+        
         ulong enemyBitboard = BoardUtils.GetWhiteBitboard();
         ulong friendlyBitboard = BoardUtils.GetBlackBitboard();
         
@@ -114,17 +200,34 @@ public class ValidMoves
         bool isQueen = BitboardUtils.isBitOn(Bitboards.BlackQueenBitboard, pieceIndex);
         
         if (BitboardUtils.isBitOn(Bitboards.BlackRookBitboard, pieceIndex) || isQueen)
-        {
+        {   
+            if (!isQueen & pinnedByBishop)
+            {
+                return 0ul;
+            }
+            
             ulong rookMovementMask = MovementMasks.RookMovementMasksNoEdges[pieceIndex];
 
             ulong blockers = rookMovementMask & (enemyBitboard | friendlyBitboard);;
             ulong key = (blockers * PrecomputedMagics.RookMagics[pieceIndex]) >> PrecomputedMagics.RookShifts[pieceIndex];
             ulong validMoves = MovementMasks.RookMovesLookUp[pieceIndex][key];
             validMoves &= ~friendlyBitboard;
+            
+            
+            if (pinnedByRook)
+            {
+                validMoves &= enemyPinnedRookMovementMask;
+                validMoves |= 1ul << enemyPinnedRookIndex;
 
+                return validMoves;
+            }
+            
             if (isQueen)
             {
-                queenValidMoves |= validMoves;
+                if (!pinnedByBishop)
+                {
+                    queenValidMoves |= validMoves;
+                }
             }
             else
             {
@@ -135,7 +238,13 @@ public class ValidMoves
         }
         
         if (BitboardUtils.isBitOn(Bitboards.BlackBishopBitboard, pieceIndex) || isQueen)
-        {
+        {   
+            
+            if (!isQueen & pinnedByRook)
+            {
+                return 0ul;
+            }
+            
             ulong bishopMovementMask = MovementMasks.BishopMovementMasksNoEdges[pieceIndex];
             
             ulong blockers = bishopMovementMask & (enemyBitboard | friendlyBitboard);;
@@ -143,6 +252,14 @@ public class ValidMoves
             ulong validMoves = MovementMasks.BishopMovesLookUp[pieceIndex][key];
 
             validMoves &= ~friendlyBitboard;
+            
+            if (pinnedByBishop)
+            {
+                validMoves &= enemyPinnedBishopMovementMask;
+                validMoves |= 1ul << enemyPinnedBishopsIndex;
+                
+                return validMoves;
+            }
             
             if (isQueen)
             {
@@ -156,7 +273,22 @@ public class ValidMoves
         return 0ul;
     }
     private static ulong FindBlackNonSlidingValidMoves(int pieceIndex, ulong enemyAttackedSquares)
-    {
+    {   
+        
+        // check for pins
+        bool piecePinned = false;
+        
+        ulong friendlyKingBitboard = Bitboards.BlackKingBitboard;
+        ulong enemyQueenBitboard = Bitboards.WhiteQueenBitboard;
+        ulong enemyRookBitboard = Bitboards.WhiteRookBitboard;
+        ulong enemyBishopBitboard = Bitboards.WhiteBishopBitboard;
+        
+        (int rookPinnedPieceIndex, int enemyPinnedRookIndex, ulong enemyPinnedRookMovementMask) = Pins.FindRookPinnedPieces(pieceIndex, enemyRookBitboard, enemyQueenBitboard, friendlyKingBitboard);
+        (int bishopPinnedPieceIndex, int enemyPinnedBishopsIndex, ulong enemyPinnedBishopMovementMask) = Pins.FindBishopPinnedPieces(pieceIndex, enemyBishopBitboard, enemyQueenBitboard, friendlyKingBitboard);
+        
+        if (rookPinnedPieceIndex != -1 | bishopPinnedPieceIndex != -1)   {piecePinned = true;}
+        
+        
         ulong enemyBitboard = BoardUtils.GetWhiteBitboard();
         ulong friendlyBitboard = BoardUtils.GetBlackBitboard();
         
@@ -169,6 +301,10 @@ public class ValidMoves
 
         if (BitboardUtils.isBitOn(Bitboards.BlackKnightBitboard, pieceIndex))
         {   
+            if (piecePinned){
+                return 0ul;
+            }
+            
             ulong validMoves = MovesNotObstructed(MovementMasks.KnightMovementMasks[pieceIndex]);
 
             return validMoves;
@@ -177,6 +313,10 @@ public class ValidMoves
     
         if (BitboardUtils.isBitOn(Bitboards.BlackPawnBitboard, pieceIndex))
         {
+            if (piecePinned){
+                return 0ul;
+            }
+            
             ulong validMoves = MovementMasks.PawnBlackMoveMovementMasks[pieceIndex] & ~(friendlyBitboard | enemyBitboard) >> 8;
             
             validMoves |= 1ul << pieceIndex-8;
@@ -214,15 +354,12 @@ public class ValidMoves
 
         Board.EnemyAttackedSquares = GetEnemyAttackSquares();
 
-        foreach (int pinedPiece in Pins.FindPinnedPieces())
-        {
-            Console.WriteLine("Pinned Pieces: " + pinedPiece );
-        }
-        Console.WriteLine();
+
         
         
         for (int index = 0; index < 64; index++)
         {
+            
             if (Board.IsWhite)
             {
                 allValidMoves[index] = FindWhiteNonSlidingValidMoves(index, Board.EnemyAttackedSquares) | FindWhiteSlidingPieceMoves(index);
@@ -271,8 +408,8 @@ public class ValidMoves
     {
         ulong attackedSquares = 0ul;
         
-        for (int pieceIndex = 0; pieceIndex < 64; pieceIndex++)
-        {
+        for (int pieceIndex = 0; pieceIndex < 64; pieceIndex++){
+            
             if (Board.IsWhite)
             {
                 attackedSquares |= FindBlackNonSlidingValidMoves(pieceIndex, 0ul);
