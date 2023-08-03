@@ -164,30 +164,4 @@ public class Pins
     
     
 }
-// public static (int[], int[]) FindPinnedPieces(bool isWhite)
-        // {
-        //     ulong friendlyKingBitboard = Bitboards.WhiteKingBitboard;
-        //     ulong enemyQueenBitboard = Bitboards.BlackQueenBitboard;
-        //     ulong enemyRookBitboard = Bitboards.BlackRookBitboard;
-        //     ulong enemyBishopBitboard = Bitboards.BlackBishopBitboard;
-        //
-        //     if (!isWhite)
-        //     {
-        //         friendlyKingBitboard = Bitboards.BlackKingBitboard;
-        //         enemyQueenBitboard = Bitboards.WhiteQueenBitboard;
-        //         enemyRookBitboard = Bitboards.WhiteRookBitboard;
-        //         enemyBishopBitboard = Bitboards.WhiteBishopBitboard;
-        //     }
-        //     
-        //     
-        //     ulong friendlyPieces = BoardUtils.GetWhiteBitboard() & ~ friendlyKingBitboard;
-        //     int[] friendlyPiecesIndexes = BitboardUtils.GetSetBitIndexes(friendlyPieces);
-        //
-        //     (int[] rookPinnedPieces, int[] enemyRookIndexes,  ulong[] enemyRookMoves) = FindRookPinnedPieces(friendlyPiecesIndexes, enemyRookBitboard, enemyQueenBitboard, friendlyKingBitboard);
-        //     (int[] bishopPinnedPieces, int[] enemyBishopIndexes,  ulong[] enemyBishopMoves) = FindBishopPinnedPieces(friendlyPiecesIndexes, enemyBishopBitboard, enemyQueenBitboard, friendlyKingBitboard);
-        //
-        //     return (rookPinnedPieces.ToArray(), bishopPinnedPieces.ToArray());
-        //
-        //
-        // }
 
