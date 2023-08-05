@@ -8,7 +8,6 @@ Utilizes bitboards and movement masks for move creation
 Uses raylib for gui
 
 Todo:
-- Allow for checks
 - Check for checkmate, 50 move rule, stalemate and repition
 - Start work on an engine
 
