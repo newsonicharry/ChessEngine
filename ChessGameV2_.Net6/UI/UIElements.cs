@@ -154,7 +154,7 @@ public class UIElements
 
                 if (_currentSquareSelected != -1)
                 {
-                    if (BitboardUtils.isBitOn(_validMoves[_currentSquareSelected], index)) { customColor = true; }
+                    if (BitboardUtils.isBitOn(_validMoves[_currentSquareSelected], index)) { customColor = true;}
                     if (index == _currentSquareSelected) { customColor = true;}
                 }
                 

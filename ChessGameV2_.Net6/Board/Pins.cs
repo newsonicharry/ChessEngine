@@ -79,7 +79,7 @@ public class Pins
                 if ((enemyBishopMove | (1ul << friendlyPieceIndex)) == enemyBishopMove)
                 {
                     // adds that piece as a blocker
-                    ulong newBishopMoves = GetBishopMoves(i, 1ul << friendlyPieceIndex);
+                    ulong newBishopMoves = GetBishopMoves(enemyBishopIndexes[i], 1ul << friendlyPieceIndex);
 
                     // checks if with the piece in the way it can not attack the king
                     if ((newBishopMoves | friendlyKingBitboard) != newBishopMoves)
@@ -137,11 +137,11 @@ public class Pins
                 if ((enemyRookMove | (1ul << friendlyPieceIndex)) == enemyRookMove)
                 {
                     // adds that piece as a blocker
-                    ulong newRookMoves = GetRookMoves(i, 1ul << friendlyPieceIndex);
+                    ulong newRookMoves = GetRookMoves(enemyRookIndexes[i], 1ul << friendlyPieceIndex);
 
                     // checks if with the piece in the way it can not attack the king
                     if ((newRookMoves | friendlyKingBitboard) != newRookMoves)
-                    {
+                    {   
                         // if so then it is probably pinned (does not account for multiple pieces in the way)
                         possiblePinnedPieces.Add(friendlyPieceIndex);
 

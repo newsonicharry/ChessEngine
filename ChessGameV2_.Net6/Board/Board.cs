@@ -13,10 +13,10 @@ public class Board
     public static int BlackDoubleMovedPawnIndex;
 
     
-    public static bool InCheck(ulong enemyAttackedSquares)
-    {
-        if (IsWhite) {
-            return (Bitboards.WhiteKingBitboard & ~enemyAttackedSquares) != Bitboards.WhiteKingBitboard;
+    public static bool InCheck(bool isWhite, ulong enemyAttackedSquares)
+    {   
+        if (isWhite) {
+            return (Bitboards.WhiteKingBitboard | enemyAttackedSquares) == enemyAttackedSquares;
         }
 
         return (Bitboards.BlackKingBitboard & ~enemyAttackedSquares) != Bitboards.BlackKingBitboard;

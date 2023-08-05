@@ -20,7 +20,7 @@ public abstract class Castling
 
         bool squaresNotBlocked = ((blackBitboard | blackAttackedSquares | whiteBitboard) & notOccupiedSquares) == 0ul;
         
-        if (!HasMovedWhiteKing & squaresNotBlocked & !HasMovedRightWhiteRook & !Board.InCheck(blackAttackedSquares))
+        if (!HasMovedWhiteKing & squaresNotBlocked & !HasMovedRightWhiteRook & !Board.InCheck(true, blackAttackedSquares))
         {   
             return true;
         }
@@ -38,7 +38,7 @@ public abstract class Castling
 
         bool squaresNotBlocked = ((blackBitboard | blackAttackedSquares | whiteBitboard) & notOccupiedSquares) == 0ul;
         
-        if (!HasMovedWhiteKing & squaresNotBlocked & !HasMovedLeftWhiteRook & !Board.InCheck(blackAttackedSquares))
+        if (!HasMovedWhiteKing & squaresNotBlocked & !HasMovedLeftWhiteRook & !Board.InCheck(true, blackAttackedSquares))
         {   
             return true;
         }
@@ -56,7 +56,7 @@ public abstract class Castling
 
         bool squaresNotBlocked = ((blackBitboard | whiteAttackedSquares | whiteBitboard) & notOccupiedSquares) == 0ul;
         
-        if (!HasMovedBlackKing & squaresNotBlocked & !HasMovedRightBlackRook & !Board.InCheck(whiteAttackedSquares))
+        if (!HasMovedBlackKing & squaresNotBlocked & !HasMovedRightBlackRook & !Board.InCheck(false, whiteAttackedSquares))
         {   
             return true;
         }
@@ -74,7 +74,7 @@ public abstract class Castling
 
         bool squaresNotBlocked = ((blackBitboard | whiteAttackedSquares | whiteBitboard) & notOccupiedSquares) == 0ul;
         
-        if (!HasMovedBlackKing & squaresNotBlocked & !HasMovedLeftBlackRook & !Board.InCheck(whiteAttackedSquares))
+        if (!HasMovedBlackKing & squaresNotBlocked & !HasMovedLeftBlackRook & !Board.InCheck(false, whiteAttackedSquares))
         {   
             return true;
         }
