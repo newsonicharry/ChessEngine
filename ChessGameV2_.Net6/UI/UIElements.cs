@@ -3,6 +3,7 @@ using ChessGame.board;
 using ChessGame.bitboards;
 using Raylib_cs;
 using static learnraylib.UIConstants;
+using ChessGame;
 
 namespace learnraylib;
 
@@ -77,7 +78,12 @@ public class UIElements
                         {
                             Board.UpdateBoard(_pieceBitboard, _currentSquareSelected, newSquareIndex);
                             Board.SwitchCurrentPlayerTurn();
+                            
+                            Engine.MakeMove();
+                            Board.SwitchCurrentPlayerTurn();
+                            
                             _validMoves = ValidMoves.FindValidMoves();
+
                         }
 
                     }

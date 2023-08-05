@@ -4,6 +4,10 @@ namespace ChessGame.board;
 
 public class Pins
 {
+    
+    // i wrote this code in a daze
+    // dont worry about what it does
+    // it probably works    (jk there is no way it just works)
     private static ulong GetRookMoves(int rookIndex, ulong blockers)
     {
         ulong enemyPieces;
