@@ -8,6 +8,7 @@ Utilizes bitboards and movement masks for move creation
 Uses raylib for gui
 
 Todo:
+- Remake all my move validation code because it is messy and checks dont work :)
 - Check for checkmate, 50 move rule, stalemate and repition
 - Start work on an engine
 
