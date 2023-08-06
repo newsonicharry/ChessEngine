@@ -122,7 +122,7 @@ public class UIElements
     {
         string[] imageFiles = Directory.GetFiles("../../../Pieces");
 
-        List<Texture2D> allPieceTextures = new List<Texture2D>();
+        Texture2D[] allPieceTextures = new Texture2D[12];
         
         
         foreach (string imagePath in imageFiles)
@@ -134,8 +134,23 @@ public class UIElements
                 Raylib.ImageResize(&image, SideLength, SideLength);
                 Texture2D texture = Raylib.LoadTextureFromImage(image);
                 Raylib.UnloadImage(image);
-            
-                allPieceTextures.Add(texture);
+
+                string filename = imagePath.Split("\\")[1];            
+                
+                if (filename == "whitepawn.png") { allPieceTextures[0] = texture; }
+                if (filename == "whiteknight.png") { allPieceTextures[1] = texture; }
+                if (filename == "whitebishop.png") { allPieceTextures[2] = texture; }
+                if (filename == "whiterook.png") { allPieceTextures[3] = texture; }
+                if (filename == "whitequeen.png") { allPieceTextures[4] = texture; }
+                if (filename == "whiteking.png") { allPieceTextures[5] = texture; }
+                if (filename == "blackpawn.png") { allPieceTextures[6] = texture; }
+                if (filename == "blackknight.png") { allPieceTextures[7] = texture; }
+                if (filename == "blackbishop.png") { allPieceTextures[8] = texture; }
+                if (filename == "blackrook.png") { allPieceTextures[9] = texture; }
+                if (filename == "blackqueen.png") { allPieceTextures[10] = texture; }
+                if (filename == "blackking.png") { allPieceTextures[11] = texture; }
+
+                
             }
             
 
@@ -210,14 +225,7 @@ public class UIElements
             Bitboards.BlackPawnBitboard, Bitboards.BlackKnightBitboard, Bitboards.BlackBishopBitboard,
             Bitboards.BlackRookBitboard, Bitboards.BlackQueenBitboard, Bitboards.BlackKingBitboard
         };
-
-
-        Texture2D[] allBitboardPieceTextures =
-        {
-            allPieceTextures[9], allPieceTextures[7], allPieceTextures[5], allPieceTextures[6],
-            allPieceTextures[3], allPieceTextures[10], allPieceTextures[4], allPieceTextures[11],
-            allPieceTextures[1], allPieceTextures[8], allPieceTextures[2], allPieceTextures[0]
-        };
+        
 
         _occupiedSquares.Clear();
 
@@ -252,16 +260,16 @@ public class UIElements
                         {
                             Color selectedColor = Color.WHITE;
                             selectedColor.a = 50;
-                            Raylib.DrawTexture(allBitboardPieceTextures[bitboardIndex], posX, posY, selectedColor);
+                            Raylib.DrawTexture(allPieceTextures[bitboardIndex], posX, posY, selectedColor);
                             
-                            _pieceSelectedTexture = allBitboardPieceTextures[bitboardIndex];
+                            _pieceSelectedTexture = allPieceTextures[bitboardIndex];
                             _pieceBitboard = allBitboards[bitboardIndex];
 
                         }
                         
                         if (index != _currentSquareSelected)
                         {
-                            Raylib.DrawTexture(allBitboardPieceTextures[bitboardIndex], posX, posY, Color.WHITE);
+                            Raylib.DrawTexture(allPieceTextures[bitboardIndex], posX, posY, Color.WHITE);
 
                         }
                         
