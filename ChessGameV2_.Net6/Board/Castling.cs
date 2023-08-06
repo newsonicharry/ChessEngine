@@ -2,6 +2,10 @@ namespace ChessGame.board;
 
 public abstract class Castling
 {   
+    public static bool FenWhiteCastleKingSide;
+    public static bool FenWhiteCastleQueenSide;
+    public static bool FenBlackCastleKingSide;
+    public static bool FenBlackCastleQueenSide;
     
     public static bool HasMovedWhiteKing;
     public static bool HasMovedBlackKing;
@@ -20,7 +24,7 @@ public abstract class Castling
 
         bool squaresNotBlocked = ((blackBitboard | blackAttackedSquares | whiteBitboard) & notOccupiedSquares) == 0ul;
         
-        if (!HasMovedWhiteKing & squaresNotBlocked & !HasMovedRightWhiteRook & !Board.InCheck(true, blackAttackedSquares))
+        if (!HasMovedWhiteKing & squaresNotBlocked & !HasMovedRightWhiteRook & !Board.InCheck(true, blackAttackedSquares) & FenWhiteCastleKingSide)
         {   
             return true;
         }
@@ -38,7 +42,7 @@ public abstract class Castling
 
         bool squaresNotBlocked = ((blackBitboard | blackAttackedSquares | whiteBitboard) & notOccupiedSquares) == 0ul;
         
-        if (!HasMovedWhiteKing & squaresNotBlocked & !HasMovedLeftWhiteRook & !Board.InCheck(true, blackAttackedSquares))
+        if (!HasMovedWhiteKing & squaresNotBlocked & !HasMovedLeftWhiteRook & !Board.InCheck(true, blackAttackedSquares) & FenWhiteCastleQueenSide)
         {   
             return true;
         }
@@ -56,7 +60,7 @@ public abstract class Castling
 
         bool squaresNotBlocked = ((blackBitboard | whiteAttackedSquares | whiteBitboard) & notOccupiedSquares) == 0ul;
         
-        if (!HasMovedBlackKing & squaresNotBlocked & !HasMovedRightBlackRook & !Board.InCheck(false, whiteAttackedSquares))
+        if (!HasMovedBlackKing & squaresNotBlocked & !HasMovedRightBlackRook & !Board.InCheck(false, whiteAttackedSquares) & FenBlackCastleKingSide)
         {   
             return true;
         }
@@ -74,7 +78,7 @@ public abstract class Castling
 
         bool squaresNotBlocked = ((blackBitboard | whiteAttackedSquares | whiteBitboard) & notOccupiedSquares) == 0ul;
         
-        if (!HasMovedBlackKing & squaresNotBlocked & !HasMovedLeftBlackRook & !Board.InCheck(false, whiteAttackedSquares))
+        if (!HasMovedBlackKing & squaresNotBlocked & !HasMovedLeftBlackRook & !Board.InCheck(false, whiteAttackedSquares) & FenBlackCastleQueenSide)
         {   
             return true;
         }

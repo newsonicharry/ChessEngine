@@ -1,3 +1,5 @@
+using ChessGame.board;
+
 namespace ChessGame.bitboards;
 
 public class Bitboards
@@ -19,9 +21,50 @@ public class Bitboards
     public static void LoadBitboardsFromFen(string fen) {
 
         // only the board position
-        string rawFen = fen.Split(" ")[0];
+        string[] fenFields = fen.Split(" ");
 
-        string[] fenSplits = rawFen.Split("/");
+        string activeColor = fenFields[1];
+        if (activeColor == "b") { Board.SwitchCurrentPlayerTurn(); }
+
+        string castlingRights = fenFields[2];
+        foreach (char castlingSymbol in castlingRights){
+            if (castlingSymbol == 'K') { Castling.FenWhiteCastleKingSide = true; }
+            if (castlingSymbol == 'Q') { Castling.FenWhiteCastleQueenSide = true; }
+            if (castlingSymbol == 'k') { Castling.FenBlackCastleKingSide = true; }
+            if (castlingSymbol == 'q') { Castling.FenBlackCastleQueenSide = true; }
+
+        }
+
+        string enPassantTargets = fenFields[3];
+        if (enPassantTargets != "-")
+        {   
+            int xCord = enPassantTargets[0] - 'a';
+            int yCord = (enPassantTargets[1] - '1');
+            int enPassantTargetIndex = yCord * 8 + xCord;
+            
+            Console.WriteLine(xCord);
+            Console.WriteLine(yCord);
+
+            
+            if (Board.IsWhite)
+            {
+                Board.WhiteDoubleMovedPawnIndex = enPassantTargetIndex - 8;
+            }
+            else
+            {
+                Board.BlackDoubleMovedPawnIndex = enPassantTargetIndex + 8;
+            }
+        }
+
+        string halfMoveClock = fenFields[4];
+        string fullMoveClock = fenFields[5];
+
+        Board.HalfMoveClock = Convert.ToInt32(halfMoveClock);
+        Board.FullMoveClock = Convert.ToInt32(fullMoveClock);
+
+        
+        
+        string[] fenSplits = fenFields[0].Split("/");
         
         int index = 0;
         foreach (string column in fenSplits)

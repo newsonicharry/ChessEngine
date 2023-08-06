@@ -4,7 +4,11 @@ namespace ChessGame.board;
 
 public class Board
 {
+    public static List<ushort> AllMovesMade = new List<ushort>();
+    public static int HalfMoveClock = 0;
+    public static int FullMoveClock = 0;
     public static bool GameOver = false;
+    
     public static bool IsWhite = true;
     
     public static ulong EnemyAttackedSquares = 0ul;

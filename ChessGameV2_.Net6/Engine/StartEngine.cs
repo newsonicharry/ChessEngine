@@ -14,5 +14,6 @@ public class StartEngine
         MovementMasks.GenerateRookMovesLookup();
         MovementMasks.GenerateBishopMovesLookup();
         
+        
     }
 }
