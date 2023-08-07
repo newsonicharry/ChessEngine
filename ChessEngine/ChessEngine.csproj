@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Raylib-cs" Version="4.5.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Pieces\blackbishop.png" />
+      <Resource Include="Pieces\blackbishop.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Pieces\blackrook.png" />
+      <Resource Include="Pieces\blackrook.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Pieces\blackqueen.png" />
+      <Resource Include="Pieces\blackqueen.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Pieces\whiteking.png" />
+      <Resource Include="Pieces\whiteking.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Pieces\whitebishop.png" />
+      <Resource Include="Pieces\whitebishop.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Pieces\whitepawn.png" />
+      <Resource Include="Pieces\whitepawn.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Pieces\blackking.png" />
+      <Resource Include="Pieces\blackking.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Pieces\whiteknight.png" />
+      <Resource Include="Pieces\whiteknight.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Pieces\whiterook.png" />
+      <Resource Include="Pieces\whiterook.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Pieces\whitequeen.png" />
+      <Resource Include="Pieces\whitequeen.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Pieces\blackpawn.png" />
+      <Resource Include="Pieces\blackpawn.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Pieces\blackknight.png" />
+      <Resource Include="Pieces\blackknight.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+    </ItemGroup>
+
+</Project>
