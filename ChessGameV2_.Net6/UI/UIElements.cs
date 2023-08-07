@@ -76,7 +76,6 @@ public class UIElements
                         {
                             Board.UpdateBoard(_pieceBitboard, _currentSquareSelected, newSquareIndex);
                             Board.SwitchCurrentPlayerTurn();
-
                             
                             _validMoves = ValidMoves.FindValidMoves();
 

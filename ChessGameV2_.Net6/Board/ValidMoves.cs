@@ -77,7 +77,7 @@ public class ValidMoves
         return validMoves;
     }
 
-    private static ulong FindPawnMoves(bool isWhite, int pieceIndex, bool inCheck, ulong squaresNeedToBlock)
+    private static ulong FindPawnMoves(bool isWhite, int pieceIndex, bool inCheck, ulong squaresNeedToBlock, bool getEnemyAttackedSquares)
     {   
         
         
@@ -107,8 +107,8 @@ public class ValidMoves
         bool piecePinned = rookPinnedPieceIndex != -1 | bishopPinnedPieceIndex != -1;
         
         
-        ulong validMoves;
-        ulong validAttacks;
+        ulong validMoves = 0ul;
+        ulong validAttacks = 0ul;
         
         // if pinned then there are no possible moves
         if (piecePinned)
@@ -119,12 +119,15 @@ public class ValidMoves
         
         if (isWhite)
         {
+            // so that the pawn moving does not count as it attack that square
+            if (!getEnemyAttackedSquares)
+            {
+                validMoves = friendlyPawnMovementMasks[pieceIndex] & ~(friendlyBitboard | enemyBitboard) << 8;
+                validMoves |= 1ul << pieceIndex + 8;
+                validMoves &= ~(friendlyBitboard | enemyBitboard);
+            }
 
-            validMoves = friendlyPawnMovementMasks[pieceIndex] & ~(friendlyBitboard | enemyBitboard) << 8;
-            validMoves |= 1ul << pieceIndex + 8;
-            validMoves &= ~(friendlyBitboard | enemyBitboard);
-
-            validAttacks = friendlyPawnAttackMovementMasks[pieceIndex] & enemyBitboard;
+            
 
             // en passant
             if (BoardUtils.IndexToFile(enemyDoubleMovedPawnIndex) == BoardUtils.IndexToFile(pieceIndex) &
@@ -135,11 +138,13 @@ public class ValidMoves
         }
         else
         {
-            validMoves = friendlyPawnMovementMasks[pieceIndex] & ~(friendlyBitboard | enemyBitboard) >> 8;
-            validMoves |= 1ul << pieceIndex - 8;
-            validMoves &= ~(friendlyBitboard | enemyBitboard);
+            if (!getEnemyAttackedSquares)
+            {
+                validMoves = friendlyPawnMovementMasks[pieceIndex] & ~(friendlyBitboard | enemyBitboard) >> 8;
+                validMoves |= 1ul << pieceIndex - 8;
+                validMoves &= ~(friendlyBitboard | enemyBitboard);
+            }
 
-            validAttacks = friendlyPawnAttackMovementMasks[pieceIndex] & enemyBitboard;
 
             if (BoardUtils.IndexToFile(enemyDoubleMovedPawnIndex) == BoardUtils.IndexToFile(pieceIndex) &
                 (Math.Abs(enemyDoubleMovedPawnIndex - pieceIndex) == 1))
@@ -148,7 +153,18 @@ public class ValidMoves
             }
         }
 
-
+        
+        // so that a king can not move into the way of a enemy pawns attack
+        if (getEnemyAttackedSquares)
+        {
+            validAttacks |= friendlyPawnAttackMovementMasks[pieceIndex];
+        }
+        else
+        {
+            validAttacks |= friendlyPawnAttackMovementMasks[pieceIndex] & enemyBitboard;
+        }
+        
+        
         if (inCheck)
         {
             validMoves &= squaresNeedToBlock;
@@ -293,11 +309,12 @@ public class ValidMoves
         
         
         ulong validMoves = MovementMasks.KingMovementMasks[pieceIndex] & ~friendlyBitboard;
+        validMoves &= ~ enemyAttackedSquares;
 
+        
         if (inCheck)
         {
             validMoves &= ~ squaresNotAllowedByKing;
-            validMoves &= ~ enemyAttackedSquares;
         }
 
         return validMoves;
@@ -419,7 +436,7 @@ public class ValidMoves
             if (!Board.IsWhite)
             {
                 if ((Bitboards.WhitePawnBitboard | bitboardIndex) == Bitboards.WhitePawnBitboard){
-                    currentValidMoves = FindPawnMoves(true, pieceIndex, inCheck, 0ul);
+                    currentValidMoves = FindPawnMoves(true, pieceIndex, inCheck, 0ul, true);
                 }
 
                 if ((Bitboards.WhiteKnightBitboard | bitboardIndex) == Bitboards.WhiteKnightBitboard){
@@ -445,7 +462,7 @@ public class ValidMoves
             else
             {
                 if ((Bitboards.BlackPawnBitboard | bitboardIndex) == Bitboards.BlackPawnBitboard){
-                    currentValidMoves = FindPawnMoves(false, pieceIndex, inCheck, 0ul);
+                    currentValidMoves = FindPawnMoves(false, pieceIndex, inCheck, 0ul, true);
                 }
 
                 if ((Bitboards.BlackKnightBitboard | bitboardIndex) == Bitboards.BlackKnightBitboard){
@@ -464,7 +481,7 @@ public class ValidMoves
                     currentValidMoves = FindQueenMoves(false, pieceIndex, inCheck, 0ul);
                 }
 
-                if ((Bitboards.BlackKingBitboard | bitboardIndex) == Bitboards.WhiteKingBitboard){
+                if ((Bitboards.BlackKingBitboard | bitboardIndex) == Bitboards.BlackKingBitboard){
                     currentValidMoves = FindKingMoves(false, pieceIndex, inCheck, 0ul, 0ul);
                 }
             }
@@ -492,7 +509,7 @@ public class ValidMoves
 
         (ulong squaresBlockedWhenChecked, ulong squaresNotAllowedByKing) =
             GetBlockableSquaresWhenChecked(Board.IsWhite, piecesAttackingKingValidMoves);
-
+        
 
         ulong[] allValidMoves = new ulong[64];
 
@@ -508,7 +525,7 @@ public class ValidMoves
             if (Board.IsWhite)
             {
                 if ((Bitboards.WhitePawnBitboard | bitboardIndex) == Bitboards.WhitePawnBitboard){
-                    allValidMoves[index] = FindPawnMoves(true, index, inCheck, squaresBlockedWhenChecked);
+                    allValidMoves[index] = FindPawnMoves(true, index, inCheck, squaresBlockedWhenChecked, false);
                 }
 
                 if ((Bitboards.WhiteKnightBitboard | bitboardIndex) == Bitboards.WhiteKnightBitboard){
@@ -536,7 +553,7 @@ public class ValidMoves
             else
             {
                 if ((Bitboards.BlackPawnBitboard | bitboardIndex) == Bitboards.BlackPawnBitboard){
-                    allValidMoves[index] = FindPawnMoves(false, index, inCheck, squaresBlockedWhenChecked);
+                    allValidMoves[index] = FindPawnMoves(false, index, inCheck, squaresBlockedWhenChecked, false);
                 }
 
                 if ((Bitboards.BlackKnightBitboard | bitboardIndex) == Bitboards.BlackKnightBitboard){
@@ -605,7 +622,6 @@ public class ValidMoves
         return allValidMoves;
 
 
-        return allValidMoves;
     }
 
 }
