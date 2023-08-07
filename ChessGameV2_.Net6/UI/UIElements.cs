@@ -37,8 +37,7 @@ public class UIElements
 
         return squarePositions;
     }
-
-
+    
     private static int CheckIfMouesOnPiece()
     {
         int i = 0;
@@ -57,7 +56,6 @@ public class UIElements
 
         return -1;
     }
-    
     
     public static void MovePiece()
     {
@@ -78,9 +76,7 @@ public class UIElements
                         {
                             Board.UpdateBoard(_pieceBitboard, _currentSquareSelected, newSquareIndex);
                             Board.SwitchCurrentPlayerTurn();
-                            
-                            Engine.MakeMove();
-                            Board.SwitchCurrentPlayerTurn();
+
                             
                             _validMoves = ValidMoves.FindValidMoves();
 
@@ -118,6 +114,7 @@ public class UIElements
         }
         
     }
+    
     public static Texture2D[] GetPieceTextures()
     {
         string[] imageFiles = Directory.GetFiles("../../../Pieces");
@@ -158,7 +155,6 @@ public class UIElements
 
         return allPieceTextures.ToArray();
     }
-    
     
     public static void DrawBoard()
     {

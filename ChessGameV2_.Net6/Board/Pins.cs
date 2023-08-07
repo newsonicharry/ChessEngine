@@ -53,11 +53,21 @@ public class Pins
         return validMoves;
     }
 
-    public static (int, int, ulong) FindBishopPinnedPieces(int friendlyPieceIndex, ulong enemyBishopBitboard,
-        ulong enemyQueenBitboard, ulong friendlyKingBitboard)
-    {
-        int[] enemyBishopIndexes = BitboardUtils.GetSetBitIndexes(enemyBishopBitboard).ToList()
-            .Concat(BitboardUtils.GetSetBitIndexes(enemyQueenBitboard)).ToArray();
+    public static (int, int, ulong) FindBishopPinnedPieces(bool isWhite, int friendlyPieceIndex)
+    {   
+        ulong enemyBishopBitboard = Bitboards.BlackBishopBitboard;
+        ulong enemyQueenBitboard = Bitboards.BlackQueenBitboard;
+        ulong friendlyKingBitboard = Bitboards.WhiteKingBitboard;
+
+
+        if (!isWhite)
+        {
+            enemyBishopBitboard = Bitboards.WhiteBishopBitboard;
+            enemyQueenBitboard = Bitboards.WhiteQueenBitboard;
+            friendlyKingBitboard = Bitboards.BlackKingBitboard;
+        }
+        
+        int[] enemyBishopIndexes = BitboardUtils.GetSetBitIndexes(enemyBishopBitboard).ToList().Concat(BitboardUtils.GetSetBitIndexes(enemyQueenBitboard)).ToArray();
 
         List<ulong> enemyBishopMoves = new List<ulong>();
 
@@ -107,10 +117,23 @@ public class Pins
         return (pinnedPiecesIndex, enemyPinnedBishopsIndex, enemyPinnedBishopMove);
     }
 
-    public static (int, int, ulong) FindRookPinnedPieces(int friendlyPieceIndex, ulong enemyRookBitboard,
-        ulong enemyQueenBitboard, ulong friendlyKingBitboard)
+    public static (int, int, ulong) FindRookPinnedPieces(bool isWhite, int friendlyPieceIndex)
     {
+        
+        ulong enemyRookBitboard = Bitboards.BlackRookBitboard;
+        ulong enemyQueenBitboard = Bitboards.BlackQueenBitboard;
+        ulong friendlyKingBitboard = Bitboards.WhiteKingBitboard;
 
+
+        if (!isWhite)
+        {
+            enemyRookBitboard = Bitboards.WhiteRookBitboard;
+            enemyQueenBitboard = Bitboards.WhiteQueenBitboard;
+            friendlyKingBitboard = Bitboards.BlackKingBitboard;
+        }
+        
+        
+        
         int[] enemyRookIndexes = BitboardUtils.GetSetBitIndexes(enemyRookBitboard).ToList()
             .Concat(BitboardUtils.GetSetBitIndexes(enemyQueenBitboard)).ToArray();
 
@@ -165,6 +188,7 @@ public class Pins
 
         return (pinnedPieceIndex, enemyPinnedRookIndex, enemyPinnedRookMovementMask);
     }
+    
     
     
 }
