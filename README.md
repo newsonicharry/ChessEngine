@@ -1,6 +1,8 @@
 # ChessEngine
 Simple chess engine made in C#
 
+Version downloads for x86 Windows:
+https://drive.google.com/drive/folders/1mvW5xdzHiLY7cX9XJNeHC_Brk6v9Y116
 
 This is very much a work in progress
 
