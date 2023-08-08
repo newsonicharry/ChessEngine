@@ -79,11 +79,14 @@ public class UiDebug
     public static void AddPieceToBoard()
     {   
         bool drawWhitePieces = !Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_SHIFT);
-        bool deletePiece = Raylib.IsKeyDown(KeyboardKey.KEY_DELETE);
         
         int keyPressed = Raylib.GetKeyPressed();
         
-        if (keyPressed != 0 | deletePiece)
+        bool deletePiece = keyPressed == 259;
+        
+        
+
+        if ((keyPressed == 49 | keyPressed == 50 | keyPressed == 51 | keyPressed == 52 | keyPressed == 53 | keyPressed == 54 ) | deletePiece)
         {
             int currentSquareSelected = CheckIfMouesOnSquare();
 

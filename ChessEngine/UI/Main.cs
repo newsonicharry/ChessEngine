@@ -44,7 +44,7 @@ namespace ChessEngine.UI
                     // Board.Board.SwitchCurrentPlayerTurn();
                 }
                 
-                UiElements.WriteVersion(1, 0, 1, font);
+                UiElements.WriteVersion(1, 0, 3, font);
 
                 
 
