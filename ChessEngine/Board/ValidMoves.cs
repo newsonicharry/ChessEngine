@@ -360,7 +360,9 @@ public class ValidMoves
         
         
         if (inCheck)
-        {
+        {   
+            // Console.WriteLine("king in check");
+            // BitboardUtils.PrintBitboards(squaresNotAllowedByKing);
             validMoves &= ~ squaresNotAllowedByKing;
         }
 
@@ -401,7 +403,8 @@ public class ValidMoves
             if (pieceType == 5 | pieceType == 11)
             {
                 // check if its acting as a rook would, so checking on its orthogonal
-                bool attackedOnOrthogonal = (GetRookValidMoves(pieceIndex, isWhite, true, false) & friendlyKingBitboard) != 0;
+                bool attackedOnOrthogonal = (GetRookValidMoves(pieceIndex, !isWhite, true, false) & friendlyKingBitboard) != 0;
+                
                 // if so then call it a white rook
                 // not then we know its attacked on its diagonals so its a bishop
                 pieceType = attackedOnOrthogonal ? 4 :3;
@@ -414,7 +417,7 @@ public class ValidMoves
                 // if multiple pieces checking then the only option is moving the king not blocking the check
                 if (multiplePiecesChecking)
                 {
-                    ulong enemyRookMovesNoBlockers = GetRookValidMoves(pieceIndex, isWhite, false, false);
+                    ulong enemyRookMovesNoBlockers = GetRookValidMoves(pieceIndex, !isWhite, false, false);
                     squaresNotAllowedByKing |= enemyRookMovesNoBlockers;
                 }
                 else
@@ -426,7 +429,7 @@ public class ValidMoves
                     
                     // the rook shown without any blockers as to know that when the king moves, it may not be still checked
                     // by the enemy rook
-                    ulong enemyRookMovesNoBlockers = GetRookValidMoves(pieceIndex, isWhite, false, false);
+                    ulong enemyRookMovesNoBlockers = GetRookValidMoves(pieceIndex, !isWhite, false, false);
 
                     squaresNeedToBlock |= (kingAsRook & validMoves) | bitboardIndex;
                     squaresNotAllowedByKing |= enemyRookMovesNoBlockers;
@@ -440,7 +443,7 @@ public class ValidMoves
 
                 if (multiplePiecesChecking)
                 {
-                    ulong enemyBishopMovesNoBlockers = GetBishopValidMoves(pieceIndex, isWhite, false, false);
+                    ulong enemyBishopMovesNoBlockers = GetBishopValidMoves(pieceIndex, !isWhite, false, false);
                     squaresNotAllowedByKing |= enemyBishopMovesNoBlockers;
 
                 }
@@ -448,8 +451,8 @@ public class ValidMoves
                 {
                     int kingIndex = BitboardUtils.FindLsb(friendlyKingBitboard);
                     ulong kingAsBishop = GetBishopValidMoves(kingIndex, isWhite, true, false);
-                    ulong validEnemyBishopMoves = GetBishopValidMoves(pieceIndex, isWhite, true, false);
-                    ulong enemyBishopMovesNoBlockers = GetBishopValidMoves(pieceIndex, isWhite, false, false);
+                    ulong validEnemyBishopMoves = GetBishopValidMoves(pieceIndex, !isWhite, true, false);
+                    ulong enemyBishopMovesNoBlockers = GetBishopValidMoves(pieceIndex, !isWhite, false, false);
                     
                     
                     squaresNeedToBlock |= ((kingAsBishop & validEnemyBishopMoves) | bitboardIndex);

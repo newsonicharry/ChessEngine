@@ -83,8 +83,8 @@ public abstract class UiElements
                         {
                             Board.Board.UpdateBoard(_pieceBitboard, _currentSquareSelected, newSquareIndex);
                             Board.Board.SwitchCurrentPlayerTurn();
-                            Engine.Engine.MakeMove();
-                            Board.Board.SwitchCurrentPlayerTurn();
+                            // Engine.Engine.MakeMove();
+                            // Board.Board.SwitchCurrentPlayerTurn();
                             
                             ValidMoves = Board.ValidMoves.FindValidMoves();
 
