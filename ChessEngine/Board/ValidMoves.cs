@@ -370,11 +370,20 @@ public class ValidMoves
             ulong bitboardIndex = 1ul << pieceIndex;
 
             int pieceType = BoardUtils.IndexToPieceType(pieceIndex);
-
-            Console.WriteLine(pieceType);
+        
+            // if being attacked by a queen
+            if (pieceType == 5 | pieceType == 11)
+            {
+                // check if its acting as a rook would, so checking on its orthogonal
+                bool attackedOnOrthogonal = (GetRookValidMoves(pieceIndex, isWhite, true) & friendlyKingBitboard) != 0;
+                
+                // if so then call it a white rook
+                // not then we know its attacked on its diagonals so its a bishop
+                pieceType = attackedOnOrthogonal ? 4 :5;
+            }
             
             // piece equal to white or black rook or black or white queen
-            if (pieceType == 4 | pieceType == 10 | pieceType == 5 | pieceType == 11)
+            if (pieceType == 4 | pieceType == 10)
             {       
                 // if multiple pieces checking then the only option is moving the king not blocking the check
                 if (multiplePiecesChecking)
@@ -400,7 +409,7 @@ public class ValidMoves
             }
 
             // piece is white or black bishop
-            if (pieceType == 3 | pieceType == 9 | pieceType == 5 | pieceType == 11)
+            if (pieceType == 3 | pieceType == 9)
             {   
 
                 if (multiplePiecesChecking)
