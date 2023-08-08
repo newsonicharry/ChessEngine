@@ -22,9 +22,7 @@ namespace ChessEngine.UI
 
             Texture2D[] allPieceTextures = UiElements.GetPieceTextures();
             
-            Font font = Raylib.LoadFont("../../../Roboto-Black.ttf");
-            // Raylib.UnloadFont(font);
-
+            Font font = Raylib.LoadFont("./Roboto-Black.ttf");
             
             StartEngine.Start();
         
@@ -46,7 +44,7 @@ namespace ChessEngine.UI
                     // Board.Board.SwitchCurrentPlayerTurn();
                 }
                 
-                UiElements.WriteVersion(1, 0, 0, font);
+                UiElements.WriteVersion(1, 0, 1, font);
 
                 
 

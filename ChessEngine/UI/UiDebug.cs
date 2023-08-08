@@ -104,7 +104,9 @@ public class UiDebug
                 }
 
             }
-
+            UiElements.ValidMoves = Board.ValidMoves.FindValidMoves();
         }
+        
+        
     }
 }

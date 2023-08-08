@@ -18,7 +18,7 @@ public abstract class UiElements
     private static ulong _pieceBitboard = 0ul;
     private static List<int> _occupiedSquares = new List<int>();
 
-    private static ulong[] _validMoves = ValidMoves.FindValidMoves();
+    public static ulong[] ValidMoves = Board.ValidMoves.FindValidMoves();
     
     
     private static int[][] FindSquarePositions()
@@ -79,14 +79,14 @@ public abstract class UiElements
                 {
                     if (_currentSquareSelected != newSquareIndex & _currentSquareSelected != -1)
                     {
-                        if (BitboardUtils.isBitOn(_validMoves[_currentSquareSelected], newSquareIndex))
+                        if (BitboardUtils.isBitOn(ValidMoves[_currentSquareSelected], newSquareIndex))
                         {
                             Board.Board.UpdateBoard(_pieceBitboard, _currentSquareSelected, newSquareIndex);
                             Board.Board.SwitchCurrentPlayerTurn();
                             Engine.Engine.MakeMove();
                             Board.Board.SwitchCurrentPlayerTurn();
                             
-                            _validMoves = ValidMoves.FindValidMoves();
+                            ValidMoves = Board.ValidMoves.FindValidMoves();
 
                         }
 
@@ -180,7 +180,7 @@ public abstract class UiElements
 
                 if (_currentSquareSelected != -1)
                 {
-                    if (BitboardUtils.isBitOn(_validMoves[_currentSquareSelected], index)) { customColor = true;}
+                    if (BitboardUtils.isBitOn(ValidMoves[_currentSquareSelected], index)) { customColor = true;}
                     if (index == _currentSquareSelected) { customColor = true;}
                 }
                 
