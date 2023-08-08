@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using ChessEngine.Bitboards;
 
 namespace ChessEngine.Board;
@@ -100,8 +101,8 @@ public class ValidMoves
         }
 
         // pinned
-        (int rookPinnedPieceIndex, _, _) = Pins.FindRookPinnedPieces(Board.IsWhite, pieceIndex);
-        (int bishopPinnedPieceIndex, _, _) = Pins.FindBishopPinnedPieces(Board.IsWhite, pieceIndex);
+        (int rookPinnedPieceIndex, int enemyPinnedRookIndex, _) = Pins.FindRookPinnedPieces(Board.IsWhite, pieceIndex);
+        (int bishopPinnedPieceIndex, int enemyPinnedBishopIndex, _) = Pins.FindBishopPinnedPieces(Board.IsWhite, pieceIndex);
 
         bool piecePinned = rookPinnedPieceIndex != -1 | bishopPinnedPieceIndex != -1;
         
@@ -109,10 +110,20 @@ public class ValidMoves
         ulong validMoves = 0ul;
         ulong validAttacks = 0ul;
         
-        // if pinned then there are no possible moves
+        // if pinned then there are no possible moves other than taking the enemy piece
         if (piecePinned)
-        {
-            return 0ul;
+        {   
+            
+            // checks if it can take the enemy piece
+            ulong enemyPinnedRookBitboardIndex = 1ul << enemyPinnedRookIndex;
+            ulong enemyPinnedBishopBitboardIndex = 1ul << enemyPinnedBishopIndex;
+
+            ulong possiblePinnedPieceCapture = friendlyPawnAttackMovementMasks[pieceIndex] & (enemyPinnedRookBitboardIndex | enemyPinnedBishopBitboardIndex);
+            
+            if (possiblePinnedPieceCapture != 0)
+            {
+                validAttacks = possiblePinnedPieceCapture;
+            }
         }
 
         
@@ -166,7 +177,6 @@ public class ValidMoves
         
         if (inCheck)
         {   
-            BitboardUtils.PrintBitboards(squaresNeedToBlock);
             validMoves &= squaresNeedToBlock;
             validAttacks &= squaresNeedToBlock;
         }
@@ -305,12 +315,23 @@ public class ValidMoves
     private static ulong FindKingMoves(bool isWhite, int pieceIndex, bool inCheck, ulong squaresNotAllowedByKing, ulong enemyAttackedSquares)
     {
         ulong friendlyBitboard = BoardUtils.GetWhiteBitboard();
-        if (!isWhite){ friendlyBitboard = BoardUtils.GetBlackBitboard(); }
+        ulong enemyBitboard = BoardUtils.GetBlackBitboard();
+
+        if (!isWhite)
+        {
+            friendlyBitboard = BoardUtils.GetBlackBitboard();
+            enemyBitboard = BoardUtils.GetWhiteBitboard();
+        }
         
         
         ulong validMoves = MovementMasks.KingMovementMasks[pieceIndex] & ~friendlyBitboard;
         validMoves &= ~ enemyAttackedSquares;
 
+        ulong enemyPiecesProtected = ~enemyBitboard & enemyAttackedSquares;
+        enemyPiecesProtected = enemyBitboard & enemyPiecesProtected;
+
+        validMoves &= ~enemyPiecesProtected;
+        
         
         if (inCheck)
         {
@@ -332,7 +353,7 @@ public class ValidMoves
 
         if (!isWhite)
         {
-            friendlyKingBitboard = Bitboards.Bitboards.WhiteKingBitboard;
+            friendlyKingBitboard = Bitboards.Bitboards.BlackKingBitboard;
         }
 
 
@@ -350,9 +371,10 @@ public class ValidMoves
 
             int pieceType = BoardUtils.IndexToPieceType(pieceIndex);
 
-
-            // piece equal to white or black rook
-            if (pieceType == 4 | pieceType == 10)
+            Console.WriteLine(pieceType);
+            
+            // piece equal to white or black rook or black or white queen
+            if (pieceType == 4 | pieceType == 10 | pieceType == 5 | pieceType == 11)
             {       
                 // if multiple pieces checking then the only option is moving the king not blocking the check
                 if (multiplePiecesChecking)
@@ -378,8 +400,9 @@ public class ValidMoves
             }
 
             // piece is white or black bishop
-            else if (pieceType == 3 | pieceType == 9)
-            {
+            if (pieceType == 3 | pieceType == 9 | pieceType == 5 | pieceType == 11)
+            {   
+
                 if (multiplePiecesChecking)
                 {
                     ulong enemyBishopMovesNoBlockers = GetBishopValidMoves(pieceIndex, isWhite, false);
@@ -389,17 +412,18 @@ public class ValidMoves
                 else
                 {
                     int kingIndex = BitboardUtils.FindLsb(friendlyKingBitboard);
-                    ulong kingAsRook = GetRookValidMoves(kingIndex, isWhite, true);
-                    ulong validEnemyRookMoves = GetRookValidMoves(pieceIndex, isWhite, true);
+                    ulong kingAsBishop = GetBishopValidMoves(kingIndex, isWhite, true);
+                    ulong validEnemyBishopMoves = GetBishopValidMoves(pieceIndex, isWhite, true);
                     ulong enemyBishopMovesNoBlockers = GetBishopValidMoves(pieceIndex, isWhite, false);
-
-                    squaresNeedToBlock |= ((kingAsRook & validEnemyRookMoves) | bitboardIndex);
+                    
+                    
+                    squaresNeedToBlock |= ((kingAsBishop & validEnemyBishopMoves) | bitboardIndex);
                     squaresNotAllowedByKing |= enemyBishopMovesNoBlockers;
                 }
             }
 
             // piece is anything else
-            else
+            if (pieceType != 3 & pieceType != 4 & pieceType != 5 & pieceType != 9 & pieceType != 10 & pieceType != 11)
             {   
                 // dont need to worry about squares not allowed, because we know the king will not be checked by the same 
                 // piece when it moves
@@ -510,7 +534,8 @@ public class ValidMoves
         (ulong squaresBlockedWhenChecked, ulong squaresNotAllowedByKing) =
             GetBlockableSquaresWhenChecked(Board.IsWhite, piecesAttackingKingValidMoves);
         
-
+        // BitboardUtils.PrintBitboards(squaresNotAllowedByKing);
+        
         ulong[] allValidMoves = new ulong[64];
 
         bool inCheck = Board.InCheck(Board.IsWhite, enemyAttackedSquares);
