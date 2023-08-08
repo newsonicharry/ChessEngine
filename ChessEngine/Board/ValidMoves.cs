@@ -80,7 +80,6 @@ public class ValidMoves
     private static ulong FindPawnMoves(bool isWhite, int pieceIndex, bool inCheck, ulong squaresNeedToBlock, bool getEnemyAttackedSquares)
     {   
         
-        
         // declare basic bitboards
         ulong[] friendlyPawnMovementMasks = MovementMasks.PawnWhiteMoveMovementMasks;
         ulong[] friendlyPawnAttackMovementMasks = MovementMasks.PawnWhiteAttackMovementMasks;
@@ -103,7 +102,7 @@ public class ValidMoves
         // pinned
         (int rookPinnedPieceIndex, int enemyPinnedRookIndex, _) = Pins.FindRookPinnedPieces(Board.IsWhite, pieceIndex);
         (int bishopPinnedPieceIndex, int enemyPinnedBishopIndex, _) = Pins.FindBishopPinnedPieces(Board.IsWhite, pieceIndex);
-
+        
         bool piecePinned = rookPinnedPieceIndex != -1 | bishopPinnedPieceIndex != -1;
         
         
@@ -376,11 +375,11 @@ public class ValidMoves
             {
                 // check if its acting as a rook would, so checking on its orthogonal
                 bool attackedOnOrthogonal = (GetRookValidMoves(pieceIndex, isWhite, true) & friendlyKingBitboard) != 0;
-                
                 // if so then call it a white rook
                 // not then we know its attacked on its diagonals so its a bishop
-                pieceType = attackedOnOrthogonal ? 4 :5;
+                pieceType = attackedOnOrthogonal ? 4 :3;
             }
+            
             
             // piece equal to white or black rook or black or white queen
             if (pieceType == 4 | pieceType == 10)
