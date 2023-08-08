@@ -13,16 +13,19 @@ namespace ChessEngine.UI
     {
         public static void Main()
         {   
-            
-            
-            Raylib.InitWindow(Width, Height, "Chess Engine");
-            // Raylib.SetTargetFPS(144);
 
+            Raylib.InitWindow(Width, Height, "Chess Engine");
+            Raylib.SetTargetFPS(144);
+            
+        
             Color backgroundColor = new Color((byte)31, (byte)31, (byte)31, (byte)255);
 
             Texture2D[] allPieceTextures = UiElements.GetPieceTextures();
+            
+            Font font = Raylib.LoadFont("../../../Roboto-Black.ttf");
+            // Raylib.UnloadFont(font);
 
-
+            
             StartEngine.Start();
         
             while (!Raylib.WindowShouldClose())
@@ -30,6 +33,8 @@ namespace ChessEngine.UI
 
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(backgroundColor);
+
+                UiDebug.AddPieceToBoard();
                 
                 UiElements.DrawBoard();
                 UiElements.DrawPiecesFromBitboards(allPieceTextures);
@@ -41,6 +46,8 @@ namespace ChessEngine.UI
                     // Board.Board.SwitchCurrentPlayerTurn();
                 }
                 
+                UiElements.WriteVersion(1, 0, 0, font);
+
                 
 
                 Raylib.EndDrawing();

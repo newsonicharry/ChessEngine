@@ -1,3 +1,4 @@
+using System.Numerics;
 using ChessEngine.Bitboards;
 using ChessEngine.Board;
 using Raylib_cs;
@@ -9,7 +10,7 @@ public abstract class UiElements
 {   
     
 
-    private static readonly int[][] SquarePositions = FindSquarePositions();
+    public static readonly int[][] SquarePositions = FindSquarePositions();
     
     private static int _currentSquareSelected = -1;
     private static bool _pieceSelected = false;
@@ -36,7 +37,7 @@ public abstract class UiElements
         return squarePositions;
     }
     
-    private static int CheckIfMouesOnPiece()
+    public static int CheckIfMouesOnPiece()
     {
         int i = 0;
         foreach (int[] posData in SquarePositions)
@@ -55,6 +56,14 @@ public abstract class UiElements
         return -1;
     }
     
+    public static void WriteVersion(int majorVersion, int minorVersion, int patchVersion, Font font)
+    {
+        string version = $"Ver {majorVersion}.{minorVersion}.{patchVersion}";
+
+        Vector2 textPosition = new Vector2(0, 0);
+        
+        Raylib.DrawTextPro(font, version, textPosition, textPosition, 0f, 20, 4, Color.GRAY);
+    }
     public static void MovePiece()
     {
 
