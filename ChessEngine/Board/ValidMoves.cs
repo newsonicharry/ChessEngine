@@ -37,7 +37,7 @@ public class ValidMoves
         ulong validMoves = MovementMasks.RookMovesLookUp[pieceIndex][key];
         
         // so that checking for protected pieces works
-        if (getEnemyAttackedSquares)
+        if (!getEnemyAttackedSquares)
         {
             validMoves &= ~friendlyBitboard;
         }
@@ -79,7 +79,7 @@ public class ValidMoves
         
         
         // so that getting protected pieces works
-        if (getEnemyAttackedSquares)
+        if (!getEnemyAttackedSquares)
         {
             validMoves &= ~friendlyBitboard;
         }
