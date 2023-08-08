@@ -24,7 +24,7 @@ namespace ChessEngine.UI
 
 
             StartEngine.Start();
-
+        
             while (!Raylib.WindowShouldClose())
             {
 
@@ -37,7 +37,8 @@ namespace ChessEngine.UI
                 if (!Board.Board.GameOver)
                 {   
                     UiElements.MovePiece();
-                    
+                    // Engine.Engine.MakeMove();
+                    // Board.Board.SwitchCurrentPlayerTurn();
                 }
                 
                 
