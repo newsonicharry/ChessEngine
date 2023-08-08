@@ -130,9 +130,14 @@ public class ValidMoves
             ulong possiblePinnedPieceCapture = friendlyPawnAttackMovementMasks[pieceIndex] & (enemyPinnedRookBitboardIndex | enemyPinnedBishopBitboardIndex);
             
             if (possiblePinnedPieceCapture != 0)
-            {
+            {   
                 validAttacks = possiblePinnedPieceCapture;
             }
+            else
+            {
+                return 0ul;
+            }
+            
         }
 
         
