@@ -5,6 +5,9 @@ namespace ChessEngine.Board;
 
 public class Board
 {
+    public static bool WhiteInCheck = false;
+    public static bool BlackInCheck = false;
+    
     public static List<ushort> AllMovesMade = new List<ushort>();
     public static int HalfMoveClock = 0;
     public static int FullMoveClock = 0;
@@ -133,14 +136,14 @@ public class Board
         
         if (pieceBitboard == Bitboards.Bitboards.WhiteKingBitboard)
         {
-            if (newIndex == 6 & Castling.CanWhiteShortCastle(EnemyAttackedSquares))
+            if (newIndex == 6 & Castling.CanWhiteShortCastle(EnemyAttackedSquares, WhiteInCheck))
             {
                 Bitboards.Bitboards.WhiteRookBitboard = BitboardUtils.NegateBit(Bitboards.Bitboards.WhiteRookBitboard, 7);
                 Bitboards.Bitboards.WhiteRookBitboard = BitboardUtils.EnableBit(Bitboards.Bitboards.WhiteRookBitboard, 5);
                 Castling.HasMovedRightWhiteRook = true;
             }
             
-            if (newIndex == 2 & Castling.CanWhiteLongCastle(EnemyAttackedSquares))
+            if (newIndex == 2 & Castling.CanWhiteLongCastle(EnemyAttackedSquares, WhiteInCheck))
             {
                 Bitboards.Bitboards.WhiteRookBitboard = BitboardUtils.NegateBit(Bitboards.Bitboards.WhiteRookBitboard, 0);
                 Bitboards.Bitboards.WhiteRookBitboard = BitboardUtils.EnableBit(Bitboards.Bitboards.WhiteRookBitboard, 3);
@@ -199,14 +202,14 @@ public class Board
         if (pieceBitboard == Bitboards.Bitboards.BlackKingBitboard)
         {   
             // checks if the king is going to a square that it can castle on, and that it actually is allowed to castle
-            if (newIndex == 62 & Castling.CanBlackShortCastle(EnemyAttackedSquares))
+            if (newIndex == 62 & Castling.CanBlackShortCastle(EnemyAttackedSquares, BlackInCheck))
             {
                 Bitboards.Bitboards.BlackRookBitboard = BitboardUtils.NegateBit(Bitboards.Bitboards.BlackRookBitboard, 63);
                 Bitboards.Bitboards.BlackRookBitboard = BitboardUtils.EnableBit(Bitboards.Bitboards.BlackRookBitboard, 61);
                 Castling.HasMovedRightBlackRook = true;
             }
             
-            if (newIndex == 58 & Castling.CanBlackLongCastle(EnemyAttackedSquares))
+            if (newIndex == 58 & Castling.CanBlackLongCastle(EnemyAttackedSquares, BlackInCheck))
             {
                 Bitboards.Bitboards.BlackRookBitboard = BitboardUtils.NegateBit(Bitboards.Bitboards.BlackRookBitboard, 56);
                 Bitboards.Bitboards.BlackRookBitboard = BitboardUtils.EnableBit(Bitboards.Bitboards.BlackRookBitboard, 59);

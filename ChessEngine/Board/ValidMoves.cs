@@ -569,6 +569,16 @@ public class ValidMoves
         ulong[] allValidMoves = new ulong[64];
 
         bool inCheck = Board.InCheck(Board.IsWhite, enemyAttackedSquares);
+
+        if (Board.IsWhite)
+        {
+            Board.WhiteInCheck = inCheck;
+        }
+        else
+        {
+            Board.BlackInCheck = inCheck;
+        }
+        
         
         // Console.WriteLine(Board.EnemyAttackedSquares);
         
@@ -650,24 +660,24 @@ public class ValidMoves
 
         if (Board.IsWhite)
         {
-            if (Castling.CanWhiteShortCastle(Board.EnemyAttackedSquares))
+            if (Castling.CanWhiteShortCastle(Board.EnemyAttackedSquares, inCheck))
             {
                 allValidMoves[4] |= 64ul;
             }
             
-            if (Castling.CanWhiteLongCastle(Board.EnemyAttackedSquares))
+            if (Castling.CanWhiteLongCastle(Board.EnemyAttackedSquares, inCheck))
             {   
                 allValidMoves[4] |= 4ul;
             }
         }
         else
         {
-            if (Castling.CanBlackShortCastle(Board.EnemyAttackedSquares))
+            if (Castling.CanBlackShortCastle(Board.EnemyAttackedSquares, inCheck))
             {
                 allValidMoves[60] |= 4611686018427387904ul;
             }
         
-            if (Castling.CanBlackLongCastle(Board.EnemyAttackedSquares))
+            if (Castling.CanBlackLongCastle(Board.EnemyAttackedSquares, inCheck))
             {
                 allValidMoves[60] |= 288230376151711744ul;
             }

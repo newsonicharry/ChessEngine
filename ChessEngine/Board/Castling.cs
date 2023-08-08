@@ -15,7 +15,7 @@ public abstract class Castling
     public static bool HasMovedRightWhiteRook;
     public static bool HasMovedRightBlackRook;
 
-    public static bool CanWhiteShortCastle(ulong blackAttackedSquares)
+    public static bool CanWhiteShortCastle(ulong blackAttackedSquares, bool inCheck)
     {
         ulong whiteBitboard = BoardUtils.GetWhiteBitboard();
         ulong blackBitboard = BoardUtils.GetBlackBitboard();
@@ -24,7 +24,7 @@ public abstract class Castling
 
         bool squaresNotBlocked = ((blackBitboard | blackAttackedSquares | whiteBitboard) & notOccupiedSquares) == 0ul;
         
-        if (!HasMovedWhiteKing & squaresNotBlocked & !HasMovedRightWhiteRook & !Board.InCheck(true, blackAttackedSquares) & FenWhiteCastleKingSide)
+        if (!HasMovedWhiteKing & squaresNotBlocked & !HasMovedRightWhiteRook & !inCheck & FenWhiteCastleKingSide)
         {   
             return true;
         }
@@ -33,7 +33,7 @@ public abstract class Castling
 
     }
     
-    public static bool CanWhiteLongCastle(ulong blackAttackedSquares)
+    public static bool CanWhiteLongCastle(ulong blackAttackedSquares, bool inCheck)
     {
         ulong whiteBitboard = BoardUtils.GetWhiteBitboard();
         ulong blackBitboard = BoardUtils.GetBlackBitboard();
@@ -42,7 +42,7 @@ public abstract class Castling
 
         bool squaresNotBlocked = ((blackBitboard | blackAttackedSquares | whiteBitboard) & notOccupiedSquares) == 0ul;
         
-        if (!HasMovedWhiteKing & squaresNotBlocked & !HasMovedLeftWhiteRook & !Board.InCheck(true, blackAttackedSquares) & FenWhiteCastleQueenSide)
+        if (!HasMovedWhiteKing & squaresNotBlocked & !HasMovedLeftWhiteRook & !inCheck & FenWhiteCastleQueenSide)
         {   
             return true;
         }
@@ -51,7 +51,7 @@ public abstract class Castling
 
     }
     
-    public static bool CanBlackShortCastle(ulong whiteAttackedSquares)
+    public static bool CanBlackShortCastle(ulong whiteAttackedSquares, bool inCheck)
     {
         ulong whiteBitboard = BoardUtils.GetWhiteBitboard();
         ulong blackBitboard = BoardUtils.GetBlackBitboard();
@@ -60,7 +60,7 @@ public abstract class Castling
 
         bool squaresNotBlocked = ((blackBitboard | whiteAttackedSquares | whiteBitboard) & notOccupiedSquares) == 0ul;
         
-        if (!HasMovedBlackKing & squaresNotBlocked & !HasMovedRightBlackRook & !Board.InCheck(false, whiteAttackedSquares) & FenBlackCastleKingSide)
+        if (!HasMovedBlackKing & squaresNotBlocked & !HasMovedRightBlackRook & !inCheck & FenBlackCastleKingSide)
         {   
             return true;
         }
@@ -69,7 +69,7 @@ public abstract class Castling
 
     }
     
-    public static bool CanBlackLongCastle(ulong whiteAttackedSquares)
+    public static bool CanBlackLongCastle(ulong whiteAttackedSquares, bool inCheck)
     {
         ulong whiteBitboard = BoardUtils.GetWhiteBitboard();
         ulong blackBitboard = BoardUtils.GetBlackBitboard();
@@ -78,7 +78,7 @@ public abstract class Castling
 
         bool squaresNotBlocked = ((blackBitboard | whiteAttackedSquares | whiteBitboard) & notOccupiedSquares) == 0ul;
         
-        if (!HasMovedBlackKing & squaresNotBlocked & !HasMovedLeftBlackRook & !Board.InCheck(false, whiteAttackedSquares) & FenBlackCastleQueenSide)
+        if (!HasMovedBlackKing & squaresNotBlocked & !HasMovedLeftBlackRook & !inCheck & FenBlackCastleQueenSide)
         {   
             return true;
         }
