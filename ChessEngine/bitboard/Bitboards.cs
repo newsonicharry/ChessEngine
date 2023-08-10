@@ -1,8 +1,8 @@
 using ChessEngine.Board;
 
-namespace ChessEngine.Bitboards;
+namespace ChessEngine.bitboard;
 
-public class Bitboards
+public abstract class Bitboards
 {
     public static ulong WhiteRookBitboard;
     public static ulong WhiteBishopBitboard;
@@ -24,7 +24,7 @@ public class Bitboards
         string[] fenFields = fen.Split(" ");
 
         string activeColor = fenFields[1];
-        if (activeColor == "b") { Board.Board.SwitchCurrentPlayerTurn(); }
+        if (activeColor == "b") { board.Board.SwitchCurrentPlayerTurn(); }
 
         string castlingRights = fenFields[2];
         foreach (char castlingSymbol in castlingRights){
@@ -46,21 +46,21 @@ public class Bitboards
             Console.WriteLine(yCord);
 
             
-            if (Board.Board.IsWhite)
+            if (board.Board.IsWhite)
             {
-                Board.Board.WhiteDoubleMovedPawnIndex = enPassantTargetIndex - 8;
+                board.Board.WhiteDoubleMovedPawnIndex = enPassantTargetIndex - 8;
             }
             else
             {
-                Board.Board.BlackDoubleMovedPawnIndex = enPassantTargetIndex + 8;
+                board.Board.BlackDoubleMovedPawnIndex = enPassantTargetIndex + 8;
             }
         }
 
         string halfMoveClock = fenFields[4];
         string fullMoveClock = fenFields[5];
 
-        Board.Board.HalfMoveClock = Convert.ToInt32(halfMoveClock);
-        Board.Board.FullMoveClock = Convert.ToInt32(fullMoveClock);
+        board.Board.HalfMoveClock = Convert.ToInt32(halfMoveClock);
+        board.Board.FullMoveClock = Convert.ToInt32(fullMoveClock);
 
         
         

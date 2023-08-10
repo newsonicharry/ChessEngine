@@ -1,4 +1,4 @@
-using ChessEngine.Bitboards;
+using ChessEngine.bitboard;
 
 namespace ChessEngine.Board;
 
@@ -12,13 +12,13 @@ public class Pins
     {
         ulong enemyPieces;
 
-        if (Board.IsWhite)
+        if (board.Board.IsWhite)
         {
-            enemyPieces = BoardUtils.GetBlackBitboard() & ~ Bitboards.Bitboards.BlackRookBitboard;
+            enemyPieces = BoardUtils.GetBlackBitboard() & ~ Bitboards.BlackRookBitboard;
         }
         else
         {
-            enemyPieces = BoardUtils.GetWhiteBitboard() & ~ Bitboards.Bitboards.WhiteRookBitboard;
+            enemyPieces = BoardUtils.GetWhiteBitboard() & ~ Bitboards.WhiteRookBitboard;
 
         }
 
@@ -34,13 +34,13 @@ public class Pins
     {
         ulong enemyPieces;
 
-        if (Board.IsWhite)
+        if (board.Board.IsWhite)
         {
-            enemyPieces = BoardUtils.GetBlackBitboard() & ~ Bitboards.Bitboards.BlackBishopBitboard;
+            enemyPieces = BoardUtils.GetBlackBitboard() & ~ Bitboards.BlackBishopBitboard;
         }
         else
         {
-            enemyPieces = BoardUtils.GetWhiteBitboard() & ~ Bitboards.Bitboards.WhiteBishopBitboard;
+            enemyPieces = BoardUtils.GetWhiteBitboard() & ~ Bitboards.WhiteBishopBitboard;
 
         }
 
@@ -55,16 +55,16 @@ public class Pins
 
     public static (int, int, ulong) FindBishopPinnedPieces(bool isWhite, int friendlyPieceIndex)
     {   
-        ulong enemyBishopBitboard = Bitboards.Bitboards.BlackBishopBitboard;
-        ulong enemyQueenBitboard = Bitboards.Bitboards.BlackQueenBitboard;
-        ulong friendlyKingBitboard = Bitboards.Bitboards.WhiteKingBitboard;
+        ulong enemyBishopBitboard = Bitboards.BlackBishopBitboard;
+        ulong enemyQueenBitboard = Bitboards.BlackQueenBitboard;
+        ulong friendlyKingBitboard = Bitboards.WhiteKingBitboard;
 
 
         if (!isWhite)
         {
-            enemyBishopBitboard = Bitboards.Bitboards.WhiteBishopBitboard;
-            enemyQueenBitboard = Bitboards.Bitboards.WhiteQueenBitboard;
-            friendlyKingBitboard = Bitboards.Bitboards.BlackKingBitboard;
+            enemyBishopBitboard = Bitboards.WhiteBishopBitboard;
+            enemyQueenBitboard = Bitboards.WhiteQueenBitboard;
+            friendlyKingBitboard = Bitboards.BlackKingBitboard;
         }
         
         int[] enemyBishopIndexes = BitboardUtils.GetSetBitIndexes(enemyBishopBitboard).ToList().Concat(BitboardUtils.GetSetBitIndexes(enemyQueenBitboard)).ToArray();
@@ -120,16 +120,16 @@ public class Pins
     public static (int, int, ulong) FindRookPinnedPieces(bool isWhite, int friendlyPieceIndex)
     {
         
-        ulong enemyRookBitboard = Bitboards.Bitboards.BlackRookBitboard;
-        ulong enemyQueenBitboard = Bitboards.Bitboards.BlackQueenBitboard;
-        ulong friendlyKingBitboard = Bitboards.Bitboards.WhiteKingBitboard;
+        ulong enemyRookBitboard = Bitboards.BlackRookBitboard;
+        ulong enemyQueenBitboard = Bitboards.BlackQueenBitboard;
+        ulong friendlyKingBitboard = Bitboards.WhiteKingBitboard;
 
 
         if (!isWhite)
         {
-            enemyRookBitboard = Bitboards.Bitboards.WhiteRookBitboard;
-            enemyQueenBitboard = Bitboards.Bitboards.WhiteQueenBitboard;
-            friendlyKingBitboard = Bitboards.Bitboards.BlackKingBitboard;
+            enemyRookBitboard = Bitboards.WhiteRookBitboard;
+            enemyQueenBitboard = Bitboards.WhiteQueenBitboard;
+            friendlyKingBitboard = Bitboards.BlackKingBitboard;
         }
         
         

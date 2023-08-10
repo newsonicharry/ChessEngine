@@ -1,7 +1,6 @@
 using ChessEngine.Engine;
 using Raylib_cs;
 using static ChessEngine.UI.UIConstants;
-using ChessEngine.Board;
 
 
 // if you cant tell, im not so great with ui code
@@ -37,14 +36,14 @@ namespace ChessEngine.UI
                 UiElements.DrawBoard();
                 UiElements.DrawPiecesFromBitboards(allPieceTextures);
 
-                if (!Board.Board.GameOver)
+                if (!board.Board.GameOver)
                 {   
                     UiElements.MovePiece();
                     // Engine.Engine.MakeMove();
                     // Board.Board.SwitchCurrentPlayerTurn();
                 }
                 
-                UiElements.WriteVersion(1, 0, 4, font);
+                UiElements.WriteVersion(1, 0, 5, font);
 
                 
 

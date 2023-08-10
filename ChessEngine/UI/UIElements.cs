@@ -1,5 +1,5 @@
 using System.Numerics;
-using ChessEngine.Bitboards;
+using ChessEngine.bitboard;
 using ChessEngine.Board;
 using Raylib_cs;
 using static ChessEngine.UI.UIConstants;
@@ -13,12 +13,26 @@ public abstract class UiElements
     public static readonly int[][] SquarePositions = FindSquarePositions();
     
     private static int _currentSquareSelected = -1;
-    private static bool _pieceSelected = false;
-    private static Texture2D _pieceSelectedTexture = new Texture2D();
-    private static ulong _pieceBitboard = 0ul;
-    private static List<int> _occupiedSquares = new List<int>();
+    private static bool _pieceSelected;
+    private static Texture2D _pieceSelectedTexture;
+    private static readonly List<int> OccupiedSquares = new();
 
-    public static ulong[] ValidMoves = Board.ValidMoves.FindValidMoves();
+    public static ushort[] ValidMoves = Board.ValidMoves.FindValidMoves();
+
+
+
+    private static int[][] FindDecodedValidMove()
+    {
+        List<int[]> validMovesIndexes = new List<int[]>();
+        
+        foreach (ushort validMove in ValidMoves)
+        {   
+            (int startingSquare, int endingSquare, int pieceIndex) = BoardUtils.DecodeMove(validMove);
+            validMovesIndexes.Add(new []{startingSquare, endingSquare, pieceIndex});
+        }
+
+        return validMovesIndexes.ToArray();
+    }
     
     
     private static int[][] FindSquarePositions()
@@ -45,7 +59,7 @@ public abstract class UiElements
             int xPos = posData[0];
             int yPos = posData[1];
                 
-            if (Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle(xPos, yPos, SideLength, SideLength)) & _occupiedSquares.Contains(i))
+            if (Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle(xPos, yPos, SideLength, SideLength)) & OccupiedSquares.Contains(i))
             {
                 return i;
             }
@@ -76,15 +90,31 @@ public abstract class UiElements
             foreach (int[] squarePosition in SquarePositions)
             {
                 if (Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle(squarePosition[0], squarePosition[1], SideLength, SideLength)))
-                {
+                {   
                     if (_currentSquareSelected != newSquareIndex & _currentSquareSelected != -1)
                     {
-                        if (BitboardUtils.isBitOn(ValidMoves[_currentSquareSelected], newSquareIndex))
+                        int[][] validMovesDecoded = FindDecodedValidMove();
+                        if (validMovesDecoded.Length != 0)
                         {
-                            Board.Board.UpdateBoard(_pieceBitboard, _currentSquareSelected, newSquareIndex);
-                            Board.Board.SwitchCurrentPlayerTurn();
+                            int i = 0;
+                            foreach (int[] moveData in validMovesDecoded)
+                            {
+                                if (newSquareIndex == moveData[1] & _currentSquareSelected == moveData[0])
+                                {
+
+                                    board.Board.UpdateBoard(ValidMoves[i]);
+                                    board.Board.SwitchCurrentPlayerTurn();
+
+                                    Engine.Engine.MakeMove();
+                                    board.Board.SwitchCurrentPlayerTurn();
+                                }
+
+                                i++;
+                            }
+                            
+                            
                             // Engine.Engine.MakeMove();
-                            // Board.Board.SwitchCurrentPlayerTurn();
+                            // board.Board.SwitchCurrentPlayerTurn();
                             
                             ValidMoves = Board.ValidMoves.FindValidMoves();
 
@@ -99,7 +129,6 @@ public abstract class UiElements
             }
             
             _currentSquareSelected = -1;
-            _pieceBitboard = 0ul;
             _pieceSelectedTexture = new Texture2D();
 
         }
@@ -179,8 +208,16 @@ public abstract class UiElements
 
 
                 if (_currentSquareSelected != -1)
-                {
-                    if (BitboardUtils.isBitOn(ValidMoves[_currentSquareSelected], index)) { customColor = true;}
+                {   
+                    int[][] validDecodedMoves = FindDecodedValidMove();
+                    foreach (int[] validMoveData in validDecodedMoves)
+                    {       
+                        if (index == validMoveData[1] & _currentSquareSelected == validMoveData[0])
+                        {
+                            customColor = true;
+                        }
+                    }
+                    
                     if (index == _currentSquareSelected) { customColor = true;}
                 }
                 
@@ -188,7 +225,6 @@ public abstract class UiElements
                 
                 // lighter
                 if (Math.Abs(y-x) % 2 == 0){
-                    
                     
                     currentColor = new Color((byte)235, (byte)210, (byte)184, (byte)255);
                     if (customColor) {   
@@ -222,17 +258,18 @@ public abstract class UiElements
     }
 
     public static void DrawPiecesFromBitboards(Texture2D[] allPieceTextures)
-    {
+    {   
+        
         ulong[] allBitboards = 
         {
-            Bitboards.Bitboards.WhitePawnBitboard, Bitboards.Bitboards.WhiteKnightBitboard, Bitboards.Bitboards.WhiteBishopBitboard,
-            Bitboards.Bitboards.WhiteRookBitboard, Bitboards.Bitboards.WhiteQueenBitboard, Bitboards.Bitboards.WhiteKingBitboard,
-            Bitboards.Bitboards.BlackPawnBitboard, Bitboards.Bitboards.BlackKnightBitboard, Bitboards.Bitboards.BlackBishopBitboard,
-            Bitboards.Bitboards.BlackRookBitboard, Bitboards.Bitboards.BlackQueenBitboard, Bitboards.Bitboards.BlackKingBitboard
+            Bitboards.WhitePawnBitboard, Bitboards.WhiteKnightBitboard, Bitboards.WhiteBishopBitboard,
+            Bitboards.WhiteRookBitboard, Bitboards.WhiteQueenBitboard, Bitboards.WhiteKingBitboard,
+            Bitboards.BlackPawnBitboard, Bitboards.BlackKnightBitboard, Bitboards.BlackBishopBitboard,
+            Bitboards.BlackRookBitboard, Bitboards.BlackQueenBitboard, Bitboards.BlackKingBitboard
         };
         
 
-        _occupiedSquares.Clear();
+        OccupiedSquares.Clear();
 
         for (int bitboardIndex = 0; bitboardIndex < 12; bitboardIndex++)
         {
@@ -259,7 +296,7 @@ public abstract class UiElements
                         int posX = SquarePositions[index][0];
                         int posY = SquarePositions[index][1];
                         
-                        _occupiedSquares.Add(index);
+                        OccupiedSquares.Add(index);
 
                         if (index == _currentSquareSelected & Raylib.IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON))
                         {
@@ -268,8 +305,6 @@ public abstract class UiElements
                             Raylib.DrawTexture(allPieceTextures[bitboardIndex], posX, posY, selectedColor);
                             
                             _pieceSelectedTexture = allPieceTextures[bitboardIndex];
-                            _pieceBitboard = allBitboards[bitboardIndex];
-
                         }
                         
                         if (index != _currentSquareSelected)

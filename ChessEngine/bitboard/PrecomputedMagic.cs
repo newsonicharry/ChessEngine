@@ -1,4 +1,4 @@
-namespace ChessEngine.Bitboards
+namespace ChessEngine.bitboard
 {
     public static class PrecomputedMagics
     {

@@ -1,6 +1,7 @@
+using System.Numerics;
 using ChessEngine.Board;
 
-namespace ChessEngine.Bitboards;
+namespace ChessEngine.bitboard;
 
 public abstract class BitboardUtils
 {
@@ -86,27 +87,25 @@ public abstract class BitboardUtils
 
     public static int[] GetSetBitIndexes(ulong number)
     {
-        List<int> setBitIndexes = new List<int>();
-        int bitIndex = 0;
+        int[] result = new int[BitOperations.PopCount(number)];
+        int index = 0;
 
-        while (number > 0)
+        for (int i = 0; i < 64; i++)
         {
-            if ((number & 1UL) == 1UL) // Check if the least significant bit is set (i.e., equal to 1)
+            if ((number & (1UL << i)) != 0)
             {
-                setBitIndexes.Add(bitIndex);
+                result[index] = i;
+                index++;
             }
-
-            bitIndex++;
-            number >>= 1; // Right shift the number by 1 bit to check the next bit
         }
 
-        return setBitIndexes.ToArray();
+        return result;
     }
     
     public static ulong ChangeBitPosition(ulong bitboard, int originalIndex, int newIndex)
     {
-        ulong newBitboard = BitboardUtils.NegateBit(bitboard, originalIndex);
-        newBitboard = BitboardUtils.EnableBit(newBitboard, newIndex);
+        ulong newBitboard = NegateBit(bitboard, originalIndex);
+        newBitboard = EnableBit(newBitboard, newIndex);
             
         return newBitboard;
     }

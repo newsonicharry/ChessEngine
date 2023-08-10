@@ -1,6 +1,7 @@
-﻿using System.Numerics;
+﻿using ChessEngine.bitboard;
+using ChessEngine.Board;
 using Raylib_cs;
-using ChessEngine.Bitboards;
+
 namespace ChessEngine.UI;
 
 public class UiDebug
@@ -34,19 +35,19 @@ public class UiDebug
             return (bitboard | bitboardIndex) == bitboard;
         }
         
-        if (BitboardContainsPiece(Bitboards.Bitboards.WhitePawnBitboard)) { Bitboards.Bitboards.WhitePawnBitboard &= ~bitboardIndex; }
-        if (BitboardContainsPiece(Bitboards.Bitboards.WhiteKnightBitboard)) { Bitboards.Bitboards.WhiteKnightBitboard &= ~bitboardIndex; }
-        if (BitboardContainsPiece(Bitboards.Bitboards.WhiteBishopBitboard)) { Bitboards.Bitboards.WhiteBishopBitboard &= ~bitboardIndex; }
-        if (BitboardContainsPiece(Bitboards.Bitboards.WhiteRookBitboard)) { Bitboards.Bitboards.WhiteRookBitboard &= ~bitboardIndex; }
-        if (BitboardContainsPiece(Bitboards.Bitboards.WhiteQueenBitboard)) { Bitboards.Bitboards.WhiteQueenBitboard &= ~bitboardIndex; }
-        if (BitboardContainsPiece(Bitboards.Bitboards.WhiteKingBitboard)) { Bitboards.Bitboards.WhiteKingBitboard &= ~bitboardIndex; }
+        if (BitboardContainsPiece(Bitboards.WhitePawnBitboard)) { Bitboards.WhitePawnBitboard &= ~bitboardIndex; }
+        if (BitboardContainsPiece(Bitboards.WhiteKnightBitboard)) { Bitboards.WhiteKnightBitboard &= ~bitboardIndex; }
+        if (BitboardContainsPiece(Bitboards.WhiteBishopBitboard)) { Bitboards.WhiteBishopBitboard &= ~bitboardIndex; }
+        if (BitboardContainsPiece(Bitboards.WhiteRookBitboard)) { Bitboards.WhiteRookBitboard &= ~bitboardIndex; }
+        if (BitboardContainsPiece(Bitboards.WhiteQueenBitboard)) { Bitboards.WhiteQueenBitboard &= ~bitboardIndex; }
+        if (BitboardContainsPiece(Bitboards.WhiteKingBitboard)) { Bitboards.WhiteKingBitboard &= ~bitboardIndex; }
 
-        if (BitboardContainsPiece(Bitboards.Bitboards.BlackPawnBitboard)) { Bitboards.Bitboards.BlackPawnBitboard &= ~bitboardIndex; }
-        if (BitboardContainsPiece(Bitboards.Bitboards.BlackKnightBitboard)) { Bitboards.Bitboards.BlackKnightBitboard &= ~bitboardIndex; }
-        if (BitboardContainsPiece(Bitboards.Bitboards.BlackBishopBitboard)) { Bitboards.Bitboards.BlackBishopBitboard &= ~bitboardIndex; }
-        if (BitboardContainsPiece(Bitboards.Bitboards.BlackRookBitboard)) { Bitboards.Bitboards.BlackRookBitboard &= ~bitboardIndex; }
-        if (BitboardContainsPiece(Bitboards.Bitboards.BlackQueenBitboard)) { Bitboards.Bitboards.BlackQueenBitboard &= ~bitboardIndex; }
-        if (BitboardContainsPiece(Bitboards.Bitboards.BlackKingBitboard)) { Bitboards.Bitboards.BlackKingBitboard &= ~bitboardIndex; }
+        if (BitboardContainsPiece(Bitboards.BlackPawnBitboard)) { Bitboards.BlackPawnBitboard &= ~bitboardIndex; }
+        if (BitboardContainsPiece(Bitboards.BlackKnightBitboard)) { Bitboards.BlackKnightBitboard &= ~bitboardIndex; }
+        if (BitboardContainsPiece(Bitboards.BlackBishopBitboard)) { Bitboards.BlackBishopBitboard &= ~bitboardIndex; }
+        if (BitboardContainsPiece(Bitboards.BlackRookBitboard)) { Bitboards.BlackRookBitboard &= ~bitboardIndex; }
+        if (BitboardContainsPiece(Bitboards.BlackQueenBitboard)) { Bitboards.BlackQueenBitboard &= ~bitboardIndex; }
+        if (BitboardContainsPiece(Bitboards.BlackKingBitboard)) { Bitboards.BlackKingBitboard &= ~bitboardIndex; }
 
     }
 
@@ -54,12 +55,12 @@ public class UiDebug
     {
         ulong bitboardIndex = 1ul << squareSelected;
         
-        if (pieceType == 49) { Bitboards.Bitboards.WhitePawnBitboard |= bitboardIndex; }
-        if (pieceType == 50) { Bitboards.Bitboards.WhiteKnightBitboard |= bitboardIndex; }
-        if (pieceType == 51) { Bitboards.Bitboards.WhiteBishopBitboard |= bitboardIndex; }
-        if (pieceType == 52) { Bitboards.Bitboards.WhiteRookBitboard |= bitboardIndex; }
-        if (pieceType == 53) { Bitboards.Bitboards.WhiteQueenBitboard |= bitboardIndex; }
-        if (pieceType == 54) { Bitboards.Bitboards.WhiteKingBitboard |= bitboardIndex; }
+        if (pieceType == 49) { Bitboards.WhitePawnBitboard |= bitboardIndex; }
+        if (pieceType == 50) { Bitboards.WhiteKnightBitboard |= bitboardIndex; }
+        if (pieceType == 51) { Bitboards.WhiteBishopBitboard |= bitboardIndex; }
+        if (pieceType == 52) { Bitboards.WhiteRookBitboard |= bitboardIndex; }
+        if (pieceType == 53) { Bitboards.WhiteQueenBitboard |= bitboardIndex; }
+        if (pieceType == 54) { Bitboards.WhiteKingBitboard |= bitboardIndex; }
         
     }
     
@@ -67,12 +68,12 @@ public class UiDebug
     {
         ulong bitboardIndex = 1ul << squareSelected;
         
-        if (pieceType == 49) { Bitboards.Bitboards.BlackPawnBitboard |= bitboardIndex; }
-        if (pieceType == 50) { Bitboards.Bitboards.BlackKnightBitboard |= bitboardIndex; }
-        if (pieceType == 51) { Bitboards.Bitboards.BlackBishopBitboard |= bitboardIndex; }
-        if (pieceType == 52) { Bitboards.Bitboards.BlackRookBitboard |= bitboardIndex; }
-        if (pieceType == 53) { Bitboards.Bitboards.BlackQueenBitboard |= bitboardIndex; }
-        if (pieceType == 54) { Bitboards.Bitboards.BlackKingBitboard |= bitboardIndex; }
+        if (pieceType == 49) { Bitboards.BlackPawnBitboard |= bitboardIndex; }
+        if (pieceType == 50) { Bitboards.BlackKnightBitboard |= bitboardIndex; }
+        if (pieceType == 51) { Bitboards.BlackBishopBitboard |= bitboardIndex; }
+        if (pieceType == 52) { Bitboards.BlackRookBitboard |= bitboardIndex; }
+        if (pieceType == 53) { Bitboards.BlackQueenBitboard |= bitboardIndex; }
+        if (pieceType == 54) { Bitboards.BlackKingBitboard |= bitboardIndex; }
         
     }
     
@@ -107,7 +108,7 @@ public class UiDebug
                 }
 
             }
-            UiElements.ValidMoves = Board.ValidMoves.FindValidMoves();
+            UiElements.ValidMoves = ValidMoves.FindValidMoves();
         }
         
         

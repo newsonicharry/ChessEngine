@@ -1,6 +1,6 @@
 using ChessEngine.Board;
 
-namespace ChessEngine.Bitboards;
+namespace ChessEngine.bitboard;
 
 public abstract class Blockers
 {
