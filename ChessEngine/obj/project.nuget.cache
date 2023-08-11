@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "uo4wrosczJ5Yuog9RAdYLufWgyEwH4NY6NyU5Q2ub9nvd9QN18RJbmRt0MUmxYuvLZq5/25aDTvfuD2ImfUvXg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Harry\\RiderProjects\\ChessEngine\\ChessEngine\\ChessEngine.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Harry\\.nuget\\packages\\raylib-cs\\4.5.0.2\\raylib-cs.4.5.0.2.nupkg.sha512",
+    "C:\\Users\\Harry\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
+    "C:\\Users\\Harry\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x86\\6.0.0\\microsoft.netcore.app.runtime.win-x86.6.0.0.nupkg.sha512",
+    "C:\\Users\\Harry\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x86\\6.0.0\\microsoft.windowsdesktop.app.runtime.win-x86.6.0.0.nupkg.sha512",
+    "C:\\Users\\Harry\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x86\\6.0.0\\microsoft.aspnetcore.app.runtime.win-x86.6.0.0.nupkg.sha512",
+    "C:\\Users\\Harry\\.nuget\\packages\\microsoft.netcore.app.crossgen2.win-x64\\6.0.0\\microsoft.netcore.app.crossgen2.win-x64.6.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

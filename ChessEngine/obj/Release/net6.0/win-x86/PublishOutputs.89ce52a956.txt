@@ -1,0 +1,2 @@
+D:\release\ChessEngine.pdb
+D:\release\ChessEngine.exe

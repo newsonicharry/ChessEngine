@@ -1,0 +1,6 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Publish ChessGameV2_.Net6 to folder" type="DotNetFolderPublish" factoryName="Publish to folder">
+    <riderPublish configuration="Release" platform="Any CPU" runtime="Portable" target_folder="$USER_HOME$/OneDrive/Desktop/release" target_framework="net6.0" uuid_high="-4474155216725652560" uuid_low="-6009633491504296978" />
+    <method v="2" />
+  </configuration>
+</component>
