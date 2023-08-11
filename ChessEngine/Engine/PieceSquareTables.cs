@@ -1,8 +1,8 @@
 namespace ChessEngine.Engine;
 
-public class PieceSquareTables
-{
-    public int[] PawnEvalWhite =
+public abstract class PieceSquareTables
+{   
+    public static int[] PawnEvalWhite =
     {
         0, 0, 0, 0, 0, 0, 0, 0,
         5, 10, 10, -20, -20, 10, 10, 5,
@@ -15,7 +15,7 @@ public class PieceSquareTables
     };
     
     
-    public int[] PawnEvalBlack =
+    public static int[] PawnEvalBlack =
     {
         0, 0, 0, 0, 0, 0, 0, 0,
         50, 50, 50, 50, 50, 50, 50, 50,
@@ -28,7 +28,7 @@ public class PieceSquareTables
     };
     
     
-    public int[] KnightEval = {
+    public static int[] KnightEval = {
         -50, -40, -30, -30, -30, -30, -40, -50,
         -40, -20, 0, 0, 0, 0, -20, -40,
         -30, 0, 10, 15, 15, 10, 0, -30,
@@ -39,7 +39,7 @@ public class PieceSquareTables
         -50, -40, -30, -30, -30, -30, -40, -50
     };
 
-    public int[] BishopEvalWhite =
+    public static int[] BishopEvalWhite =
     {
         -20, -10, -10, -10, -10, -10, -10, -20,
         -10, 5, 0, 0, 0, 0, 5, -10,
@@ -51,7 +51,7 @@ public class PieceSquareTables
         -20, -10, -10, -10, -10, -10, -10, -20
     };
     
-    public int[] BishopEvalBlack =
+    public static int[] BishopEvalBlack =
     {
         -20, -10, -10, -10, -10, -10, -10, -20
         -10, 0, 0, 0, 0, 0, 0, -10,
@@ -63,7 +63,7 @@ public class PieceSquareTables
         -20, -10, -10, -10, -10, -10, -10, -20,
     };
 
-    public int[] RookEvalWhite =
+    public static int[] RookEvalWhite =
     {
         0, 0, 0, 5, 5, 0, 0, 0,
         -5, 0, 0, 0, 0, 0, 0, -5,
@@ -75,7 +75,7 @@ public class PieceSquareTables
         0, 0, 0, 0, 0, 0, 0, 0
     };
     
-    public int[] RookEvalBlack =
+    public static int[] RookEvalBlack =
     {
         0, 0, 0, 0, 0, 0, 0, 0 ,
         5, 10, 10, 10, 10, 10, 10, 5,
@@ -87,7 +87,7 @@ public class PieceSquareTables
         0, 0, 0, 5, 5, 0, 0, 0,
     };
 
-    public int[] QueenEval =
+    public static int[] QueenEval =
     {
         -20, -10, -10, -5, -5, -10, -10, -20,
         -10, 0, 0, 0, 0, 0, 0, -10,
@@ -99,7 +99,7 @@ public class PieceSquareTables
         -20, -10, -10, -5, -5, -10, -10, -20
     };
 
-    public int[] KingEvalWhite =
+    public static int[] KingEvalWhite =
     {
         20, 30, 10, 0, 0, 10, 30, 20,
         20, 20, 0, 0, 0, 0, 20, 20,
@@ -112,7 +112,7 @@ public class PieceSquareTables
     };
     
     
-    public int[] KingEvalBlack =
+    public static int[] KingEvalBlack =
     {
         -30, -40, -40, -50, -50, -40, -40, -30,
         -30, -40, -40, -50, -50, -40, -40, -30,
@@ -124,7 +124,7 @@ public class PieceSquareTables
         20, 30, 10, 0, 0, 10, 30, 20,
     };
 
-    public int[] KingEvalEndGameBlack =
+    public static int[] KingEvalEndGameBlack =
     {
         50, -30, -30, -30, -30, -30, -30, -50,
         -30, -30, 0, 0, 0, 0, -30, -30,
@@ -137,7 +137,7 @@ public class PieceSquareTables
     };
     
     
-    public int[] KingEvalEndGameWhite =
+    public static int[] KingEvalEndGameWhite =
     {
         -50, -40, -30, -20, -20, -30, -40, -50
         -30, -20, -10, 0, 0, -10, -20, -30,

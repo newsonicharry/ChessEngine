@@ -37,13 +37,14 @@ namespace ChessEngine.UI
                 UiElements.DrawPiecesFromBitboards(allPieceTextures);
 
                 if (!board.Board.GameOver)
-                {   
+                {
+                    
                     UiElements.MovePiece();
                     // Engine.Engine.MakeMove();
                     // Board.Board.SwitchCurrentPlayerTurn();
                 }
                 
-                UiElements.WriteVersion(1, 0, 5, font);
+                UiElements.WriteVersion(1, 1, 0, font);
 
                 
 

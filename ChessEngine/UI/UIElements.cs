@@ -101,12 +101,11 @@ public abstract class UiElements
                             {
                                 if (newSquareIndex == moveData[1] & _currentSquareSelected == moveData[0])
                                 {
-
+                                    
                                     board.Board.UpdateBoard(ValidMoves[i]);
-                                    board.Board.SwitchCurrentPlayerTurn();
-
-                                    Engine.Engine.MakeMove();
-                                    board.Board.SwitchCurrentPlayerTurn();
+                                    
+                                    ushort bestMove =  Engine.Engine.FindBestMove(4);
+                                    board.Board.UpdateBoard(bestMove);
                                 }
 
                                 i++;

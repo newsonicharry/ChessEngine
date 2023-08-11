@@ -90,6 +90,54 @@ public class BoardUtils
         return (startingSquare, endingSquare, piece);
 
     }
-    
+
+    public static void PrintMove(ushort move)
+    {   
+        
+        var numToFile = new Dictionary<int, string>(){
+            {0, "A"},
+            {1, "B"},
+            {2, "C"},
+            {3, "D"},
+            {4, "E"},
+            {5, "F"},
+            {6, "G"},
+            {7, "H"},
+        };      
+        
+        var numToPiece = new Dictionary<int, string>(){
+            {1, "P"},
+            {2, "N"},
+            {3, "B"},
+            {4, "R"},
+            {5, "Q"},
+            {6, "K"},
+            {7, "p"},
+            {8, "n"},
+            {9, "b"},
+            {10, "r"},
+            {11, "q"},
+            {12, "k"},
+
+        };   
+        
+        (int startingSquare, int endingSquare, int piece) = DecodeMove(move);
+
+        int startingSquareRank = IndexToRank(startingSquare);
+        int startingSquareColumn = IndexToFile(startingSquare);
+        
+        int endingSquareRank = IndexToRank(endingSquare);
+        int endingSquareColumn = IndexToFile(endingSquare);
+        
+        
+        string notationStartingSquare = numToFile[startingSquareRank] + (startingSquareColumn+1);
+        string notationEndingSquare = numToFile[endingSquareRank] + (endingSquareColumn+1);
+
+        string pieceString = numToPiece[piece];
+        
+        // Console.WriteLine(startingSquare);
+        Console.WriteLine(pieceString + " " + notationStartingSquare+notationEndingSquare);
+
+    }
     
 }
