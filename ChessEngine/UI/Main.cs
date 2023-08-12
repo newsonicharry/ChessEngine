@@ -15,7 +15,6 @@ namespace ChessEngine.UI
 
             Raylib.InitWindow(Width, Height, "Chess Engine");
             Raylib.SetTargetFPS(144);
-            
         
             Color backgroundColor = new Color((byte)31, (byte)31, (byte)31, (byte)255);
 
@@ -40,11 +39,12 @@ namespace ChessEngine.UI
                 {
                     
                     UiElements.MovePiece();
-                    // Engine.Engine.MakeMove();
-                    // Board.Board.SwitchCurrentPlayerTurn();
+                    // ushort bestMove =  Engine.Engine.FindBestMove(5);
+                    // board.Board.UpdateBoard(bestMove);
+    
                 }
                 
-                UiElements.WriteVersion(1, 1, 0, font);
+                UiElements.WriteVersion(1, 2, 0, font);
 
                 
 

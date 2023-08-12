@@ -5,6 +5,15 @@ namespace ChessEngine.bitboard;
 
 public abstract class BitboardUtils
 {
+
+    public static ulong RemoveEdgeIndexes(ulong bitboard)
+    {
+        ulong edgeIndexesBitboard = 18411139144890810879ul;
+
+        return bitboard & ~edgeIndexesBitboard;
+
+    }
+    
     public static void PrintBitboards(ulong value)
     {
         for (int row = 7; row >= 0; row--)

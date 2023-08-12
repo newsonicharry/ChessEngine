@@ -8,10 +8,14 @@
           "System.Numerics.Vectors": "4.5.0"
         },
         "compile": {
-          "lib/net6.0/Raylib-cs.dll": {}
+          "lib/net6.0/Raylib-cs.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/net6.0/Raylib-cs.dll": {}
+          "lib/net6.0/Raylib-cs.dll": {
+            "related": ".xml"
+          }
         },
         "runtimeTargets": {
           "runtimes/linux-x64/native/libraylib.so": {
@@ -34,32 +38,6 @@
             "assetType": "native",
             "rid": "win-x86"
           }
-        }
-      },
-      "System.Numerics.Vectors/4.5.0": {
-        "type": "package",
-        "compile": {
-          "ref/netcoreapp2.0/_._": {}
-        },
-        "runtime": {
-          "lib/netcoreapp2.0/_._": {}
-        }
-      }
-    },
-    "net6.0/win-x86": {
-      "Raylib-cs/4.5.0.2": {
-        "type": "package",
-        "dependencies": {
-          "System.Numerics.Vectors": "4.5.0"
-        },
-        "compile": {
-          "lib/net6.0/Raylib-cs.dll": {}
-        },
-        "runtime": {
-          "lib/net6.0/Raylib-cs.dll": {}
-        },
-        "native": {
-          "runtimes/win-x86/native/raylib.dll": {}
         }
       },
       "System.Numerics.Vectors/4.5.0": {
@@ -203,35 +181,12 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.AspNetCore.App.Runtime.win-x86",
-            "version": "[6.0.0, 6.0.0]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Crossgen2.win-x64",
-            "version": "[6.0.0, 6.0.0]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Runtime.win-x86",
-            "version": "[6.0.0, 6.0.0]"
-          },
-          {
-            "name": "Microsoft.WindowsDesktop.App.Runtime.win-x86",
-            "version": "[6.0.0, 6.0.0]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
-      }
-    },
-    "runtimes": {
-      "win-x86": {
-        "#import": []
       }
     }
   }

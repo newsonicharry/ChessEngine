@@ -13,61 +13,93 @@ public abstract class Engine
     private const int QueenValue = 900;
     private const int KingValue = 100000;
     
+    private const int NegativeInf = -9999999;
+    private const int PositiveInf = 9999999;
+
     
     
     public static ushort FindBestMove(int depth)
     {
+        
         ushort[] validMoves = ValidMoves.FindValidMoves(); // Assuming FindValidMoves takes a Board parameter
-        int bestScore = int.MinValue;
+        int bestScore = NegativeInf;
         ushort bestMove = 0; // Placeholder for the best move
 
         foreach (ushort move in validMoves)
         {
             board.Board.UpdateBoard(move);
-            int score = -Search(depth - 1);
+            int score = -Search(depth - 1, NegativeInf, PositiveInf);
             board.Board.UndoMove();
             
             
             if (score > bestScore)
-            {
+            {   
                 bestScore = score;
                 bestMove = move;
             }
         }
-
+        
+        board.Board.AllBitboardsMoves.Clear();
+        
         return bestMove;
     }
 
-    public static int Search(int depth)
+    public static int Search(int depth, int alpha, int beta)
     {
         if (depth == 0)
         {
             return EvaluatePosition();
         }
 
-        ushort[] validMoves = ValidMoves.FindValidMoves(); // Assuming FindValidMoves takes a Board parameter
-        int bestScore = int.MinValue;
+        ushort[] validMoves = ValidMoves.FindValidMoves(); 
 
-        foreach (ushort move in validMoves)
+        if (validMoves.Length == 0)
         {
+            if (board.Board.WhiteInCheck & board.Board.IsWhite)
+            {
+                return NegativeInf;
+            }
+            if (board.Board.BlackInCheck & !board.Board.IsWhite)
+            {
+                return NegativeInf;
+            }
+        
+            return 0;
+        }
+        
+
+        for (int i = 0; i < validMoves.Length; i++)
+        {
+            ushort move = validMoves[i];
+            
             board.Board.UpdateBoard(move);
-            int score = -Search(depth - 1);
+            int score = -Search(depth - 1, -beta, -alpha);
             board.Board.UndoMove();
 
-            if (score > bestScore)
+            if (score >= beta)
             {
-                bestScore = score;
+                return beta;
             }
+
+            alpha = Math.Max(alpha, score);
+
         }
 
-        return bestScore;
+        return alpha;
     }
     
     public static int EvaluatePosition()
     {
+        if (board.Board.IsWhite)
+        {   
+            return GetPieceSquareTablesEvalWhite() - GetPieceSquareTablesEvalBlack();
+        }
+        return GetPieceSquareTablesEvalBlack()-GetPieceSquareTablesEvalWhite();
+
+
+
 
         
-        return GetPieceSquareTablesEvalBlack() - GetPieceSquareTablesEvalWhite(); // Invert the material calculation
     }
 
 
@@ -81,7 +113,13 @@ public abstract class Engine
         int[] rookIndexes = BitboardUtils.GetSetBitIndexes(Bitboards.WhiteRookBitboard);
         int[] queenIndexes = BitboardUtils.GetSetBitIndexes(Bitboards.WhiteQueenBitboard);
         int[] kingIndexes = BitboardUtils.GetSetBitIndexes(Bitboards.WhiteKingBitboard);
-
+        
+        
+        
+        if (bishopIndexes.Length > 1)
+        {
+            whitePositionEval += 50;
+        }
         
         for (int i = 0; i < pawnIndexes.Length; i++)
         {
@@ -125,6 +163,7 @@ public abstract class Engine
     private static int GetPieceSquareTablesEvalBlack()
     {
         int blackPositionEval = 0;
+        
 
         int[] pawnIndexes = BitboardUtils.GetSetBitIndexes(Bitboards.BlackPawnBitboard);
         int[] knightIndexes = BitboardUtils.GetSetBitIndexes(Bitboards.BlackKnightBitboard);
@@ -133,6 +172,11 @@ public abstract class Engine
         int[] queenIndexes = BitboardUtils.GetSetBitIndexes(Bitboards.BlackQueenBitboard);
         int[] kingIndexes = BitboardUtils.GetSetBitIndexes(Bitboards.BlackKingBitboard);
 
+
+        if (bishopIndexes.Length > 1)
+        {
+            blackPositionEval += 50;
+        }
         
         for (int i = 0; i < pawnIndexes.Length; i++)
         {

@@ -104,7 +104,7 @@ public abstract class UiElements
                                     
                                     board.Board.UpdateBoard(ValidMoves[i]);
                                     
-                                    ushort bestMove =  Engine.Engine.FindBestMove(4);
+                                    ushort bestMove =  Engine.Engine.FindBestMove(5);
                                     board.Board.UpdateBoard(bestMove);
                                 }
 

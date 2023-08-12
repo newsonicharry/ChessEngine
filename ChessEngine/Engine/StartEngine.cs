@@ -6,18 +6,18 @@ public class StartEngine
 {
     public static void Start()
     {
+        // const string fen = "r2qk2r/pppbnppp/2n1p3/3pP3/1b1P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 5 7";
+
         const string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        // const string fen = "rnbqkbnr/pppppppp/8/8/qK6/8/PPPPPPPP/RNBQ1BNR w kq - 0 1";
-        
+
         Bitboards.LoadBitboardsFromFen(fen);
-        board.Board.LoadMaterialFromFen(fen);
-        
+
         MovementMasks.CreateMovementMasks();
         MovementMasks.GenerateRookMovesLookup();
         MovementMasks.GenerateBishopMovesLookup();
-        
-        
-        board.Board.AllBitboardsMoves.Add(new []{
+
+
+        ulong[] currentBitboards ={
             Bitboards.WhitePawnBitboard,
             Bitboards.WhiteKnightBitboard,
             Bitboards.WhiteBishopBitboard,
@@ -29,8 +29,18 @@ public class StartEngine
             Bitboards.BlackBishopBitboard,
             Bitboards.BlackRookBitboard,
             Bitboards.BlackQueenBitboard,
-            Bitboards.BlackKingBitboard});
+            Bitboards.BlackKingBitboard
+        };
 
+        bool[] currentCastling ={
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+        };
 
+        board.Board.AllBitboardsMoves.Add((currentBitboards, currentCastling));
     }
 }

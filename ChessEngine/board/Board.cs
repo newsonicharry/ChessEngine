@@ -6,15 +6,12 @@ namespace ChessEngine.board;
 
 public abstract class Board
 {
-    public static int WhiteMaterial = 0;
-    public static int BlackMaterial = 0;
-    
     public static bool WhiteInCheck = false;
     public static bool BlackInCheck = false;
     
     public static int HalfMoveClock = 0;
     public static int FullMoveClock = 0;
-    public static bool GameOver = false;
+    public static readonly bool GameOver = false;
     
     public static bool IsWhite = true;
     
@@ -24,34 +21,10 @@ public abstract class Board
     public static int BlackDoubleMovedPawnIndex;
 
 
-    public static List<ulong[]> AllBitboardsMoves = new();
+    public static readonly List<(ulong[], bool[])> AllBitboardsMoves = new();
     
     
 
-    public static void LoadMaterialFromFen(string fen)
-    {
-        string fenBoard = fen.Split(" ")[0];
-
-        foreach (string row in fenBoard.Split("/"))
-        {
-            foreach (char piece in row)
-            {
-                if (piece == 'P') { WhiteMaterial += 100; }
-                if (piece == 'N') { WhiteMaterial += 300; }
-                if (piece == 'B') { WhiteMaterial += 320; }
-                if (piece == 'R') { WhiteMaterial += 500; }
-                if (piece == 'Q') { WhiteMaterial += 900; }
-                if (piece == 'p') { BlackMaterial += 100; }
-                if (piece == 'n') { BlackMaterial += 300; }
-                if (piece == 'b') { BlackMaterial += 320; }
-                if (piece == 'r') { BlackMaterial += 500; }
-                if (piece == 'q') { BlackMaterial += 900; }
-
-
-            }
-            
-        }
-    }
     
     public static bool InCheck(bool isWhite, ulong enemyAttackedSquares)
     {   
@@ -101,7 +74,7 @@ public abstract class Board
         // Console.WriteLine(AllBitboardsMoves.Count);
         AllBitboardsMoves.RemoveAt(AllBitboardsMoves.Count-1);
 
-        ulong[] oldBitboard = AllBitboardsMoves[AllBitboardsMoves.Count-1];
+        ulong[] oldBitboard = AllBitboardsMoves[^1].Item1;
         
         Bitboards.WhitePawnBitboard = oldBitboard[0];
         Bitboards.WhiteKnightBitboard = oldBitboard[1];
@@ -116,7 +89,14 @@ public abstract class Board
         Bitboards.BlackRookBitboard = oldBitboard[9];
         Bitboards.BlackQueenBitboard = oldBitboard[10];
         Bitboards.BlackKingBitboard = oldBitboard[11];
-    
+        
+        Castling.HasMovedWhiteKing = AllBitboardsMoves[^1].Item2[0]; 
+        Castling.HasMovedBlackKing = AllBitboardsMoves[^1].Item2[1];
+        
+        Castling.HasMovedLeftWhiteRook = AllBitboardsMoves[^1].Item2[2]; 
+        Castling.HasMovedRightWhiteRook = AllBitboardsMoves[^1].Item2[3];
+        Castling.HasMovedLeftBlackRook = AllBitboardsMoves[^1].Item2[4];
+        Castling.HasMovedRightBlackRook = AllBitboardsMoves[^1].Item2[5];
         
         SwitchCurrentPlayerTurn();
         
@@ -126,39 +106,35 @@ public abstract class Board
      {
          (int startingSquare, int endingSquare, int piece) = BoardUtils.DecodeMove(move);
 
-         int pieceCapturedValue = 0;
          
          
         if (IsWhite)
         {   
-            if (BitboardUtils.isBitOn(Bitboards.BlackPawnBitboard, endingSquare)){Bitboards.BlackPawnBitboard = BitboardUtils.NegateBit(Bitboards.BlackPawnBitboard, endingSquare);       pieceCapturedValue = 100;}
-            if (BitboardUtils.isBitOn(Bitboards.BlackKnightBitboard, endingSquare)){Bitboards.BlackKnightBitboard = BitboardUtils.NegateBit(Bitboards.BlackKnightBitboard, endingSquare); pieceCapturedValue = 300;}
-            if (BitboardUtils.isBitOn(Bitboards.BlackBishopBitboard, endingSquare)){Bitboards.BlackBishopBitboard = BitboardUtils.NegateBit(Bitboards.BlackBishopBitboard, endingSquare); pieceCapturedValue = 320;}
-            if (BitboardUtils.isBitOn(Bitboards.BlackRookBitboard, endingSquare)){Bitboards.BlackRookBitboard = BitboardUtils.NegateBit(Bitboards.BlackRookBitboard, endingSquare);       pieceCapturedValue = 500;}
-            if (BitboardUtils.isBitOn(Bitboards.BlackQueenBitboard, endingSquare)){Bitboards.BlackQueenBitboard = BitboardUtils.NegateBit(Bitboards.BlackQueenBitboard, endingSquare);    pieceCapturedValue = 900;}
+            if (BitboardUtils.isBitOn(Bitboards.BlackPawnBitboard, endingSquare)){Bitboards.BlackPawnBitboard = BitboardUtils.NegateBit(Bitboards.BlackPawnBitboard, endingSquare);}
+            if (BitboardUtils.isBitOn(Bitboards.BlackKnightBitboard, endingSquare)){Bitboards.BlackKnightBitboard = BitboardUtils.NegateBit(Bitboards.BlackKnightBitboard, endingSquare);
+            }if (BitboardUtils.isBitOn(Bitboards.BlackBishopBitboard, endingSquare)){Bitboards.BlackBishopBitboard = BitboardUtils.NegateBit(Bitboards.BlackBishopBitboard, endingSquare);
+            }if (BitboardUtils.isBitOn(Bitboards.BlackRookBitboard, endingSquare)){Bitboards.BlackRookBitboard = BitboardUtils.NegateBit(Bitboards.BlackRookBitboard, endingSquare);}
+            if (BitboardUtils.isBitOn(Bitboards.BlackQueenBitboard, endingSquare)){Bitboards.BlackQueenBitboard = BitboardUtils.NegateBit(Bitboards.BlackQueenBitboard, endingSquare);}
             
             UpdateWhiteBitboards(piece, startingSquare, endingSquare);
-            BlackMaterial -= pieceCapturedValue;
             
         }
         else
         {   
-            if (BitboardUtils.isBitOn(Bitboards.WhitePawnBitboard, endingSquare)) {Bitboards.WhitePawnBitboard = BitboardUtils.NegateBit(Bitboards.WhitePawnBitboard, endingSquare);      pieceCapturedValue = 100;}
-            if (BitboardUtils.isBitOn(Bitboards.WhiteKnightBitboard, endingSquare)){Bitboards.WhiteKnightBitboard = BitboardUtils.NegateBit(Bitboards.WhiteKnightBitboard, endingSquare); pieceCapturedValue = 300;}
-            if (BitboardUtils.isBitOn(Bitboards.WhiteBishopBitboard, endingSquare)){Bitboards.WhiteBishopBitboard = BitboardUtils.NegateBit(Bitboards.WhiteBishopBitboard, endingSquare); pieceCapturedValue = 320;}
-            if (BitboardUtils.isBitOn(Bitboards.WhiteRookBitboard, endingSquare)){Bitboards.WhiteRookBitboard = BitboardUtils.NegateBit(Bitboards.WhiteRookBitboard, endingSquare);       pieceCapturedValue = 500;}
-            if (BitboardUtils.isBitOn(Bitboards.WhiteQueenBitboard, endingSquare)){Bitboards.WhiteQueenBitboard = BitboardUtils.NegateBit(Bitboards.WhiteQueenBitboard, endingSquare);    pieceCapturedValue = 900;}
+            if (BitboardUtils.isBitOn(Bitboards.WhitePawnBitboard, endingSquare)) {Bitboards.WhitePawnBitboard = BitboardUtils.NegateBit(Bitboards.WhitePawnBitboard, endingSquare);}
+            if (BitboardUtils.isBitOn(Bitboards.WhiteKnightBitboard, endingSquare)){Bitboards.WhiteKnightBitboard = BitboardUtils.NegateBit(Bitboards.WhiteKnightBitboard, endingSquare);}
+            if (BitboardUtils.isBitOn(Bitboards.WhiteBishopBitboard, endingSquare)){Bitboards.WhiteBishopBitboard = BitboardUtils.NegateBit(Bitboards.WhiteBishopBitboard, endingSquare);}
+            if (BitboardUtils.isBitOn(Bitboards.WhiteRookBitboard, endingSquare)){Bitboards.WhiteRookBitboard = BitboardUtils.NegateBit(Bitboards.WhiteRookBitboard, endingSquare);}
+            if (BitboardUtils.isBitOn(Bitboards.WhiteQueenBitboard, endingSquare)){Bitboards.WhiteQueenBitboard = BitboardUtils.NegateBit(Bitboards.WhiteQueenBitboard, endingSquare);}
             
             
             UpdateBlackBitboards(piece, startingSquare, endingSquare);
-            WhiteMaterial -= pieceCapturedValue;
             
         }
         
         CheckForQueening();
-        
-        AllBitboardsMoves.Add(new[]
-        {
+
+        ulong[] currentBitboards ={
             Bitboards.WhitePawnBitboard,
             Bitboards.WhiteKnightBitboard,
             Bitboards.WhiteBishopBitboard,
@@ -171,7 +147,18 @@ public abstract class Board
             Bitboards.BlackRookBitboard,
             Bitboards.BlackQueenBitboard,
             Bitboards.BlackKingBitboard
-        });
+        };
+
+        bool[] currentCastling ={
+            Castling.HasMovedWhiteKing,
+            Castling.HasMovedBlackKing,
+            Castling.HasMovedLeftWhiteRook,
+            Castling.HasMovedRightWhiteRook,
+            Castling.HasMovedLeftBlackRook,
+            Castling.HasMovedRightBlackRook
+        };
+        
+        AllBitboardsMoves.Add((currentBitboards, currentCastling));
         
         SwitchCurrentPlayerTurn();
         
@@ -185,21 +172,10 @@ public abstract class Board
         
 
         // change positions of the piece
-        if (pieceType == 2) {
-            Bitboards.WhiteKnightBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhiteKnightBitboard, originalIndex, newIndex);
-        }
-
-        if (pieceType == 3) {
-            Bitboards.WhiteBishopBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhiteBishopBitboard, originalIndex, newIndex);
-        }
-
-        if (pieceType == 4) {
-            Bitboards.WhiteRookBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhiteRookBitboard, originalIndex, newIndex);
-        }
-
-        if (pieceType == 5) {
-            Bitboards.WhiteQueenBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhiteQueenBitboard, originalIndex, newIndex);
-        }
+        if (pieceType == 2) {Bitboards.WhiteKnightBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhiteKnightBitboard, originalIndex, newIndex);}
+        if (pieceType == 3) {Bitboards.WhiteBishopBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhiteBishopBitboard, originalIndex, newIndex);}
+        if (pieceType == 4) {Bitboards.WhiteRookBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhiteRookBitboard, originalIndex, newIndex);}
+        if (pieceType == 5) {Bitboards.WhiteQueenBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhiteQueenBitboard, originalIndex, newIndex);}
 
         if (pieceType == 1) {
             Bitboards.WhitePawnBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhitePawnBitboard, originalIndex, newIndex); 

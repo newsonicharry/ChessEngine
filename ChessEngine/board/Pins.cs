@@ -2,12 +2,13 @@ using ChessEngine.bitboard;
 
 namespace ChessEngine.Board;
 
-public class Pins
+public abstract class Pins
 {
     
     // i wrote this code in a daze
     // dont worry about what it does
     // it probably works    (jk there is no way it just works)
+
     private static ulong GetRookMoves(int rookIndex, ulong blockers)
     {
         ulong enemyPieces;
@@ -32,32 +33,20 @@ public class Pins
 
     private static ulong GetBishopMoves(int bishopIndex, ulong blockers)
     {
-        ulong enemyPieces;
 
-        if (board.Board.IsWhite)
-        {
-            enemyPieces = BoardUtils.GetBlackBitboard() & ~ Bitboards.BlackBishopBitboard;
-        }
-        else
-        {
-            enemyPieces = BoardUtils.GetWhiteBitboard() & ~ Bitboards.WhiteBishopBitboard;
-
-        }
-
-        ulong key = (blockers * PrecomputedMagics.BishopMagics[bishopIndex]) >>
-                    PrecomputedMagics.BishopShifts[bishopIndex];
+        ulong key = (blockers * PrecomputedMagics.BishopMagics[bishopIndex]) >> PrecomputedMagics.BishopShifts[bishopIndex];
         ulong validMoves = MovementMasks.BishopMovesLookUp[bishopIndex][key];
-        validMoves &= ~enemyPieces;
-
-
+        
         return validMoves;
     }
 
     public static (int, int, ulong) FindBishopPinnedPieces(bool isWhite, int friendlyPieceIndex)
-    {   
+    {
+        
         ulong enemyBishopBitboard = Bitboards.BlackBishopBitboard;
         ulong enemyQueenBitboard = Bitboards.BlackQueenBitboard;
         ulong friendlyKingBitboard = Bitboards.WhiteKingBitboard;
+        ulong friendlyBitboard = BoardUtils.GetWhiteBitboard();
 
 
         if (!isWhite)
@@ -65,56 +54,71 @@ public class Pins
             enemyBishopBitboard = Bitboards.WhiteBishopBitboard;
             enemyQueenBitboard = Bitboards.WhiteQueenBitboard;
             friendlyKingBitboard = Bitboards.BlackKingBitboard;
+            friendlyBitboard = BoardUtils.GetBlackBitboard();
+
         }
         
         int[] enemyBishopIndexes = BitboardUtils.GetSetBitIndexes(enemyBishopBitboard).ToList().Concat(BitboardUtils.GetSetBitIndexes(enemyQueenBitboard)).ToArray();
 
         List<ulong> enemyBishopMoves = new List<ulong>();
 
-        for (int i = 0; i < enemyBishopIndexes.Length; i++)
-        {
-            enemyBishopMoves.Add(GetBishopMoves(enemyBishopIndexes[i], 0ul));
+        for (int index = 0; index < enemyBishopIndexes.Length; index++){
+            int enemyBishopIndex = enemyBishopIndexes[index];
+            enemyBishopMoves.Add(GetBishopMoves(enemyBishopIndex, 0ul));
         }
-
-        ulong enemyPinnedBishopMove = 0ul;
-        int enemyPinnedBishopsIndex = -1;
-        int pinnedPiecesIndex = -1;
-
-        for (int i = 0; i < enemyBishopMoves.Count; i++)
+            
+        
+        // i dont like this much nesting but like if it saves a tiny bit of performance then why not
+        // i need performance for this engine
+        
+        for (int i = 0; i < enemyBishopMoves.ToArray().Length; i++)
         {
-
+            int enemyBishopIndex = enemyBishopIndexes[i];
             ulong enemyBishopMove = enemyBishopMoves[i];
             bool isAttackingKing = (enemyBishopMove | friendlyKingBitboard) == enemyBishopMove;
 
-            List<int> possiblePinnedPieces = new List<int>();
-            if (isAttackingKing)
-            {
-                // checks if the piece is actually in the way of the rook
-                if ((enemyBishopMove | (1ul << friendlyPieceIndex)) == enemyBishopMove)
+            ulong friendlyPieceIndexBitboard = 1ul << friendlyPieceIndex;
+            
+            // if the bishop can actually check the king, assuming it has no blockers
+            if (isAttackingKing){
+                
+                // the enemy bishop moves, with the friendly piece as a blocker
+                // checks if the enemy bishop can still check the king with the friendly piece as a blocker
+                // if so then it is not pinned
+                ulong bishopMovesWithPiece = GetBishopMoves(enemyBishopIndex, BitboardUtils.RemoveEdgeIndexes(friendlyPieceIndexBitboard & enemyBishopMove));
+                bool attackingKingWithPieceInWay = (bishopMovesWithPiece | friendlyKingBitboard) == bishopMovesWithPiece;
+                
+
+                if (!attackingKingWithPieceInWay)
                 {
-                    // adds that piece as a blocker
-                    ulong newBishopMoves = GetBishopMoves(enemyBishopIndexes[i], 1ul << friendlyPieceIndex);
+                    
+                    // checks if the king can still be checked with other friendly pieces on the board
+                    // if it can be then there are no other pieces in the way, and so cant pin two pieces at once
+                    ulong friendlyBitboardWithoutPiece = BitboardUtils.NegateBit(friendlyBitboard, friendlyPieceIndex);
+                    
+                    ulong bishopMovesWithOtherPieces = GetBishopMoves(enemyBishopIndex, BitboardUtils.RemoveEdgeIndexes(friendlyBitboardWithoutPiece & enemyBishopMove));
+                    bool attackingKingWithOtherPieces =  (bishopMovesWithOtherPieces | friendlyKingBitboard) == bishopMovesWithOtherPieces;
 
-                    // checks if with the piece in the way it can not attack the king
-                    if ((newBishopMoves | friendlyKingBitboard) != newBishopMoves)
+                    if (friendlyPieceIndex == 13)
                     {
-                        // if so then it is probably pinned (does not account for multiple pieces in the way)
-                        possiblePinnedPieces.Add(friendlyPieceIndex);
+                        // BitboardUtils.PrintBitboards(friendlyBitboardWithoutPiece & enemyBishopMove);
+
+                        // Console.WriteLine("attacking king with other pieces = " + attackingKingWithOtherPieces);
+
                     }
 
-
-                    if (possiblePinnedPieces.Count == 1)
-                    {
-                        pinnedPiecesIndex = possiblePinnedPieces[0];
-                        enemyPinnedBishopMove = enemyBishopMove;
-                        enemyPinnedBishopsIndex = enemyBishopIndexes[i];
+                    if (attackingKingWithOtherPieces)
+                    {   
+                        return (friendlyPieceIndex, enemyBishopIndex, enemyBishopMove);
                     }
+                    
+
                 }
-
             }
-
         }
-        return (pinnedPiecesIndex, enemyPinnedBishopsIndex, enemyPinnedBishopMove);
+        
+        // default for no pins
+        return (-1, -1, 0ul);
     }
 
     public static (int, int, ulong) FindRookPinnedPieces(bool isWhite, int friendlyPieceIndex)
@@ -123,6 +127,7 @@ public class Pins
         ulong enemyRookBitboard = Bitboards.BlackRookBitboard;
         ulong enemyQueenBitboard = Bitboards.BlackQueenBitboard;
         ulong friendlyKingBitboard = Bitboards.WhiteKingBitboard;
+        ulong friendlyBitboard = BoardUtils.GetWhiteBitboard();
 
 
         if (!isWhite)
@@ -130,63 +135,64 @@ public class Pins
             enemyRookBitboard = Bitboards.WhiteRookBitboard;
             enemyQueenBitboard = Bitboards.WhiteQueenBitboard;
             friendlyKingBitboard = Bitboards.BlackKingBitboard;
+            friendlyBitboard = BoardUtils.GetBlackBitboard();
+
         }
         
-        
-        
-        int[] enemyRookIndexes = BitboardUtils.GetSetBitIndexes(enemyRookBitboard).ToList()
-            .Concat(BitboardUtils.GetSetBitIndexes(enemyQueenBitboard)).ToArray();
+        int[] enemyRookIndexes = BitboardUtils.GetSetBitIndexes(enemyRookBitboard).ToList().Concat(BitboardUtils.GetSetBitIndexes(enemyQueenBitboard)).ToArray();
 
         List<ulong> enemyRookMoves = new List<ulong>();
 
-        for (int i = 0; i < enemyRookIndexes.Length; i++)
-        {
-            enemyRookMoves.Add(GetRookMoves(enemyRookIndexes[i], 0ul));
+        for (int index = 0; index < enemyRookIndexes.Length; index++){
+            int enemyRookIndex = enemyRookIndexes[index];
+            enemyRookMoves.Add(GetRookMoves(enemyRookIndex, 0ul));
         }
-
-
-
-        int pinnedPieceIndex = -1;
-        int enemyPinnedRookIndex = -1;
-        ulong enemyPinnedRookMovementMask = 0ul;
-
-
-        for (int i = 0; i < enemyRookMoves.Count; i++)
+            
+        
+        // i dont like this much nesting but like if it saves a tiny bit of performance then why not
+        // i need performance for this engine
+        
+        for (int i = 0; i < enemyRookMoves.ToArray().Length; i++)
         {
-
+            int enemyRookIndex = enemyRookIndexes[i];
             ulong enemyRookMove = enemyRookMoves[i];
             bool isAttackingKing = (enemyRookMove | friendlyKingBitboard) == enemyRookMove;
 
-            List<int> possiblePinnedPieces = new List<int>();
-            if (isAttackingKing)
-            {
-                // checks if the piece is actually in the way of the rook
-                if ((enemyRookMove | (1ul << friendlyPieceIndex)) == enemyRookMove)
-                {
-                    // adds that piece as a blocker
-                    ulong newRookMoves = GetRookMoves(enemyRookIndexes[i], 1ul << friendlyPieceIndex);
+            ulong friendlyPieceIndexBitboard = 1ul << friendlyPieceIndex;
+            
+            // if the rook can actually check the king, assuming it has no blockers
+            if (isAttackingKing){
+                
+                // the enemy rook moves, with the friendly piece as a blocker
+                // checks if the enemy rook can still check the king with the friendly piece as a blocker
+                // if so then it is not pinned
+                ulong rookMovesWithPiece = GetRookMoves(enemyRookIndex, BitboardUtils.RemoveEdgeIndexes(friendlyPieceIndexBitboard & enemyRookMove));
+                bool attackingKingWithPieceInWay = (rookMovesWithPiece | friendlyKingBitboard) == rookMovesWithPiece;
+                
 
-                    // checks if with the piece in the way it can not attack the king
-                    if ((newRookMoves | friendlyKingBitboard) != newRookMoves)
+                if (!attackingKingWithPieceInWay)
+                {
+                    
+                    // checks if the king can still be checked with other friendly pieces on the board
+                    // if it can be then there are no other pieces in the way, and so cant pin two pieces at once
+                    ulong friendlyBitboardWithoutPiece = BitboardUtils.NegateBit(friendlyBitboard, friendlyPieceIndex);
+                    
+                    ulong rookMovesWithOtherPieces = GetRookMoves(enemyRookIndex, BitboardUtils.RemoveEdgeIndexes(friendlyBitboardWithoutPiece & enemyRookMove));
+                    bool attackingKingWithOtherPieces =  (rookMovesWithOtherPieces | friendlyKingBitboard) == rookMovesWithOtherPieces;
+                    
+                    
+                    if (attackingKingWithOtherPieces)
                     {   
-                        // if so then it is probably pinned (does not account for multiple pieces in the way)
-                        possiblePinnedPieces.Add(friendlyPieceIndex);
-
+                        return (friendlyPieceIndex, enemyRookIndex, enemyRookMove);
                     }
-                }
-
-
-                if (possiblePinnedPieces.Count == 1)
-                {
-                    pinnedPieceIndex = possiblePinnedPieces[0];
-                    enemyPinnedRookMovementMask = enemyRookMove;
-                    enemyPinnedRookIndex = enemyRookIndexes[i];
+                    
 
                 }
             }
         }
-
-        return (pinnedPieceIndex, enemyPinnedRookIndex, enemyPinnedRookMovementMask);
+        
+        // default for no pins
+        return (-1, -1, 0ul);
     }
     
     
