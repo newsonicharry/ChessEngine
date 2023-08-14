@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using ChessEngine.Engine;
 using Raylib_cs;
 using static ChessEngine.UI.UIConstants;
@@ -10,6 +11,8 @@ namespace ChessEngine.UI
 {
     static class Program
     {
+
+        private static bool RuuningEngine = false;
         public static void Main()
         {   
 
@@ -30,21 +33,16 @@ namespace ChessEngine.UI
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(backgroundColor);
 
+                UiElements.DrawBoard();
+
+                UiElements.DrawPiecesFromBitboards(allPieceTextures);
+                UiElements.MovePiece();
+
                 UiDebug.AddPieceToBoard();
                 
-                UiElements.DrawBoard();
-                UiElements.DrawPiecesFromBitboards(allPieceTextures);
 
-                if (!board.Board.GameOver)
-                {
-                    
-                    UiElements.MovePiece();
-                    // ushort bestMove =  Engine.Engine.FindBestMove(5);
-                    // board.Board.UpdateBoard(bestMove);
-    
-                }
                 
-                UiElements.WriteVersion(1, 2, 0, font);
+                UiElements.WriteVersion(1, 2, 1, font);
 
                 
 

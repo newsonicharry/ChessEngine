@@ -99,17 +99,20 @@ public abstract class BitboardUtils
         int[] result = new int[BitOperations.PopCount(number)];
         int index = 0;
 
-        for (int i = 0; i < 64; i++)
+        while (number != 0)
         {
-            if ((number & (1UL << i)) != 0)
-            {
-                result[index] = i;
-                index++;
-            }
+            ulong bit = number & (ulong)-(long)number;
+            int trailingZeros = BitOperations.TrailingZeroCount(bit);
+
+            result[index] = trailingZeros;
+            index++;
+
+            number ^= bit; // Clear the least significant set bit
         }
 
         return result;
     }
+
     
     public static ulong ChangeBitPosition(ulong bitboard, int originalIndex, int newIndex)
     {

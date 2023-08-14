@@ -98,6 +98,8 @@ public abstract class Board
         Castling.HasMovedLeftBlackRook = AllBitboardsMoves[^1].Item2[4];
         Castling.HasMovedRightBlackRook = AllBitboardsMoves[^1].Item2[5];
         
+        PieceHelper.UpdatePieceArray();
+        
         SwitchCurrentPlayerTurn();
         
     }
@@ -106,26 +108,35 @@ public abstract class Board
      {
          (int startingSquare, int endingSquare, int piece) = BoardUtils.DecodeMove(move);
 
+         int endingSquarePiece = PieceHelper.PieceArray[endingSquare];
          
          
         if (IsWhite)
-        {   
-            if (BitboardUtils.isBitOn(Bitboards.BlackPawnBitboard, endingSquare)){Bitboards.BlackPawnBitboard = BitboardUtils.NegateBit(Bitboards.BlackPawnBitboard, endingSquare);}
-            if (BitboardUtils.isBitOn(Bitboards.BlackKnightBitboard, endingSquare)){Bitboards.BlackKnightBitboard = BitboardUtils.NegateBit(Bitboards.BlackKnightBitboard, endingSquare);
-            }if (BitboardUtils.isBitOn(Bitboards.BlackBishopBitboard, endingSquare)){Bitboards.BlackBishopBitboard = BitboardUtils.NegateBit(Bitboards.BlackBishopBitboard, endingSquare);
-            }if (BitboardUtils.isBitOn(Bitboards.BlackRookBitboard, endingSquare)){Bitboards.BlackRookBitboard = BitboardUtils.NegateBit(Bitboards.BlackRookBitboard, endingSquare);}
-            if (BitboardUtils.isBitOn(Bitboards.BlackQueenBitboard, endingSquare)){Bitboards.BlackQueenBitboard = BitboardUtils.NegateBit(Bitboards.BlackQueenBitboard, endingSquare);}
+        {
+            if (endingSquarePiece != 0)
+            {
+                if (endingSquarePiece == 7){Bitboards.BlackPawnBitboard = BitboardUtils.NegateBit(Bitboards.BlackPawnBitboard, endingSquare);}
+                if (endingSquarePiece == 8){Bitboards.BlackKnightBitboard = BitboardUtils.NegateBit(Bitboards.BlackKnightBitboard, endingSquare);}
+                if (endingSquarePiece == 9){Bitboards.BlackBishopBitboard = BitboardUtils.NegateBit(Bitboards.BlackBishopBitboard, endingSquare);}
+                if (endingSquarePiece == 10){Bitboards.BlackRookBitboard = BitboardUtils.NegateBit(Bitboards.BlackRookBitboard, endingSquare);}
+                if (endingSquarePiece == 11){Bitboards.BlackQueenBitboard = BitboardUtils.NegateBit(Bitboards.BlackQueenBitboard, endingSquare);}   
+            }
+        
             
             UpdateWhiteBitboards(piece, startingSquare, endingSquare);
             
         }
         else
-        {   
-            if (BitboardUtils.isBitOn(Bitboards.WhitePawnBitboard, endingSquare)) {Bitboards.WhitePawnBitboard = BitboardUtils.NegateBit(Bitboards.WhitePawnBitboard, endingSquare);}
-            if (BitboardUtils.isBitOn(Bitboards.WhiteKnightBitboard, endingSquare)){Bitboards.WhiteKnightBitboard = BitboardUtils.NegateBit(Bitboards.WhiteKnightBitboard, endingSquare);}
-            if (BitboardUtils.isBitOn(Bitboards.WhiteBishopBitboard, endingSquare)){Bitboards.WhiteBishopBitboard = BitboardUtils.NegateBit(Bitboards.WhiteBishopBitboard, endingSquare);}
-            if (BitboardUtils.isBitOn(Bitboards.WhiteRookBitboard, endingSquare)){Bitboards.WhiteRookBitboard = BitboardUtils.NegateBit(Bitboards.WhiteRookBitboard, endingSquare);}
-            if (BitboardUtils.isBitOn(Bitboards.WhiteQueenBitboard, endingSquare)){Bitboards.WhiteQueenBitboard = BitboardUtils.NegateBit(Bitboards.WhiteQueenBitboard, endingSquare);}
+        {
+            if (endingSquarePiece != 0)
+            {
+                if (endingSquarePiece == 1) {Bitboards.WhitePawnBitboard = BitboardUtils.NegateBit(Bitboards.WhitePawnBitboard, endingSquare);}
+                if (endingSquarePiece == 2){Bitboards.WhiteKnightBitboard = BitboardUtils.NegateBit(Bitboards.WhiteKnightBitboard, endingSquare);}
+                if (endingSquarePiece == 3) {Bitboards.WhiteBishopBitboard = BitboardUtils.NegateBit(Bitboards.WhiteBishopBitboard, endingSquare);}
+                if (endingSquarePiece == 4) {Bitboards.WhiteRookBitboard = BitboardUtils.NegateBit(Bitboards.WhiteRookBitboard, endingSquare);}
+                if (endingSquarePiece == 5) {Bitboards.WhiteQueenBitboard = BitboardUtils.NegateBit(Bitboards.WhiteQueenBitboard, endingSquare);}
+            }
+        
             
             
             UpdateBlackBitboards(piece, startingSquare, endingSquare);
@@ -159,6 +170,8 @@ public abstract class Board
         };
         
         AllBitboardsMoves.Add((currentBitboards, currentCastling));
+        
+        PieceHelper.UpdatePieceArray();
         
         SwitchCurrentPlayerTurn();
         

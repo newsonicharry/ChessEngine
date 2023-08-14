@@ -1,6 +1,7 @@
 using ChessEngine.bitboard;
 using ChessEngine.Board;
 using static ChessEngine.Engine.PieceSquareTables;
+using System.Threading;
 
 namespace ChessEngine.Engine;
 
@@ -16,19 +17,24 @@ public abstract class Engine
     private const int NegativeInf = -9999999;
     private const int PositiveInf = 9999999;
 
+    public static int PositionsEvaluated = 0;
+
+    private const int Depth = 5;
     
-    
-    public static ushort FindBestMove(int depth)
+    public static void FindBestMove()
     {
         
         ushort[] validMoves = ValidMoves.FindValidMoves(); // Assuming FindValidMoves takes a Board parameter
         int bestScore = NegativeInf;
         ushort bestMove = 0; // Placeholder for the best move
 
-        foreach (ushort move in validMoves)
+        for (int i = 0; i < validMoves.Length; i++)
         {
+            ushort move = validMoves[i];
             board.Board.UpdateBoard(move);
-            int score = -Search(depth - 1, NegativeInf, PositiveInf);
+
+            
+            int score = -Search(Depth - 1, NegativeInf, PositiveInf);
             board.Board.UndoMove();
             
             
@@ -39,13 +45,15 @@ public abstract class Engine
             }
         }
         
+        board.Board.UpdateBoard(bestMove);
+
         board.Board.AllBitboardsMoves.Clear();
         
-        return bestMove;
     }
-
-    public static int Search(int depth, int alpha, int beta)
-    {
+    
+    private static int Search(int depth, int alpha, int beta)
+    {   
+        
         if (depth == 0)
         {
             return EvaluatePosition();
@@ -70,6 +78,8 @@ public abstract class Engine
 
         for (int i = 0; i < validMoves.Length; i++)
         {
+            PositionsEvaluated ++;
+            
             ushort move = validMoves[i];
             
             board.Board.UpdateBoard(move);
@@ -95,10 +105,7 @@ public abstract class Engine
             return GetPieceSquareTablesEvalWhite() - GetPieceSquareTablesEvalBlack();
         }
         return GetPieceSquareTablesEvalBlack()-GetPieceSquareTablesEvalWhite();
-
-
-
-
+        
         
     }
 

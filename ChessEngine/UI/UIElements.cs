@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using ChessEngine.bitboard;
 using ChessEngine.Board;
@@ -103,17 +104,14 @@ public abstract class UiElements
                                 {
                                     
                                     board.Board.UpdateBoard(ValidMoves[i]);
-                                    
-                                    ushort bestMove =  Engine.Engine.FindBestMove(5);
-                                    board.Board.UpdateBoard(bestMove);
+                                    Engine.Engine.FindBestMove();
+
                                 }
 
                                 i++;
                             }
                             
                             
-                            // Engine.Engine.MakeMove();
-                            // board.Board.SwitchCurrentPlayerTurn();
                             
                             ValidMoves = Board.ValidMoves.FindValidMoves();
 

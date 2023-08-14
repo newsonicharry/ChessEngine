@@ -690,13 +690,11 @@ public class ValidMoves
             if (Castling.CanWhiteShortCastle(enemyAttackedSquares, board.Board.WhiteInCheck))
             {   
                 EncodeUlongMoves(64ul, 4, 6);
-                // allValidMoves[4] |= 64ul;
             }
             
             if (Castling.CanWhiteLongCastle(enemyAttackedSquares, board.Board.WhiteInCheck))
             {   
                 EncodeUlongMoves(4ul, 4, 6);
-                // allValidMoves[4] |= 4ul;
             }
         }
         else
@@ -704,13 +702,11 @@ public class ValidMoves
             if (Castling.CanBlackShortCastle(enemyAttackedSquares, board.Board.BlackInCheck))
             {   
                 EncodeUlongMoves(4611686018427387904ul, 60, 12);
-                // allValidMoves[60] |= 4611686018427387904ul;
             }
         
             if (Castling.CanBlackLongCastle(enemyAttackedSquares, board.Board.BlackInCheck))
             {   
                 EncodeUlongMoves(288230376151711744ul, 60, 12);
-                // allValidMoves[60] |= 288230376151711744ul;
             }
         }
 
