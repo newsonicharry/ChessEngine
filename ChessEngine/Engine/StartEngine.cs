@@ -39,6 +39,7 @@ public class StartEngine
 
         bool[] currentCastling ={true,true,true,true,true,true};
 
-        board.Board.AllBitboardsMoves.Add((currentBitboards, currentCastling));
+        board.Board.AllBitboardsMoves.Add((currentBitboards, currentCastling, Transpositions.ZobristHash));
+        
     }
 }

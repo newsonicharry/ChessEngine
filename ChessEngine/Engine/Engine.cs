@@ -55,7 +55,19 @@ public abstract class Engine
         
         if (depth == 0)
         {
-            return EvaluatePosition();
+            try
+            {
+                return Transpositions.TranspositionTable[Transpositions.ZobristHash];
+            
+            }
+            catch (KeyNotFoundException)
+            {
+                int eval = EvaluatePosition();
+                Transpositions.TranspositionTable.Add(new KeyValuePair<int, int>(Transpositions.ZobristHash, eval));
+                
+                return eval;
+            
+            }
         }
 
         ushort[] validMoves = ValidMoves.FindValidMoves(); 

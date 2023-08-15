@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Numerics;
 using ChessEngine.bitboard;
 using ChessEngine.Board;
+using ChessEngine.Engine;
 using Raylib_cs;
 using static ChessEngine.UI.UIConstants;
 
@@ -104,8 +105,15 @@ public abstract class UiElements
                                 {
                                     
                                     board.Board.UpdateBoard(ValidMoves[i]);
+                                    
+                                    Stopwatch stopwatch = new Stopwatch();
+                                    stopwatch.Start();
+                                    
                                     Engine.Engine.FindBestMove();
-
+                                    
+                                    stopwatch.Stop();
+                                    Console.WriteLine(stopwatch.ElapsedMilliseconds);
+                                    
                                 }
 
                                 i++;

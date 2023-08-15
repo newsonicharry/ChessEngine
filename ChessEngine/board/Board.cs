@@ -1,5 +1,6 @@
 using ChessEngine.bitboard;
 using ChessEngine.Board;
+using ChessEngine.Engine;
 
 namespace ChessEngine.board;
 
@@ -21,7 +22,7 @@ public abstract class Board
     public static int BlackDoubleMovedPawnIndex;
 
 
-    public static readonly List<(ulong[], bool[])> AllBitboardsMoves = new();
+    public static readonly List<(ulong[], bool[], int)> AllBitboardsMoves = new();
     
     
 
@@ -97,7 +98,9 @@ public abstract class Board
         Castling.HasMovedRightWhiteRook = AllBitboardsMoves[^1].Item2[3];
         Castling.HasMovedLeftBlackRook = AllBitboardsMoves[^1].Item2[4];
         Castling.HasMovedRightBlackRook = AllBitboardsMoves[^1].Item2[5];
-        
+
+        Transpositions.ZobristHash = AllBitboardsMoves[^1].Item3;
+            
         PieceHelper.UpdatePieceArray();
         
         SwitchCurrentPlayerTurn();
@@ -144,7 +147,10 @@ public abstract class Board
         }
         
         CheckForQueening();
-
+        
+        PieceHelper.UpdatePieceArray();
+        Transpositions.UpdateZobristHash(piece, startingSquare, PieceHelper.PieceArray[endingSquare], endingSquare);
+        
         ulong[] currentBitboards ={
             Bitboards.WhitePawnBitboard,
             Bitboards.WhiteKnightBitboard,
@@ -169,9 +175,7 @@ public abstract class Board
             Castling.HasMovedRightBlackRook
         };
         
-        AllBitboardsMoves.Add((currentBitboards, currentCastling));
-        
-        PieceHelper.UpdatePieceArray();
+        AllBitboardsMoves.Add((currentBitboards, currentCastling, Transpositions.ZobristHash));
         
         SwitchCurrentPlayerTurn();
         
