@@ -14,7 +14,13 @@ public abstract class Castling
     public static bool HasMovedLeftBlackRook;
     public static bool HasMovedRightWhiteRook;
     public static bool HasMovedRightBlackRook;
-
+    
+    public static bool WhiteCastleKingSide;
+    public static bool WhiteCastleQueenSide;
+    public static bool BlackCastleKingSide;
+    public static bool BlackCastleQueenSide;
+    
+    
     public static bool CanWhiteShortCastle(ulong blackAttackedSquares, bool inCheck)
     {
         ulong whiteBitboard = BoardUtils.GetWhiteBitboard();

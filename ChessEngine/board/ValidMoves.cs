@@ -682,31 +682,41 @@ public class ValidMoves
             }
         }
 
-
-
         if (board.Board.IsWhite)
         {
+            Castling.WhiteCastleKingSide = false;
+            Castling.WhiteCastleQueenSide = false;
             
             if (Castling.CanWhiteShortCastle(enemyAttackedSquares, board.Board.WhiteInCheck))
             {   
                 EncodeUlongMoves(64ul, 4, 6);
+                Castling.WhiteCastleKingSide = true;
             }
             
             if (Castling.CanWhiteLongCastle(enemyAttackedSquares, board.Board.WhiteInCheck))
             {   
                 EncodeUlongMoves(4ul, 4, 6);
+                Castling.WhiteCastleQueenSide = true;
+
             }
         }
         else
-        {
+        {   
+            
+            Castling.BlackCastleKingSide = false;
+            Castling.BlackCastleQueenSide = false;
+            
             if (Castling.CanBlackShortCastle(enemyAttackedSquares, board.Board.BlackInCheck))
             {   
                 EncodeUlongMoves(4611686018427387904ul, 60, 12);
+                Castling.BlackCastleKingSide = true;
             }
         
             if (Castling.CanBlackLongCastle(enemyAttackedSquares, board.Board.BlackInCheck))
             {   
                 EncodeUlongMoves(288230376151711744ul, 60, 12);
+                Castling.BlackCastleQueenSide = true;
+
             }
         }
 

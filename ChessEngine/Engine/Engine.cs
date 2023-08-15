@@ -8,16 +8,15 @@ namespace ChessEngine.Engine;
 public abstract class Engine
 {
     private const int PawnValue = 100;
-    private const int KnightValue = 300;
+    private const int KnightValue = 280;
     private const int BishopValue = 320;
-    private const int RookValue = 500;
-    private const int QueenValue = 900;
-    private const int KingValue = 100000;
+    private const int RookValue = 479;
+    private const int QueenValue = 929;
+    private const int KingValue = 60000;
     
     private const int NegativeInf = -9999999;
     private const int PositiveInf = 9999999;
 
-    public static int PositionsEvaluated = 0;
 
     private const int Depth = 5;
     
@@ -78,8 +77,6 @@ public abstract class Engine
 
         for (int i = 0; i < validMoves.Length; i++)
         {
-            PositionsEvaluated ++;
-            
             ushort move = validMoves[i];
             
             board.Board.UpdateBoard(move);
@@ -188,37 +185,37 @@ public abstract class Engine
         for (int i = 0; i < pawnIndexes.Length; i++)
         {
             int pawnIndex = pawnIndexes[i];
-            blackPositionEval += (PawnEvalBlack[pawnIndex] + 100);
+            blackPositionEval += (PawnEvalBlack[pawnIndex] + PawnValue);
         }
         
         for (int i = 0; i < knightIndexes.Length; i++)
         {
             int knightIndex = knightIndexes[i];
-            blackPositionEval += (KnightEval[knightIndex] + 300);
+            blackPositionEval += (KnightEval[knightIndex] + KnightValue);
         }
         
         for (int i = 0; i < bishopIndexes.Length; i++)
         {
             int bishopIndex = bishopIndexes[i];
-            blackPositionEval += (BishopEvalBlack[bishopIndex] + 320);
+            blackPositionEval += (BishopEvalBlack[bishopIndex] + BishopValue);
         }
         
         for (int i = 0; i < rookIndexes.Length; i++)
         {
             int rookIndex = rookIndexes[i];
-            blackPositionEval += (RookEvalBlack[rookIndex] + 500);
+            blackPositionEval += (RookEvalBlack[rookIndex] + RookValue);
         }
         
         for (int i = 0; i < queenIndexes.Length; i++)
         {
             int queenIndex = queenIndexes[i];
-            blackPositionEval += (QueenEval[queenIndex] + 900);
+            blackPositionEval += (QueenEval[queenIndex] + QueenValue);
         }
         
         for (int i = 0; i < kingIndexes.Length; i++)
         {
             int kingIndex = kingIndexes[i];
-            blackPositionEval += (KingEvalBlack[kingIndex] + 900);
+            blackPositionEval += (KingEvalBlack[kingIndex] + KingValue);
         }
 
         return blackPositionEval;

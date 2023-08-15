@@ -18,8 +18,10 @@ public class StartEngine
         MovementMasks.CreateMovementMasks();
         MovementMasks.GenerateRookMovesLookup();
         MovementMasks.GenerateBishopMovesLookup();
-    
 
+        Transpositions.InitializeZobristKeys();
+        Transpositions.LoadZobrist();
+        
         ulong[] currentBitboards ={
             Bitboards.WhitePawnBitboard,
             Bitboards.WhiteKnightBitboard,
@@ -35,14 +37,7 @@ public class StartEngine
             Bitboards.BlackKingBitboard
         };
 
-        bool[] currentCastling ={
-            true,
-            true,
-            true,
-            true,
-            true,
-            true
-        };
+        bool[] currentCastling ={true,true,true,true,true,true};
 
         board.Board.AllBitboardsMoves.Add((currentBitboards, currentCastling));
     }
