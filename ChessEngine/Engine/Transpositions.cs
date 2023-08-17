@@ -5,8 +5,8 @@ namespace ChessEngine.Engine;
 
 public abstract class Transpositions
 {
-
-    public static IDictionary<int, int> TranspositionTable = new Dictionary<int, int>();
+    private static readonly List<int> TranspositionTable = new();
+    private static readonly List<int> TranspositionsEvals = new();
     
     private static int[,] ZobristKeys = new int[13, 64];
     private static int SideToMove = new int();
@@ -17,10 +17,11 @@ public abstract class Transpositions
 
 
 
+    
     public static void UpdateZobristHash(int movingPiece, int originalSquare, int capturedPiece, int newSquare)
     {
         ZobristHash ^= ZobristKeys[movingPiece, originalSquare];  // XOR out the moving piece
-        if (capturedPiece != PieceHelper.Empty){
+        if (capturedPiece != Piece.Empty){
             ZobristHash ^= ZobristKeys[capturedPiece, newSquare]; // XOR out the captured piece
         }
         
@@ -35,7 +36,7 @@ public abstract class Transpositions
         {
             for (int square = 0; square < 64; square++)
             {
-                if (PieceHelper.PieceArray[square] != PieceHelper.Empty)
+                if (Piece.PieceArray[square] != Piece.Empty)
                 {
                     zobristHash ^= ZobristKeys[piece, square];
                 }

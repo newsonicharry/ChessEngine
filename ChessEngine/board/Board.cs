@@ -5,7 +5,7 @@ using ChessEngine.Engine;
 namespace ChessEngine.board;
 
 
-public abstract class Board
+public static class Board
 {
     public static bool WhiteInCheck = false;
     public static bool BlackInCheck = false;
@@ -22,7 +22,7 @@ public abstract class Board
     public static int BlackDoubleMovedPawnIndex;
 
 
-    public static readonly List<(ulong[], bool[], int)> AllBitboardsMoves = new();
+    public static readonly List<(ulong[], bool[], int)> PastMoves = new();
     
     
 
@@ -72,36 +72,36 @@ public abstract class Board
     
     public static void UndoMove()
     {   
-        // Console.WriteLine(AllBitboardsMoves.Count);
-        AllBitboardsMoves.RemoveAt(AllBitboardsMoves.Count-1);
+        PastMoves.RemoveAt(PastMoves.Count-1);
 
-        ulong[] oldBitboard = AllBitboardsMoves[^1].Item1;
+        (ulong[], bool[], int) moveData = PastMoves[^1];
         
-        Bitboards.WhitePawnBitboard = oldBitboard[0];
-        Bitboards.WhiteKnightBitboard = oldBitboard[1];
-        Bitboards.WhiteBishopBitboard = oldBitboard[2];
-        Bitboards.WhiteRookBitboard = oldBitboard[3];
-        Bitboards.WhiteQueenBitboard = oldBitboard[4];
-        Bitboards.WhiteKingBitboard = oldBitboard[5];
+        
+        Bitboards.WhitePawnBitboard = moveData.Item1[0];
+        Bitboards.WhiteKnightBitboard = moveData.Item1[1];
+        Bitboards.WhiteBishopBitboard = moveData.Item1[2];
+        Bitboards.WhiteRookBitboard = moveData.Item1[3];
+        Bitboards.WhiteQueenBitboard = moveData.Item1[4];
+        Bitboards.WhiteKingBitboard = moveData.Item1[5];
 
-        Bitboards.BlackPawnBitboard = oldBitboard[6];
-        Bitboards.BlackKnightBitboard = oldBitboard[7];
-        Bitboards.BlackBishopBitboard = oldBitboard[8];
-        Bitboards.BlackRookBitboard = oldBitboard[9];
-        Bitboards.BlackQueenBitboard = oldBitboard[10];
-        Bitboards.BlackKingBitboard = oldBitboard[11];
+        Bitboards.BlackPawnBitboard = moveData.Item1[6];
+        Bitboards.BlackKnightBitboard = moveData.Item1[7];
+        Bitboards.BlackBishopBitboard = moveData.Item1[8];
+        Bitboards.BlackRookBitboard = moveData.Item1[9];
+        Bitboards.BlackQueenBitboard = moveData.Item1[10];
+        Bitboards.BlackKingBitboard = moveData.Item1[11];
         
-        Castling.HasMovedWhiteKing = AllBitboardsMoves[^1].Item2[0]; 
-        Castling.HasMovedBlackKing = AllBitboardsMoves[^1].Item2[1];
+        Castling.HasMovedWhiteKing = moveData.Item2[0]; 
+        Castling.HasMovedBlackKing = moveData.Item2[1];
         
-        Castling.HasMovedLeftWhiteRook = AllBitboardsMoves[^1].Item2[2]; 
-        Castling.HasMovedRightWhiteRook = AllBitboardsMoves[^1].Item2[3];
-        Castling.HasMovedLeftBlackRook = AllBitboardsMoves[^1].Item2[4];
-        Castling.HasMovedRightBlackRook = AllBitboardsMoves[^1].Item2[5];
+        Castling.HasMovedLeftWhiteRook = moveData.Item2[2]; 
+        Castling.HasMovedRightWhiteRook = moveData.Item2[3];
+        Castling.HasMovedLeftBlackRook = moveData.Item2[4];
+        Castling.HasMovedRightBlackRook = moveData.Item2[5];
 
-        Transpositions.ZobristHash = AllBitboardsMoves[^1].Item3;
+        Transpositions.ZobristHash = moveData.Item3;
             
-        PieceHelper.UpdatePieceArray();
+        Piece.UpdatePieceArray();
         
         SwitchCurrentPlayerTurn();
         
@@ -111,7 +111,7 @@ public abstract class Board
      {
          (int startingSquare, int endingSquare, int piece) = BoardUtils.DecodeMove(move);
 
-         int endingSquarePiece = PieceHelper.PieceArray[endingSquare];
+         int endingSquarePiece = Piece.PieceArray[endingSquare];
          
          
         if (IsWhite)
@@ -148,8 +148,8 @@ public abstract class Board
         
         CheckForQueening();
         
-        PieceHelper.UpdatePieceArray();
-        Transpositions.UpdateZobristHash(piece, startingSquare, PieceHelper.PieceArray[endingSquare], endingSquare);
+        Piece.UpdatePieceArray();
+        Transpositions.UpdateZobristHash(piece, startingSquare, Piece.PieceArray[endingSquare], endingSquare);
         
         ulong[] currentBitboards ={
             Bitboards.WhitePawnBitboard,
@@ -175,7 +175,7 @@ public abstract class Board
             Castling.HasMovedRightBlackRook
         };
         
-        AllBitboardsMoves.Add((currentBitboards, currentCastling, Transpositions.ZobristHash));
+        PastMoves.Add((currentBitboards, currentCastling, Transpositions.ZobristHash));
         
         SwitchCurrentPlayerTurn();
         
@@ -189,12 +189,12 @@ public abstract class Board
         
 
         // change positions of the piece
-        if (pieceType == 2) {Bitboards.WhiteKnightBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhiteKnightBitboard, originalIndex, newIndex);}
-        if (pieceType == 3) {Bitboards.WhiteBishopBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhiteBishopBitboard, originalIndex, newIndex);}
-        if (pieceType == 4) {Bitboards.WhiteRookBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhiteRookBitboard, originalIndex, newIndex);}
-        if (pieceType == 5) {Bitboards.WhiteQueenBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhiteQueenBitboard, originalIndex, newIndex);}
+        if (pieceType == Piece.WhiteKnight) {Bitboards.WhiteKnightBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhiteKnightBitboard, originalIndex, newIndex);}
+        if (pieceType == Piece.WhiteBishop) {Bitboards.WhiteBishopBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhiteBishopBitboard, originalIndex, newIndex);}
+        if (pieceType == Piece.WhiteRook)   {Bitboards.WhiteRookBitboard   = BitboardUtils.ChangeBitPosition(Bitboards.WhiteRookBitboard, originalIndex, newIndex);}
+        if (pieceType == Piece.WhiteQueen)  {Bitboards.WhiteQueenBitboard  = BitboardUtils.ChangeBitPosition(Bitboards.WhiteQueenBitboard, originalIndex, newIndex);}
 
-        if (pieceType == 1) {
+        if (pieceType == Piece.WhitePawn) {
             Bitboards.WhitePawnBitboard = BitboardUtils.ChangeBitPosition(Bitboards.WhitePawnBitboard, originalIndex, newIndex); 
             
             if (newIndex - originalIndex == 16)
@@ -210,7 +210,7 @@ public abstract class Board
             
         }
         
-        if (pieceType == 6)
+        if (pieceType == Piece.WhiteKing)
         {
             if (newIndex == 6 & Castling.CanWhiteShortCastle(EnemyAttackedSquares, WhiteInCheck))
             {
@@ -244,23 +244,12 @@ public abstract class Board
         // if so then delete it because the piece is capturing it
 
         // change positions of the piece
-        if (pieceType == 8) {
-            Bitboards.BlackKnightBitboard = BitboardUtils.ChangeBitPosition(Bitboards.BlackKnightBitboard, originalIndex, newIndex);
-        }
-        
-        if (pieceType == 9) {
-            Bitboards.BlackBishopBitboard = BitboardUtils.ChangeBitPosition(Bitboards.BlackBishopBitboard, originalIndex, newIndex);
-        }
+        if (pieceType == Piece.BlackKnight) {Bitboards.BlackKnightBitboard = BitboardUtils.ChangeBitPosition(Bitboards.BlackKnightBitboard, originalIndex, newIndex);}
+        if (pieceType == Piece.BlackBishop) {Bitboards.BlackBishopBitboard = BitboardUtils.ChangeBitPosition(Bitboards.BlackBishopBitboard, originalIndex, newIndex);}
+        if (pieceType == Piece.BlackRook) {Bitboards.BlackRookBitboard = BitboardUtils.ChangeBitPosition(Bitboards.BlackRookBitboard, originalIndex, newIndex);}
+        if (pieceType == Piece.BlackQueen) {Bitboards.BlackQueenBitboard = BitboardUtils.ChangeBitPosition(Bitboards.BlackQueenBitboard, originalIndex, newIndex);}
 
-        if (pieceType == 10) {
-            Bitboards.BlackRookBitboard = BitboardUtils.ChangeBitPosition(Bitboards.BlackRookBitboard, originalIndex, newIndex);
-        }
-
-        if (pieceType == 11) {
-            Bitboards.BlackQueenBitboard = BitboardUtils.ChangeBitPosition(Bitboards.BlackQueenBitboard, originalIndex, newIndex);
-        }
-
-        if (pieceType == 7) {
+        if (pieceType == Piece.BlackPawn) {
             Bitboards.BlackPawnBitboard = BitboardUtils.ChangeBitPosition(Bitboards.BlackPawnBitboard, originalIndex, newIndex); 
             
             // checks if the pawn double moved
@@ -275,7 +264,7 @@ public abstract class Board
         }
 
 
-        if (pieceType == 12)
+        if (pieceType == Piece.BlackKing)
         {   
             // checks if the king is going to a square that it can castle on, and that it actually is allowed to castle
             if (newIndex == 62 & Castling.CanBlackShortCastle(EnemyAttackedSquares, BlackInCheck))

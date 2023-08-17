@@ -8,12 +8,12 @@ public class StartEngine
     public static void Start()
     {
         // const string fen = "r2qk2r/pppbnppp/2n1p3/3pP3/1b1P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 5 7";
-        // const string fen = "8/3K4/3R4/8/8/6k1/8/8 b - - 0 1";
+        // const string fen = "r1b1k2r/ppp2ppp/2n1p3/5qP1/1bpPn2P/5N2/PP2PPB1/RNBQK1R1 w Qkq - 2 10";
         const string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
         Bitboards.LoadBitboardsFromFen(fen);
         
-        PieceHelper.UpdatePieceArray();
+        Piece.UpdatePieceArray();
         
         MovementMasks.CreateMovementMasks();
         MovementMasks.GenerateRookMovesLookup();
@@ -39,7 +39,7 @@ public class StartEngine
 
         bool[] currentCastling ={true,true,true,true,true,true};
 
-        board.Board.AllBitboardsMoves.Add((currentBitboards, currentCastling, Transpositions.ZobristHash));
+        board.Board.PastMoves.Add((currentBitboards, currentCastling, Transpositions.ZobristHash));
         
     }
 }

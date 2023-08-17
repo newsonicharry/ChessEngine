@@ -2,8 +2,15 @@
 
 namespace ChessEngine.board;
 
-public class PieceHelper
-{
+public class Piece
+{   
+    public const int PawnValue = 100;
+    public const int KnightValue = 280;
+    public const int BishopValue = 320;
+    public const int RookValue = 479;
+    public const int QueenValue = 929;
+    public const int KingValue = 60000;
+    
     public const int Empty = 0;
     
     public const int WhitePawn = 1;
@@ -19,12 +26,36 @@ public class PieceHelper
     public const int BlackRook = 10;
     public const int BlackQueen = 11;
     public const int BlackKing = 12;
-
-
     
+    public static Dictionary<int, int> PieceValues = new()
+    {   
+        {0, 0},
+        {WhitePawn, PawnValue},
+        {BlackPawn, PawnValue},
+        {WhiteKnight, KnightValue},
+        {BlackKnight, KnightValue},
+        {WhiteBishop, BishopValue},
+        {BlackBishop, BishopValue},
+        {WhiteRook, RookValue},
+        {BlackRook, RookValue},
+        {WhiteQueen, QueenValue},
+        {BlackQueen, QueenValue},
+        {WhiteKing, KingValue},
+        {BlackKing, KingValue},
+    };
     
     public static readonly int[] PieceArray = new int[64];
     
+    
+    
+    public static int GetCapturedPiece(ushort move)
+    {
+        int endingSquare = (ushort)(move << 6) >> 10;
+        int piece = PieceArray[endingSquare];
+
+        return piece;
+        
+    }
     public static void UpdatePieceArray()
     {
 

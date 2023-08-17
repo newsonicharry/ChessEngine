@@ -2,7 +2,7 @@ using ChessEngine.bitboard;
 
 namespace ChessEngine.Board;
 
-public class ValidMoves
+public abstract class ValidMoves
 {
 
     private static ulong GetRookValidMoves(int pieceIndex, bool isWhite, bool includeBlockers, bool getEnemyAttackedSquares)
@@ -68,7 +68,7 @@ public class ValidMoves
 
         ulong blockers = 0ul;
         if (includeBlockers)
-        {
+        {   
             blockers = bishopMovementMask & (enemyBitboard | friendlyBitboard);
         }
 

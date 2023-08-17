@@ -1,39 +1,38 @@
 using ChessEngine.bitboard;
+using ChessEngine.board;
 using ChessEngine.Board;
 using static ChessEngine.Engine.PieceSquareTables;
-using System.Threading;
 
 namespace ChessEngine.Engine;
 
 public abstract class Engine
 {
-    private const int PawnValue = 100;
-    private const int KnightValue = 280;
-    private const int BishopValue = 320;
-    private const int RookValue = 479;
-    private const int QueenValue = 929;
-    private const int KingValue = 60000;
     
     private const int NegativeInf = -9999999;
     private const int PositiveInf = 9999999;
-
-
+    
     private const int Depth = 5;
     
     public static void FindBestMove()
     {
         
         ushort[] validMoves = ValidMoves.FindValidMoves(); // Assuming FindValidMoves takes a Board parameter
+        validMoves = OrderMoves(validMoves);
+        
         int bestScore = NegativeInf;
         ushort bestMove = 0; // Placeholder for the best move
 
         for (int i = 0; i < validMoves.Length; i++)
         {
+
+            
             ushort move = validMoves[i];
+            
+            
             board.Board.UpdateBoard(move);
 
             
-            int score = -Search(Depth - 1, NegativeInf, PositiveInf);
+            int score = -Search(Depth - 1, NegativeInf, PositiveInf, 0);
             board.Board.UndoMove();
             
             
@@ -44,33 +43,27 @@ public abstract class Engine
             }
         }
         
+        
+        Console.WriteLine("Eval: " + (double)bestScore / 100);
         board.Board.UpdateBoard(bestMove);
 
-        board.Board.AllBitboardsMoves.Clear();
+        board.Board.PastMoves.Clear();
         
     }
     
-    private static int Search(int depth, int alpha, int beta)
+    private static int Search(int depth, int alpha, int beta, int numExtensions)
     {   
         
         if (depth == 0)
         {
-            try
-            {
-                return Transpositions.TranspositionTable[Transpositions.ZobristHash];
-            
-            }
-            catch (KeyNotFoundException)
-            {
-                int eval = EvaluatePosition();
-                Transpositions.TranspositionTable.Add(new KeyValuePair<int, int>(Transpositions.ZobristHash, eval));
-                
-                return eval;
-            
-            }
-        }
+            int eval = EvaluatePosition();
+            return eval;
 
+        }
+        
         ushort[] validMoves = ValidMoves.FindValidMoves(); 
+        validMoves = OrderMoves(validMoves);
+
 
         if (validMoves.Length == 0)
         {
@@ -86,13 +79,21 @@ public abstract class Engine
             return 0;
         }
         
-
+        
         for (int i = 0; i < validMoves.Length; i++)
         {
             ushort move = validMoves[i];
             
             board.Board.UpdateBoard(move);
-            int score = -Search(depth - 1, -beta, -alpha);
+
+            int extension = 0;
+            if (numExtensions < 4)
+            {
+                extension = GetExtensions(move);
+            }
+            
+            
+            int score = -Search(depth - 1 + extension, -beta, -alpha, numExtensions + extension);
             board.Board.UndoMove();
 
             if (score >= beta)
@@ -106,8 +107,89 @@ public abstract class Engine
 
         return alpha;
     }
+
+
+    private static ushort[] OrderMoves(ushort[] moves)
+    {   
+        
+        List<(int moveScoreGuess, ushort move)> data = new();
+
+
+        for (int i = 0; i < moves.Length; i++){
+            ushort move = moves[i];
+            int moveScoreGuess = 0;
+            
+            (int startingSquare, int endingSquare, int piece) = BoardUtils.DecodeMove(move);
+
+            int capturedPiece = Piece.GetCapturedPiece(move);
+            
+            int pieceValue = Piece.PieceValues[piece];
+
+            
+            if (capturedPiece != Piece.Empty)
+            {   
+                int capturedPieceValue = Piece.PieceValues[capturedPiece];
+                moveScoreGuess = 10 * (capturedPieceValue - pieceValue);
+            }
+
+            if (((piece == Piece.WhitePawn) & (BoardUtils.IndexToRank(endingSquare) == 7)) | ((piece == Piece.BlackPawn) & (BoardUtils.IndexToRank(endingSquare) == 0)) )
+            {
+                moveScoreGuess += Piece.QueenValue;
+            }
+            
+            data.Add((moveScoreGuess, move));
+
+            // if (expr)
+            // {
+                
+            // }
+            
+            
+        }
+        
+        List<ushort> sortedData = data.OrderByDescending(item => item.move).Select(item => item.move).ToList();
+
+        
+        return sortedData.ToArray();
+    }
     
-    public static int EvaluatePosition()
+    
+    private static int GetExtensions(ushort move)
+    {
+        int extension = 0;
+
+        (int startingSquare, int endingSquare, int piece) = BoardUtils.DecodeMove(move);
+        
+        
+        if (board.Board.IsWhite)
+        {
+            if (board.Board.WhiteInCheck){
+                extension = 1;
+            }
+
+            if ((piece == Piece.WhitePawn) & (endingSquare == 6))
+            {
+                extension = 1;
+            }
+        }
+        
+        if (!board.Board.IsWhite)
+        {
+            if (board.Board.BlackInCheck)
+            {
+                extension = 1;
+            }
+            
+            if ((piece == Piece.BlackPawn) & (endingSquare == 1))
+            {
+                extension = 1;
+            }
+        }
+
+        return extension;
+    }
+    
+    private static int EvaluatePosition()
     {
         if (board.Board.IsWhite)
         {   
@@ -140,37 +222,37 @@ public abstract class Engine
         for (int i = 0; i < pawnIndexes.Length; i++)
         {
             int pawnIndex = pawnIndexes[i];
-            whitePositionEval += (PawnEvalWhite[pawnIndex] + 100);
+            whitePositionEval += (PawnEvalWhite[pawnIndex] + Piece.PawnValue);
         }
         
         for (int i = 0; i < knightIndexes.Length; i++)
         {
             int knightIndex = knightIndexes[i];
-            whitePositionEval += (KnightEval[knightIndex] + 300);
+            whitePositionEval += (KnightEval[knightIndex] + Piece.KnightValue);
         }
         
         for (int i = 0; i < bishopIndexes.Length; i++)
         {
             int bishopIndex = bishopIndexes[i];
-            whitePositionEval += (BishopEvalWhite[bishopIndex] + 320);
+            whitePositionEval += (BishopEvalWhite[bishopIndex] + Piece.BishopValue);
         }
         
         for (int i = 0; i < rookIndexes.Length; i++)
         {
             int rookIndex = rookIndexes[i];
-            whitePositionEval += (RookEvalWhite[rookIndex] + 500);
+            whitePositionEval += (RookEvalWhite[rookIndex] + Piece.RookValue);
         }
         
         for (int i = 0; i < queenIndexes.Length; i++)
         {
             int queenIndex = queenIndexes[i];
-            whitePositionEval += (QueenEval[queenIndex] + 900);
+            whitePositionEval += (QueenEval[queenIndex] + Piece.QueenValue);
         }
         
         for (int i = 0; i < kingIndexes.Length; i++)
         {
             int kingIndex = kingIndexes[i];
-            whitePositionEval += (KingEvalWhite[kingIndex] + 900);
+            whitePositionEval += (KingEvalWhite[kingIndex] + Piece.KingValue);
         }
 
         return whitePositionEval;
@@ -197,39 +279,40 @@ public abstract class Engine
         for (int i = 0; i < pawnIndexes.Length; i++)
         {
             int pawnIndex = pawnIndexes[i];
-            blackPositionEval += (PawnEvalBlack[pawnIndex] + PawnValue);
+            blackPositionEval += (PawnEvalBlack[pawnIndex] + Piece.PawnValue);
         }
         
         for (int i = 0; i < knightIndexes.Length; i++)
         {
             int knightIndex = knightIndexes[i];
-            blackPositionEval += (KnightEval[knightIndex] + KnightValue);
+            blackPositionEval += (KnightEval[knightIndex] + Piece.KnightValue);
         }
         
         for (int i = 0; i < bishopIndexes.Length; i++)
         {
             int bishopIndex = bishopIndexes[i];
-            blackPositionEval += (BishopEvalBlack[bishopIndex] + BishopValue);
+            blackPositionEval += (BishopEvalBlack[bishopIndex] + Piece.BishopValue);
         }
         
         for (int i = 0; i < rookIndexes.Length; i++)
         {
             int rookIndex = rookIndexes[i];
-            blackPositionEval += (RookEvalBlack[rookIndex] + RookValue);
+            blackPositionEval += (RookEvalBlack[rookIndex] + Piece.RookValue);
         }
         
         for (int i = 0; i < queenIndexes.Length; i++)
         {
             int queenIndex = queenIndexes[i];
-            blackPositionEval += (QueenEval[queenIndex] + QueenValue);
+            blackPositionEval += (QueenEval[queenIndex] + Piece.QueenValue);
         }
         
         for (int i = 0; i < kingIndexes.Length; i++)
         {
             int kingIndex = kingIndexes[i];
-            blackPositionEval += (KingEvalBlack[kingIndex] + KingValue);
+            blackPositionEval += (KingEvalBlack[kingIndex] + Piece.KingValue);
         }
-
+        
+        
         return blackPositionEval;
     }
     

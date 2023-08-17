@@ -112,7 +112,8 @@ public abstract class UiElements
                                     Engine.Engine.FindBestMove();
                                     
                                     stopwatch.Stop();
-                                    Console.WriteLine(stopwatch.ElapsedMilliseconds);
+                                    Console.WriteLine("Milliseconds Thinking: " + stopwatch.ElapsedMilliseconds);
+                                    Console.WriteLine();
                                     
                                 }
 
