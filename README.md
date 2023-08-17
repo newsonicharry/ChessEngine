@@ -15,8 +15,7 @@ Todo:
 
 Engine:
 - Make a custom transposition table
-- Implement move ordering
-- Implement extensions
+- Finish move ordering
 - Add endgames
 - Utilize multiprocessing
 + And Much More
