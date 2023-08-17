@@ -10,14 +10,13 @@ Utilizes bitboards and movement masks for move creation
 Uses raylib for gui
 
 Todo:
-- Fix all bugs with move validation
-- Check for checkmate, 50 move rule, stalemate and repition
-- Start work on an engine
-
+- Fix all bugs with move validation (never ending bugs, dont expect me to get rid of this soon)
+- Check for checkmate, 50 move rule, stalemate and repition (because I somehow havent finished that yet)
 
 Engine:
-- Evaluation based on material
-- Piece square tables
-- Bishop pair
-- King safety
+- Make a custom transposition table
+- Implement move ordering
+- Implement extensions
+- Add endgames
+- Utilize multiprocessing
 + And Much More
