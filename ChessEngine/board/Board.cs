@@ -21,14 +21,37 @@ public static class Board
     public static int WhiteDoubleMovedPawnIndex;
     public static int BlackDoubleMovedPawnIndex;
 
-
-    public static readonly List<(ulong[], bool[], int)> PastMoves = new();
     
-    
+    public struct BoardData
+    {
+        public ulong WhitePawnBitboard;
+        public ulong WhiteKnightBitboard;
+        public ulong WhiteBishopBitboard;
+        public ulong WhiteRookBitboard;
+        public ulong WhiteQueenBitboard;
+        public ulong WhiteKingBitboard;
+        public ulong BlackPawnBitboard;
+        public ulong BlackKnightBitboard;
+        public ulong BlackBishopBitboard;
+        public ulong BlackRookBitboard;
+        public ulong BlackQueenBitboard;
+        public ulong BlackKingBitboard;
+        
+        public bool HasMovedWhiteKing;
+        public bool HasMovedBlackKing;
 
+        public bool HasMovedLeftWhiteRook;
+        public bool HasMovedRightWhiteRook;
+        public bool HasMovedLeftBlackRook;
+        public bool HasMovedRightBlackRook;
+        
+        public int ZobristHash;
+    }
+
+    public static Stack<BoardData> AllBoardPositions = new();
     
     public static bool InCheck(bool isWhite, ulong enemyAttackedSquares)
-    {   
+    {       
         if (isWhite) {
             return (Bitboards.WhiteKingBitboard | enemyAttackedSquares) == enemyAttackedSquares;
         }
@@ -71,35 +94,34 @@ public static class Board
     }
     
     public static void UndoMove()
-    {   
-        PastMoves.RemoveAt(PastMoves.Count-1);
+    {
+        AllBoardPositions.Pop();
+        BoardData boardData = AllBoardPositions.Peek();
+        
+        
+        Bitboards.WhitePawnBitboard = boardData.WhitePawnBitboard;
+        Bitboards.WhiteKnightBitboard = boardData.WhiteKnightBitboard;
+        Bitboards.WhiteBishopBitboard = boardData.WhiteBishopBitboard;
+        Bitboards.WhiteRookBitboard = boardData.WhiteRookBitboard;
+        Bitboards.WhiteQueenBitboard = boardData.WhiteQueenBitboard;
+        Bitboards.WhiteKingBitboard = boardData.WhiteKingBitboard;
 
-        (ulong[], bool[], int) moveData = PastMoves[^1];
+        Bitboards.BlackPawnBitboard = boardData.BlackPawnBitboard;
+        Bitboards.BlackKnightBitboard = boardData.BlackKnightBitboard;
+        Bitboards.BlackBishopBitboard = boardData.BlackBishopBitboard;
+        Bitboards.BlackRookBitboard = boardData.BlackRookBitboard;
+        Bitboards.BlackQueenBitboard = boardData.BlackQueenBitboard;
+        Bitboards.BlackKingBitboard = boardData.BlackKingBitboard;
         
+        Castling.HasMovedWhiteKing = boardData.HasMovedWhiteKing; 
+        Castling.HasMovedBlackKing = boardData.HasMovedBlackKing;
         
-        Bitboards.WhitePawnBitboard = moveData.Item1[0];
-        Bitboards.WhiteKnightBitboard = moveData.Item1[1];
-        Bitboards.WhiteBishopBitboard = moveData.Item1[2];
-        Bitboards.WhiteRookBitboard = moveData.Item1[3];
-        Bitboards.WhiteQueenBitboard = moveData.Item1[4];
-        Bitboards.WhiteKingBitboard = moveData.Item1[5];
+        Castling.HasMovedLeftWhiteRook = boardData.HasMovedLeftWhiteRook; 
+        Castling.HasMovedRightWhiteRook = boardData.HasMovedRightWhiteRook;
+        Castling.HasMovedLeftBlackRook = boardData.HasMovedLeftBlackRook;
+        Castling.HasMovedRightBlackRook = boardData.HasMovedRightBlackRook;
 
-        Bitboards.BlackPawnBitboard = moveData.Item1[6];
-        Bitboards.BlackKnightBitboard = moveData.Item1[7];
-        Bitboards.BlackBishopBitboard = moveData.Item1[8];
-        Bitboards.BlackRookBitboard = moveData.Item1[9];
-        Bitboards.BlackQueenBitboard = moveData.Item1[10];
-        Bitboards.BlackKingBitboard = moveData.Item1[11];
-        
-        Castling.HasMovedWhiteKing = moveData.Item2[0]; 
-        Castling.HasMovedBlackKing = moveData.Item2[1];
-        
-        Castling.HasMovedLeftWhiteRook = moveData.Item2[2]; 
-        Castling.HasMovedRightWhiteRook = moveData.Item2[3];
-        Castling.HasMovedLeftBlackRook = moveData.Item2[4];
-        Castling.HasMovedRightBlackRook = moveData.Item2[5];
-
-        Transpositions.ZobristHash = moveData.Item3;
+        Transpositions.ZobristHash = boardData.ZobristHash;
             
         Piece.UpdatePieceArray();
         
@@ -109,6 +131,9 @@ public static class Board
     
     public static void UpdateBoard(ushort move)
      {
+         
+
+
          (int startingSquare, int endingSquare, int piece) = BoardUtils.DecodeMove(move);
 
          int endingSquarePiece = Piece.PieceArray[endingSquare];
@@ -150,36 +175,35 @@ public static class Board
         
         Piece.UpdatePieceArray();
         Transpositions.UpdateZobristHash(piece, startingSquare, Piece.PieceArray[endingSquare], endingSquare);
-        
-        ulong[] currentBitboards ={
-            Bitboards.WhitePawnBitboard,
-            Bitboards.WhiteKnightBitboard,
-            Bitboards.WhiteBishopBitboard,
-            Bitboards.WhiteRookBitboard,
-            Bitboards.WhiteQueenBitboard,
-            Bitboards.WhiteKingBitboard,
-            Bitboards.BlackPawnBitboard,
-            Bitboards.BlackKnightBitboard,
-            Bitboards.BlackBishopBitboard,
-            Bitboards.BlackRookBitboard,
-            Bitboards.BlackQueenBitboard,
-            Bitboards.BlackKingBitboard
-        };
-
-        bool[] currentCastling ={
-            Castling.HasMovedWhiteKing,
-            Castling.HasMovedBlackKing,
-            Castling.HasMovedLeftWhiteRook,
-            Castling.HasMovedRightWhiteRook,
-            Castling.HasMovedLeftBlackRook,
-            Castling.HasMovedRightBlackRook
-        };
-        
-        PastMoves.Add((currentBitboards, currentCastling, Transpositions.ZobristHash));
+         
         
         SwitchCurrentPlayerTurn();
         
-    }
+        BoardData boardData = new BoardData
+        {
+            WhitePawnBitboard = Bitboards.WhitePawnBitboard,
+            WhiteKnightBitboard = Bitboards.WhiteKnightBitboard,
+            WhiteBishopBitboard = Bitboards.WhiteBishopBitboard,
+            WhiteRookBitboard = Bitboards.WhiteRookBitboard,
+            WhiteQueenBitboard = Bitboards.WhiteQueenBitboard,
+            WhiteKingBitboard = Bitboards.WhiteKingBitboard,
+            BlackPawnBitboard = Bitboards.BlackPawnBitboard,
+            BlackKnightBitboard = Bitboards.BlackKnightBitboard,
+            BlackBishopBitboard = Bitboards.BlackBishopBitboard,
+            BlackRookBitboard = Bitboards.BlackRookBitboard,
+            BlackQueenBitboard = Bitboards.BlackQueenBitboard,
+            BlackKingBitboard = Bitboards.BlackKingBitboard,
+            HasMovedWhiteKing = Castling.HasMovedWhiteKing,
+            HasMovedBlackKing = Castling.HasMovedBlackKing,
+            HasMovedLeftWhiteRook = Castling.HasMovedLeftWhiteRook,
+            HasMovedRightWhiteRook = Castling.HasMovedRightWhiteRook,
+            HasMovedLeftBlackRook = Castling.HasMovedLeftBlackRook,
+            HasMovedRightBlackRook = Castling.HasMovedRightBlackRook
+        };
+        
+        AllBoardPositions.Push(boardData);
+         
+     }
 
     private static void UpdateWhiteBitboards(int pieceType, int originalIndex, int newIndex) 
     {   

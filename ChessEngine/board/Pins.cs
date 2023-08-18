@@ -152,7 +152,7 @@ public abstract class Pins
         // i dont like this much nesting but like if it saves a tiny bit of performance then why not
         // i need performance for this engine
         
-        for (int i = 0; i < enemyRookMoves.ToArray().Length; i++)
+        for (int i = 0; i < enemyRookMoves.Count; i++)
         {
             int enemyRookIndex = enemyRookIndexes[i];
             ulong enemyRookMove = enemyRookMoves[i];
@@ -162,6 +162,7 @@ public abstract class Pins
             
             // if the rook can actually check the king, assuming it has no blockers
             if (isAttackingKing){
+                
                 
                 // the enemy rook moves, with the friendly piece as a blocker
                 // checks if the enemy rook can still check the king with the friendly piece as a blocker
@@ -173,14 +174,15 @@ public abstract class Pins
                 if (!attackingKingWithPieceInWay)
                 {
                     
+
                     // checks if the king can still be checked with other friendly pieces on the board
                     // if it can be then there are no other pieces in the way, and so cant pin two pieces at once
                     ulong friendlyBitboardWithoutPiece = BitboardUtils.NegateBit(friendlyBitboard, friendlyPieceIndex);
                     
-                    ulong rookMovesWithOtherPieces = GetRookMoves(enemyRookIndex, BitboardUtils.RemoveEdgeIndexes(friendlyBitboardWithoutPiece & enemyRookMove));
+                    ulong rookMovesWithOtherPieces = GetRookMoves(enemyRookIndex, (friendlyBitboardWithoutPiece & enemyRookMove));
                     bool attackingKingWithOtherPieces =  (rookMovesWithOtherPieces | friendlyKingBitboard) == rookMovesWithOtherPieces;
-                    
-                    
+
+
                     if (attackingKingWithOtherPieces)
                     {   
                         return (friendlyPieceIndex, enemyRookIndex, enemyRookMove);

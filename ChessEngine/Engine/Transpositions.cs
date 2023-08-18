@@ -5,17 +5,14 @@ namespace ChessEngine.Engine;
 
 public abstract class Transpositions
 {
-    private static readonly List<int> TranspositionTable = new();
-    private static readonly List<int> TranspositionsEvals = new();
     
     private static int[,] ZobristKeys = new int[13, 64];
     private static int SideToMove = new int();
     private static readonly int[] CastlingRights = new int[16];
     private static readonly int[] EnPassantFile = new int[8];
-
+    
     public static int ZobristHash;
-
-
+    
 
     
     public static void UpdateZobristHash(int movingPiece, int originalSquare, int capturedPiece, int newSquare)

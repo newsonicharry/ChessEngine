@@ -1,5 +1,6 @@
 using ChessEngine.bitboard;
 using ChessEngine.board;
+using ChessEngine.Board;
 
 namespace ChessEngine.Engine;
 
@@ -7,9 +8,10 @@ public class StartEngine
 {
     public static void Start()
     {
-        // const string fen = "r2qk2r/pppbnppp/2n1p3/3pP3/1b1P4/2N2N2/PPP1BPPP/R1BQK2R w KQkq - 5 7";
-        // const string fen = "r1b1k2r/ppp2ppp/2n1p3/5qP1/1bpPn2P/5N2/PP2PPB1/RNBQK1R1 w Qkq - 2 10";
-        const string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        const string fen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N4p/PPPBBPPP/R2QK2R w KQkq - 5 7";
+        // const string fen = "r1b1kb1r/ppppqppp/5n2/8/1n2P3/2N5/PPP1QPPP/R1B1KBNR b KQkq - 0 1";
+        // const string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        
 
         Bitboards.LoadBitboardsFromFen(fen);
         
@@ -22,24 +24,35 @@ public class StartEngine
         Transpositions.InitializeZobristKeys();
         Transpositions.LoadZobrist();
         
-        ulong[] currentBitboards ={
-            Bitboards.WhitePawnBitboard,
-            Bitboards.WhiteKnightBitboard,
-            Bitboards.WhiteBishopBitboard,
-            Bitboards.WhiteRookBitboard,
-            Bitboards.WhiteQueenBitboard,
-            Bitboards.WhiteKingBitboard,
-            Bitboards.BlackPawnBitboard,
-            Bitboards.BlackKnightBitboard,
-            Bitboards.BlackBishopBitboard,
-            Bitboards.BlackRookBitboard,
-            Bitboards.BlackQueenBitboard,
-            Bitboards.BlackKingBitboard
+        
+        board.Board.SwitchCurrentPlayerTurn();
+        ValidMoves.FindValidMoves();
+        board.Board.SwitchCurrentPlayerTurn();
+
+        
+        board.Board.BoardData boardData = new board.Board.BoardData
+        {
+            WhitePawnBitboard = Bitboards.WhitePawnBitboard,
+            WhiteKnightBitboard = Bitboards.WhiteKnightBitboard,
+            WhiteBishopBitboard = Bitboards.WhiteBishopBitboard,
+            WhiteRookBitboard = Bitboards.WhiteRookBitboard,
+            WhiteQueenBitboard = Bitboards.WhiteQueenBitboard,
+            WhiteKingBitboard = Bitboards.WhiteKingBitboard,
+            BlackPawnBitboard = Bitboards.BlackPawnBitboard,
+            BlackKnightBitboard = Bitboards.BlackKnightBitboard,
+            BlackBishopBitboard = Bitboards.BlackBishopBitboard,
+            BlackRookBitboard = Bitboards.BlackRookBitboard,
+            BlackQueenBitboard = Bitboards.BlackQueenBitboard,
+            BlackKingBitboard = Bitboards.BlackKingBitboard,
+            HasMovedWhiteKing = Castling.HasMovedWhiteKing,
+            HasMovedBlackKing = Castling.HasMovedBlackKing,
+            HasMovedLeftWhiteRook = Castling.HasMovedLeftWhiteRook,
+            HasMovedRightWhiteRook = Castling.HasMovedRightWhiteRook,
+            HasMovedLeftBlackRook = Castling.HasMovedLeftBlackRook,
+            HasMovedRightBlackRook = Castling.HasMovedRightBlackRook
         };
 
-        bool[] currentCastling ={true,true,true,true,true,true};
 
-        board.Board.PastMoves.Add((currentBitboards, currentCastling, Transpositions.ZobristHash));
-        
+        board.Board.AllBoardPositions.Push(boardData);         
     }
 }

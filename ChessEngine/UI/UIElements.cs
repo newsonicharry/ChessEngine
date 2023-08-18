@@ -112,8 +112,15 @@ public abstract class UiElements
                                     Engine.Engine.FindBestMove();
                                     
                                     stopwatch.Stop();
+                                    
                                     Console.WriteLine("Milliseconds Thinking: " + stopwatch.ElapsedMilliseconds);
+                                    
+                                    try{Console.WriteLine("Positions a millisecond: " + Engine.Engine.PositionsSearched / stopwatch.ElapsedMilliseconds);}
+                                    catch (DivideByZeroException){}
+                                    
                                     Console.WriteLine();
+
+                                    Engine.Engine.PositionsSearched = 0;
                                     
                                 }
 

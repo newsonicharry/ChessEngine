@@ -7,33 +7,39 @@ namespace ChessEngine.Engine;
 
 public abstract class Engine
 {
+
+    public static int PositionsSearched = 0;
     
     private const int NegativeInf = -9999999;
     private const int PositiveInf = 9999999;
+
+    private const int TotalExtensions = 4;
     
-    private const int Depth = 5;
+    public const int Depth = 5;
+
     
     public static void FindBestMove()
     {
         
-        ushort[] validMoves = ValidMoves.FindValidMoves(); // Assuming FindValidMoves takes a Board parameter
-        validMoves = OrderMoves(validMoves);
+        ushort[] validMoves = ValidMoves.FindValidMoves(); 
+        // validMoves = OrderMoves(validMoves);
         
         int bestScore = NegativeInf;
         ushort bestMove = 0; // Placeholder for the best move
-
+        
+        
         for (int i = 0; i < validMoves.Length; i++)
         {
-
             
             ushort move = validMoves[i];
             
             
             board.Board.UpdateBoard(move);
-
             
             int score = -Search(Depth - 1, NegativeInf, PositiveInf, 0);
+            
             board.Board.UndoMove();
+            
             
             
             if (score > bestScore)
@@ -45,10 +51,11 @@ public abstract class Engine
         
         
         Console.WriteLine("Eval: " + (double)bestScore / 100);
+        Console.WriteLine("Positions Searched: " + PositionsSearched);
+
         board.Board.UpdateBoard(bestMove);
 
-        board.Board.PastMoves.Clear();
-        
+
     }
     
     private static int Search(int depth, int alpha, int beta, int numExtensions)
@@ -62,7 +69,7 @@ public abstract class Engine
         }
         
         ushort[] validMoves = ValidMoves.FindValidMoves(); 
-        validMoves = OrderMoves(validMoves);
+        // validMoves = OrderMoves(validMoves);
 
 
         if (validMoves.Length == 0)
@@ -73,6 +80,7 @@ public abstract class Engine
             }
             if (board.Board.BlackInCheck & !board.Board.IsWhite)
             {
+
                 return NegativeInf;
             }
         
@@ -85,9 +93,10 @@ public abstract class Engine
             ushort move = validMoves[i];
             
             board.Board.UpdateBoard(move);
+            PositionsSearched++;
 
             int extension = 0;
-            if (numExtensions < 4)
+            if (numExtensions < TotalExtensions)
             {
                 extension = GetExtensions(move);
             }
@@ -137,20 +146,22 @@ public abstract class Engine
                 moveScoreGuess += Piece.QueenValue;
             }
             
-            data.Add((moveScoreGuess, move));
+            ulong endingSquareBitboard = 1ul << endingSquare;
+            if (board.Board.IsWhite & ((endingSquareBitboard | ValidMoves.BlackPawnAttacks) == ValidMoves.BlackPawnAttacks)){
+                moveScoreGuess -= pieceValue;
+            }
+            if (!board.Board.IsWhite & ((endingSquareBitboard | ValidMoves.WhitePawnAttacks) == ValidMoves.WhitePawnAttacks)){
+                moveScoreGuess -= pieceValue;
+            }
 
-            // if (expr)
-            // {
-                
-            // }
             
-            
+            data.Add((moveScoreGuess, move));
         }
         
-        List<ushort> sortedData = data.OrderByDescending(item => item.move).Select(item => item.move).ToList();
+        ushort[] sortedData = data.OrderByDescending(item => item.move).Select(item => item.move).ToArray();
 
         
-        return sortedData.ToArray();
+        return sortedData;
     }
     
     
