@@ -1,4 +1,7 @@
 # ChessEngine
+
+|CURRENTLY UNDER MAJOR REDESIGNING|
+
 Simple chess engine made in C#
 
 Version downloads for x86 Windows:
