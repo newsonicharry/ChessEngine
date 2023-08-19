@@ -1,6 +1,6 @@
 # ChessEngine
 
-|CURRENTLY UNDER MAJOR REDESIGNING|
+--CURRENTLY UNDER MAJOR REDESIGNING--
 
 Simple chess engine made in C#
 
