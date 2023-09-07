@@ -1,6 +1,7 @@
 # ChessEngine
 
 --CURRENTLY UNDER MAJOR REDESIGNING--
+Work is momentarily paused due to school. Hopefully will get a functionaning version around october.
 
 Simple chess engine made in C#
 
