@@ -1,7 +1,18 @@
 # ChessEngine
 
 --CURRENTLY UNDER MAJOR REDESIGNING--
-10/5/23 - Reprogrammed the ui, finished all major parts, on to bugfixing. Hope it doesnt take too long.
+Reprogrammed the ui due to its messyness
+now heavily utilizing structs for moves, and using piecelists
+various speed improvement within move generation
+move genration has been reprogrammed
+pinned pieces function has been optimized heavily
+better organization of code
+Various other improvements
+
+Expecting a release sometime in mid-late october
+
+
+
 
 Simple chess engine made in C#
 
