@@ -1,7 +1,7 @@
 # ChessEngine
 
 --CURRENTLY UNDER MAJOR REDESIGNING--
-Work is momentarily paused due to school. Hopefully will get a functionaning version around october.
+10/5/23 - Reprogrammed the ui, finished all major parts, on to bugfixing. Hope it doesnt take too long.
 
 Simple chess engine made in C#
 
