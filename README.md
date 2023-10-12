@@ -11,6 +11,8 @@ Various other improvements
 
 Expecting a release sometime in mid-late october
 
+Update: Testing is showing around a 5x performance increase,
+with better branch pruning, far higher depths should be able to be acheived.
 
 
 
