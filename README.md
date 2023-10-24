@@ -15,9 +15,11 @@ pinned pieces function has been optimized heavily
 better organization of code
 Various other improvements
 
-Expecting a release sometime in mid-late october
-
 Update: Testing is showing around a 5x performance increase,
 with better branch pruning, far higher depths should be able to be acheived.
+
+The engine is functioning right now, but suffers from occasional errors when running for too long or at too high of a depth.
+Also occasionaly plays seemingly terrible moves.
+Still hoping for a release in late october, but unexpected issues may arise. 
 
 
