@@ -23,3 +23,6 @@ Also occasionaly plays seemingly terrible moves.
 Still hoping for a release in late october, but unexpected issues may arise. 
 
 
+(believe it or not even like 10 months later i am still working on this thing, its just with school I have very little time, hopefully when I dont have to stress about AP's or finals this can finally be in a functioning state lol)
+
+
